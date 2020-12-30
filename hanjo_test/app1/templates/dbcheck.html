@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+</head>
+
+<body>
+    index에서 잘 넘어옴.
+    db 연동 검사
+    <table>
+        <tr>
+            <th>num</th>
+            <th>text</th>
+        </tr>
+        {% for t in t_h %}
+        <tr>
+            <td>{{t.num}}</td>
+            <td>{{t.text}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

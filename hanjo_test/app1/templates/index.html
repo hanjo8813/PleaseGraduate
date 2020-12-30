@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+</head>
+
+<body>
+    <!--
+        url태그 사용하기.
+        1. urls.py로 가서 'i_to_p2' name을 가진 url패턴을 찾는다.
+        2. 찾았다면 해당 패턴의 views 함수를 실행
+        3. views의 함수는 i_to_p2이므로 실행하면 render로 page2.html로 이동시켜준다.
+    -->
+    <a href="{% url 'n_dbcheck'%}">DB 연동 체크</a>
+    <br>x
+    <a href="{% url 'n_upload'%}">파일 업로드</a>
+</body>
+
+</html>
