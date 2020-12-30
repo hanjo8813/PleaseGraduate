@@ -27,4 +27,6 @@ urlpatterns = [
     # 해당 패턴의 이름은 i_to_p2로 설정
     path('dbcheck/', views.f_dbcheck, name='n_dbcheck'),
     path('upload/', views.f_upload, name='n_upload'),
+    path('compare/', views.f_compare, name='n_compare'),
+
 ]
