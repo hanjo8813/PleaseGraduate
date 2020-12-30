@@ -1,4 +1,4 @@
-"""test1 URL Configuration
+"""projcet URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from app1 import views
+from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     # 첫페이지 url 설정
     path('', views.f_index),
+
     # 뒤에 붙일 url주소는 page2, view에서 불러오는 함수는 i_to_p2,
     # 해당 패턴의 이름은 i_to_p2로 설정
     path('dbcheck/', views.f_dbcheck, name='n_dbcheck'),
