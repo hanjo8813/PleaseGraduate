@@ -1,25 +1,18 @@
-<!DOCTYPE html>
-<html>
+{% extends 'menubar.html' %}
+{% block content %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-</head>
-
-<body>
+    <p class="my_p"> css 체크 : 이 문단이 빨강이면 static 폴더의 CSS 파일이 잘 참조된겁니다 </p>
     <!--
         url태그 사용하기.
-        1. urls.py로 가서 'i_to_p2' name을 가진 url패턴을 찾는다.
+        1. href의 이름을 가지고 urls.py로 가서 해당 url 이름을 찾는다. OR href의 별명을 가지고 해당 url의 별명을 찾는다 
         2. 찾았다면 해당 패턴의 views 함수를 실행
-        3. views의 함수는 i_to_p2이므로 실행하면 render로 page2.html로 이동시켜준다.
+        3. views에서 해당 함수를 실행하게됨.
     -->
-    <a href="{% url 'n_dbcheck'%}">DB 연동 체크</a>
+    <a href="/dbcheck/">DB 연동 체크</a>
     <br>
-    <a href="{% url 'n_upload' %}">파일 업로드 체크</a>
+    <a href="/upload/">파일 업로드 체크</a>
     <br>
-    <a href="{% url 'n_compare'%}">DB 불러서 파이썬으로 비교해보기 </a>
+    <a href="/f_test/">py 테스트용</a>
+    <br>
 
-</body>
-
-</html>
+{% endblock %}

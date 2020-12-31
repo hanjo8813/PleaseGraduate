@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html>
+{% extends 'menubar.html' %}
+{% block content %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-</head>
-
-<body>
     index에서 잘 넘어옴.
     db 연동 검사
     <table>
@@ -21,6 +15,5 @@
         </tr>
         {% endfor %}
     </table>
-</body>
-
-</html>
+    
+{% endblock %}

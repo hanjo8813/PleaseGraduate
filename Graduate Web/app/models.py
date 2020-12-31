@@ -4,7 +4,6 @@ from django.db import models
 
 # DB 테이블의 구조를 보여주고, 수정가능
 class TestTable(models.Model):
-    objects = models.Manager()
     num = models.AutoField(primary_key=True)
     text = models.CharField(max_length=45)
 
@@ -14,7 +13,6 @@ class TestTable(models.Model):
 
 # 테이블 userinfo
 class Userinfo(models.Model):
-    objects = models.Manager()
     id = models.CharField(primary_key=True, max_length=50)
     pw = models.CharField(max_length=45)
 
@@ -26,7 +24,6 @@ class Userinfo(models.Model):
 
 # case별 이수학점 기준표
 class Graduatescore(models.Model):
-    objects = models.Manager()
     ind = models.AutoField(primary_key=True)
     major = models.CharField(max_length=50)
     startyear = models.IntegerField()
@@ -43,7 +40,6 @@ class Graduatescore(models.Model):
 
 
 class Dicon16CoreEssential(models.Model):
-    objects = models.Manager()
     subject_num = models.IntegerField(primary_key=True)
     subjec_name = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
@@ -56,7 +52,6 @@ class Dicon16CoreEssential(models.Model):
 
 
 class Dicon16CoreSelection(models.Model):
-    objects = models.Manager()
     subject_num = models.IntegerField(primary_key=True)
     isessential = models.IntegerField()
     subjec_name = models.CharField(max_length=45)
@@ -70,7 +65,6 @@ class Dicon16CoreSelection(models.Model):
 
 
 class Dicon16Liberal(models.Model):
-    objects = models.Manager()
     subject_num = models.IntegerField(primary_key=True)
     subjec_name = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)

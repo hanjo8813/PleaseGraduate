@@ -1,0 +1,4 @@
+missing-backwards-migration-callable:12:Migration:Always include backwards migration callable
+missing-backwards-migration-callable:13:Migration:Always include backwards migration callable
+missing-backwards-migration-callable:15:Migration:Always include backwards migration callable
+missing-backwards-migration-callable:17:Migration:Always include backwards migration callable

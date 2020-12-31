@@ -1,0 +1,1 @@
+alert('파일 업로드 성공!! app->uploaded_media 확인');

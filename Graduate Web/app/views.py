@@ -2,28 +2,77 @@
 import pandas as pd
 import numpy as np
 # 장고 관련 참조
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.core.files.storage import FileSystemStorage
+from django.contrib import messages
+# 모델 참조
+from .models import TestTable
+from .models import Graduatescore
 
-'''
 # 이 함수가 호출되면 -> index.html을 렌더링한다.
-def f_index(request):
+def r_index(request):
     return render(request, "index.html")
 
-def f_dbcheck(request):
+def r_dbcheck(request):
     # model의 test_table 테이블을 변수에 저장
     tt = TestTable.objects.all()
     # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
     return render(request, "dbcheck.html", {"t_h":tt})
 
 def f_upload(request):
+    # 만약 post 형식으로 제출됐는데 file이 있다면.
+    if 'file' in request.FILES:
+        uploaded_file = request.FILES['file']
+        # 일단 미디어 폴더에 저장.
+        fs = FileSystemStorage()
+        fs.save(uploaded_file.name , uploaded_file)
+        # 그 파일을 compare 렌더링하는 함수로 넘긴다.
+        return r_compare(request, uploaded_file.name)
+    # file이 없다면.
+    else:
+        return HttpResponse('업로드 실패')
+
+def r_upload(request):
     return render(request, "upload.html")
 
-def f_compare(request):
-    return render(request, "compare.html")
+def r_compare(request, file_name):
+    # 메시지를 html로 넘긴다.
+    messages.info(request, '업로드 성공. app/uploaded_media 폴더 확인!!')
+
+    # 이수학점 기준 모델 불러오기
+    gs = Graduatescore.objects.all()
+    gs_sum = gs[0].sum
+
+    # dataframe 작업
+    root = './app/uploaded_media/' + file_name
+    data = pd.read_excel(root, index_col=None)
+    data.to_csv('csvfile.csv', encoding='utf-8')
+    data_sum = data['학점'].sum()
+    
+    return render(request, "compare.html", {"gs_sum":gs_sum , "data_sum":data_sum })
+
+
+
+
+def f_test(request):
+    gs = Graduatescore.objects.all()
+    gs_sum = gs[0].sum
+
+    data = pd.read_excel('./app/uploaded_media/기이수성적.xls', index_col=None)
+    data.to_csv('csvfile.csv', encoding='utf-8')
+    data_sum = data['학점'].sum()
+
+    print(gs_sum)
+    print(data_sum)
+    return HttpResponse('테스트 완료, 터미널 확인')
+
+
+
+
+
 
 '''
-
 #excel to csv to dataframe
 data = pd.read_excel('./app/media_down/기이수성적.xls', index_col=None)
 data.to_csv('csvfile.csv', encoding='utf-8')
@@ -153,3 +202,4 @@ CA_df = pd.DataFrame({'영역':EC_category_rest_16})
 #결과값 Merge
 result = pd.concat([total_credit_result,MR_df,ER_df,EB_df,EC_df,CA_df],axis=1)
 result.fillna(0)
+'''
