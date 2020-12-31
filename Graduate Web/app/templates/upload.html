@@ -1,12 +1,6 @@
-<html>
+{% extends 'menubar.html' %}
+{% block content %}
 
-<head>
-    <title>Upload</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-</head>
-
-<body>
     업로드 페이지
     기이수 엑셀파일 업로드 시 해당 파일을 분석해서 기준DB와 비교하는 페이지로 이동!!!!
     <br><br>
@@ -18,6 +12,5 @@
         <br><br>
         <input type="submit" value="이 버튼 누르면 media 폴더로 업로드">
     </form>
-</body>
 
-</html>
+{% endblock %}

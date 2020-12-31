@@ -1,0 +1,14 @@
+.my_p{
+    color : red;
+}
+
+.my_span{
+    color : red;
+}
+
+body{
+    margin : 0 auto;
+    padding : 10rem;
+    background-color: rgb(226, 226, 226);
+}
+

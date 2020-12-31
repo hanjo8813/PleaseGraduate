@@ -4,17 +4,17 @@
     <!-- 업로드 성공시 -->
     {% if messages %}
 	    {% for message in messages %}
-        <p style="color:red">{{ message.message }}</p>
+        <p>{{ message.message }}</p>
 	    {% endfor %}
     {% endif %}
    
-    <p>기준학점 모델에서의 총 학점 : {{ gs_sum }}</p>
-    <p>업로드된 기이수 학점에서의 총 학점 : {{ data_sum }}</p>
+    <p>기준학점 모델에서의 총 학점 : <span class="my_span"> {{ gs_sum }} </span></p>
+    <p>업로드된 기이수 학점에서의 총 학점 : <span class="my_span"> {{ data_sum }} </span></p>
 
     {% if gs_sum > data_sum  %}
-    <p> 기준학점보다 모자랍니다. </p>
+    <p class="my_p"> 기준학점보다 모자랍니다. </p>
     {% else %}
-    <p> 기준학점을 만족합니다. </p>
+    <p class="my_p"> 기준학점을 만족합니다. </p>
     {% endif %}
 
 {% endblock %}
