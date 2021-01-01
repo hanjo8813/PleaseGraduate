@@ -8,7 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
 from .models import TestTable
-from .models import Graduatescore
+from .models import GraduateScore
 
 # 이 함수가 호출되면 -> index.html을 렌더링한다.
 def r_index(request):
@@ -41,8 +41,8 @@ def r_compare(request, file_name):
     messages.info(request, '업로드 성공. app/uploaded_media 폴더 확인!!')
 
     # 이수학점 기준 모델 불러오기
-    gs = Graduatescore.objects.all()
-    gs_sum = gs[0].sum
+    gs = GraduateScore.objects.all()
+    gs_sum = gs[0].sum_score
 
     # dataframe 작업
     root = './app/uploaded_media/' + file_name
@@ -53,10 +53,8 @@ def r_compare(request, file_name):
     return render(request, "compare.html", {"gs_sum":gs_sum , "data_sum":data_sum })
 
 
-
-
 def f_test(request):
-    gs = Graduatescore.objects.all()
+    gs = GraduateScore.objects.all()
     gs_sum = gs[0].sum
 
     data = pd.read_excel('./app/uploaded_media/기이수성적.xls', index_col=None)

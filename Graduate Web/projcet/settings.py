@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'projcet.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_django',
+        'NAME': 'graduate_help',
         'USER': 'root',
         'PASSWORD': '8813',
         'HOST': 'localhost',

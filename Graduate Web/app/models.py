@@ -1,78 +1,85 @@
 from django.db import models
 
-# objects = models.Manager() -> vscode 오류때문에 추가해줌.
+# DB 테이블의 구조를 파이썬 클래스로 보여주고, 수정가능
 
-# DB 테이블의 구조를 보여주고, 수정가능
 class TestTable(models.Model):
-    num = models.AutoField(primary_key=True)
+    num = models.IntegerField(primary_key=True)
     text = models.CharField(max_length=45)
 
     class Meta:
         managed = False
         db_table = 'test_table'
 
-# 테이블 userinfo
-class Userinfo(models.Model):
-    id = models.CharField(primary_key=True, max_length=50)
-    pw = models.CharField(max_length=45)
+
+class AllLecture(models.Model):
+    subject_num = models.IntegerField(primary_key=True)
+    subject_name = models.CharField(max_length=70)
+    classification = models.CharField(max_length=45)
+    selection = models.CharField(max_length=45, blank=True, null=True)
+    grade = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'userinfo'
+        db_table = 'all_lecture'
 
-# --------------------------------------------------
 
-# case별 이수학점 기준표
-class Graduatescore(models.Model):
-    ind = models.AutoField(primary_key=True)
-    major = models.CharField(max_length=50)
-    startyear = models.IntegerField()
-    sum = models.IntegerField()
+class Basic(models.Model):
+    ind = models.OneToOneField('IndCombi', models.DO_NOTHING, db_column='ind', primary_key=True)
+    subject_num_list = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'basic'
+
+
+class CoreEssential(models.Model):
+    ind = models.OneToOneField('IndCombi', models.DO_NOTHING, db_column='ind', primary_key=True)
+    subject_num_list = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'core_essential'
+
+
+class CoreSelection(models.Model):
+    ind = models.OneToOneField('IndCombi', models.DO_NOTHING, db_column='ind', primary_key=True)
+    subject_num_list = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'core_selection'
+
+
+class GraduateScore(models.Model):
+    ind = models.OneToOneField('IndCombi', models.DO_NOTHING, db_column='ind', primary_key=True)
+    sum_score = models.IntegerField()
     major_essential = models.IntegerField()
     major_selection = models.IntegerField()
     core_essential = models.IntegerField()
     core_selection = models.IntegerField()
-    liberal = models.IntegerField()
+    basic = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'graduatescore'
+        db_table = 'graduate_score'
 
 
-class Dicon16CoreEssential(models.Model):
-    subject_num = models.IntegerField(primary_key=True)
-    subjec_name = models.CharField(max_length=45)
-    selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
-    kind = models.CharField(max_length=45)
+class IndCombi(models.Model):
+    ind = models.AutoField(primary_key=True)
+    major = models.CharField(max_length=45)
+    year = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'dicon_16_core_essential'
+        db_table = 'ind_combi'
 
 
-class Dicon16CoreSelection(models.Model):
-    subject_num = models.IntegerField(primary_key=True)
-    isessential = models.IntegerField()
-    subjec_name = models.CharField(max_length=45)
-    selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
-    kind = models.CharField(max_length=45)
+class SubjectGroup(models.Model):
+    subject_num = models.OneToOneField(AllLecture, models.DO_NOTHING, db_column='subject_num', primary_key=True)
+    group_num = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'dicon_16_core_selection'
-
-
-class Dicon16Liberal(models.Model):
-    subject_num = models.IntegerField(primary_key=True)
-    subjec_name = models.CharField(max_length=45)
-    selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
-    kind = models.CharField(max_length=45)
-
-    class Meta:
-        managed = False
-        db_table = 'dicon_16_liberal'
+        db_table = 'subject_group'
 
 
