@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
-from .models import TestTable, AllLecture, IndCombi, SubjectGroup, GraduateScore, Basic, CoreEssential, CoreSelection
+from .models import *
 
 # 이 함수가 호출되면 -> index.html을 렌더링한다.
 def r_index(request):
@@ -108,7 +108,7 @@ def selenium_uis(id, pw):
     return
 
 def f_login(request):
-    # 셀레니움으로 서버에 엑셀 다운
+    # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
     selenium_uis(request.POST.get('id'), request.POST.get('pw'))
     # 다운로드 후 이름 변경
     file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
@@ -119,41 +119,64 @@ def f_login(request):
 
 #-------------------------------------------------------------------------------------
 
-
 # 비교 분석 파트 -------------------------------------------------------------------------------------
 
-def make_group(list_):
-    group_list = []
-    for s_num in list_:
+def db_make_dic(row):
+    dic = defaultdict(lambda:-1)
+    for s_num in row.subject_num_list.split(','):
+        s_num = int(s_num)
+        dic[s_num]
         sg = SubjectGroup.objects.filter(subject_num = s_num)
         if sg.exists():
-            group_list.append(sg[0].group_num)
-    return group_list
+            dic[s_num] = sg[0].group_num
+    return dic
 
-def make_lack(my_list, list_, group_):
-    my_lack = []
+def df_make_dic(my_list):
+    dic = defaultdict(lambda:-1)
     for s_num in my_list:
-        # 사용자가 들은게 학수번호 리스트에 존재.
-        if s_num in list_:
-            list_.pop(s_num)
-        # 존재 X -> 사용자가 재수강했을경우 고려
+        dic[s_num]
+        sg = SubjectGroup.objects.filter(subject_num = s_num)
+        if sg.exists():
+            dic[s_num] = sg[0].group_num
+    return dic
+
+def make_recommend_list(my_dic_, dic_):
+    # 만족한 학수번호는 딕셔너리에서 pop
+    for s_num in my_dic_.keys():
+        # 1차로 학수번호 검사
+        # 있다면? -> 기준 딕셔너리에서 팝.
+        if s_num in dic_.keys():
+            dic_.pop(s_num)
+        # 없다면? 2차 검사
+        else :
+            g_num = my_dic_[s_num]
+            if g_num != -1 and (g_num in dic_.values()):
+                dic_.pop(s_num)
+        
+    # 추천 리스트 알고리즘
+    recommend = []
+    for s_num in dic_.keys():
+        nl = NewLecture.objects.filter(subject_num = s_num)
+        # 부족 과목이 열리고 있다면
+        if nl.exists():
+            recommend.append(nl[0].subject_num.subject_num)
+        # 더이상 열리지 않는다면 -> 그룹번호로 동일과목 찾은 후 열리는 것만 저장
         else:
-            # 사용자가 들은걸 그룹번호로 매핑
-            sg = SubjectGroup.objects.filter(subject_num = s_num)
-            # 매핑이 애초에 안된다면 -> 단일과목이라는것
-            if sg.exists() == 0:
-                my_lack.append(s_num)
-            # 매핑이 됐을 경우
+            g_num = dic_[s_num]
+            # 동일과목도 없고 과목이 없어졌다?
+            if g_num == -1:
+                recommend.append(s_num)
+            # 아니면 동일과목중 열리고 있는 강의를 찾자
             else:
-                # 그룹번호 리스트에 존재한다면 -> 들은것
-                if sg[0].group_num in group_:
-                    list_.pop(s_num)
-                else:
-                    my_lack.append(s_num)
-    return my_lack
-'''
+                sg = SubjectGroup.objects.filter(group_num = g_num)
+                for s in sg:
+                    nl2 = NewLecture.objects.filter(subject_num = s.subject_num)
+                    if nl2.exists():
+                        recommend.append(nl2[0].subject_num.subject_num)
+    return recommend
+
+
 def f_test(request):
-    
     # 셀레니움으로 넘어올 학과 - 입학년도
     p_major = '디지털콘텐츠'
     p_year = 16
@@ -163,7 +186,7 @@ def f_test(request):
     p_ind = ic_row.ind      # 매핑된 ind
     print(p_ind)
 
-#-------------------------------------------------------------------------------------
+    #---------------------------------------------------------
     # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
     # 1. 이수학점 수치 기준
     gs_row = GraduateScore.objects.get(ind = p_ind)
@@ -175,45 +198,42 @@ def f_test(request):
     num_b = gs_row.basic                # basic
     print(num_ss, num_me, num_ms, num_ce, num_cs, num_b)
     
-    # 2. 중필(교필) 필수과목 리스트 and 그룹번호로 바꾼 리스트
-    # ind로 필수과목 추출.
+    # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
+    # ind로 필수과목 추출후 딕셔너리 만들기
     ce_row = CoreEssential.objects.get(ind = p_ind)
-    list_ce = [int(s) for s in ce_row.subject_num_list.split(',')]
-    dic_ce = defaultdict(int)
-
-    
-    # 필수과목에 해당하는 그룹번호 리스트 만들기 / make_group 함수 위에 있음
-    group_ce = make_group(list_ce)
+    dic_ce = db_make_dic(ce_row)
     print("중필")
-    print(list_ce)
-    print(group_ce)
+    print(dic_ce)
 
     # 3. 중선(교선1) 필수과목
     cs_row = CoreSelection.objects.get(ind = p_ind)
-    list_cs = [int(s) for s in cs_row.subject_num_list.split(',')]
-    group_cs = make_group(list_cs)
+    dic_cs = db_make_dic(cs_row)
     print("중선")
-    print(list_cs)
-    print(group_cs)
+    print(dic_cs)
     
     # 4. 기교 필수과목 
     b_row = Basic.objects.get(ind = p_ind)
-    list_b = [int(s) for s in b_row.subject_num_list.split(',')]
-    group_b = make_group(list_b)
+    dic_b = db_make_dic(b_row)
     print("기교")
-    print(list_b)
-    print(group_b)
+    print(dic_b)
 
-#-------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
-    data = pd.read_excel('./app/uploaded_media/21-01-03 22_37_19.xls', index_col=None)
+    data = pd.read_excel('./app/uploaded_media/기이수성적_재현.xls', index_col=None)
     data.to_csv('csvfile.csv', encoding='utf-8')
+
     # 논패과목 삭제
+    '''
+    for i in data.index:
+        if data.loc[i]['등급'] == 'NP':
+            data = data.drop(data.index[i])
+    data.reset_index(inplace=True, drop=True)
+    
     for i in range(data.shape[0]):
         if data['등급'][i]=='NP':
             data = data.drop(data.index[i])
     data.reset_index(inplace=True, drop=True)
-
+    '''
     # 이수 구분마다 df 생성
     # 전필
     df_me = data[data['이수구분'].isin(['전필'])]
@@ -226,32 +246,34 @@ def f_test(request):
     # 중필(교필)
     df_ce = data[data['이수구분'].isin(['교필'])]
     df_ce.reset_index(inplace=True,drop=True)
-    my_num_ce = df_ce['학점'].sum()                     # 사용자의 중필학점 총합
-    my_list_ce = sorted(df_ce['학수번호'].tolist())     # 사용자의 중필 학수번호 리스트
+    my_num_ce = df_ce['학점'].sum()                         # 사용자의 중필학점 총합
+    my_dic_ce = df_make_dic(df_ce['학수번호'].tolist())     # 사용자 학수-그룹번호 딕셔너리
     # 중선(교선)
     df_cs = data[data['이수구분'].isin(['교선1'])]
     df_cs.reset_index(inplace=True,drop=True)
     my_num_cs = df_cs['학점'].sum()
-    my_list_cs = sorted(df_cs['학수번호'].tolist())
+    my_dic_cs = df_make_dic(df_cs['학수번호'].tolist())
     # 기교
     df_b = data[data['이수구분'].isin(['기교'])]
     df_b.reset_index(inplace=True,drop=True)
     my_num_b = df_b['학점'].sum()
-    my_list_b = sorted(df_b['학수번호'].tolist())
+    my_dic_b = df_make_dic(df_b['학수번호'].tolist())
+
     # 사용자의 총 학점
     my_num_ss = my_num_me+my_num_ms+my_num_ce+my_num_cs+my_num_b
-#-------------------------------------------------------------------------------------
+    
+    #-------------------------------------------------------------------------------------
     # 검사 단계
-
     # 1. 총 학점 비교
-    print('총 학점')
+    print('<총 학점>')
     if num_ss <= my_num_ss :
         print('총 학점 기준을 만족했습니다.')
     else:
         print(num_ss-my_num_ss,'학점이 부족합니다.')
+    print("")
 
     # 2. 전필 검사
-    print('전필')
+    print('<전필>')
     remain = 0
     if num_me <= my_num_me :
         print('전필 학점 기준을 만족했습니다.')
@@ -259,9 +281,10 @@ def f_test(request):
             remain = my_num_me - num_me
     else:
         print(num_me-my_num_me, '학점이 부족합니다.')
+    print("")
 
     # 3. 전선 검사
-    print('전선')
+    print('<전선>')
     if num_ms <= my_num_ms :
         print('전선 학점 기준을 만족했습니다.')
     else:
@@ -269,33 +292,43 @@ def f_test(request):
             print('전선 학점이 부족했지만 전필에서 ', remain, '학점이 남아 기준을 만족했습니다.')
         else:
             print(num_ms-my_num_ms,'학점이 부족합니다.')
-    
+    print("")
+
     # 4. 중필 검사
     # 학점 검사는 필요없지만 일단 넣음
-    print('중필')
+    print('<중필>')
     if num_ce <= my_num_ce :
         print('총 학점 기준을 만족했습니다.')
     else:
         print(num_ce-my_num_ce,'학점이 부족합니다.')
-    
-    # 내가 부족한 중필과목 리스트 
-    my_lack_ce = make_lack(my_list_ce, list_ce, group_ce)
-
-
-    print(my_lack_ce)
-    if not my_lack_ce :
-        print('모든 필수과목을 이수했습니다.')
+    # 추천과목 매핑 후 추출
+    recom_ce = make_recommend_list(my_dic_ce, dic_ce)
+    if not recom_ce:
+        print('모든 필수과목을 들었습니다!')
     else:
-        # 학수번호를 매핑해서 정보 쿼리셋 저장
-        lack_lec = AllLecture.objects.none()
-        for s_num in my_lack_ce:
-            temp = AllLecture.objects.filter(subject_num = s_num)
-            lack_lec = lack_lec.union(temp)
-        # 저장된 쿼리셋을 순회해서 정보 출력
-        for row in lack_lec:
-            print(row.subject_num)
-    
-   
-    return HttpResponse('테스트 완료, 터미널 확인')
+        print('들어야하는 과목입니다.')
+        for s_num in recom_ce:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+    print("")
 
-'''
+
+    # 5. 기교 검사
+    print('<기교>')
+    if num_b <= my_num_b :
+        print('총 학점 기준을 만족했습니다.')
+    else:
+        print(num_b-my_num_b,'학점이 부족합니다.')
+    # 추천과목 매핑 후 추출
+    recom_b = make_recommend_list(my_dic_b, dic_b)
+    if not recom_b:
+        print('모든 필수과목을 들었습니다!')
+    else:
+        print('들어야하는 과목입니다.')
+        for s_num in recom_b:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+    print("")
+   
+
+    return HttpResponse('테스트 완료, 터미널 확인')

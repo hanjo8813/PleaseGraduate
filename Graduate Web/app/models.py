@@ -22,6 +22,13 @@ class AllLecture(models.Model):
         managed = False
         db_table = 'all_lecture'
 
+class NewLecture(models.Model):
+    subject_num = models.OneToOneField(AllLecture, models.DO_NOTHING, db_column='subject_num', primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'new_lecture'
+
 
 class Basic(models.Model):
     ind = models.OneToOneField('IndCombi', models.DO_NOTHING, db_column='ind', primary_key=True)
