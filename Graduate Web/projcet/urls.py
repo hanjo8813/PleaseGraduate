@@ -35,6 +35,7 @@ urlpatterns = [
     # 다른 함수사용 url 패턴
     path('f_upload/', views.f_upload),
     path('f_test/', views.f_test),
+    path('f_login/', views.f_login),
 ]
 
 # 미디어 루트 설정

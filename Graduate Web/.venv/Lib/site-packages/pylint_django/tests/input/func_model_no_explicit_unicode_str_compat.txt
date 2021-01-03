@@ -1,1 +1,0 @@
-model-no-explicit-unicode:18:SomeModel:Model does not explicitly define __unicode__ (SomeModel)

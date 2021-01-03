@@ -1,8 +1,15 @@
 # 파이썬 라이브러리
-from collections import defaultdict
-# 데이터프레임
+import os
+import json
+import time
+import shutil
 import pandas as pd
 import numpy as np
+from collections import defaultdict
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 # 장고 관련 참조
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -21,6 +28,9 @@ def r_dbcheck(request):
     # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
     return render(request, "dbcheck.html", {"t_h":tt})
 
+def r_upload(request):
+    return render(request, "upload.html")
+
 def f_upload(request):
     # 만약 post 형식으로 제출됐는데 file이 있다면.
     if 'file' in request.FILES:
@@ -33,9 +43,6 @@ def f_upload(request):
     # file이 없다면.
     else:
         return HttpResponse('업로드 실패')
-
-def r_upload(request):
-    return render(request, "upload.html")
 
 def r_compare(request, file_name):
     # 메시지를 html로 넘긴다.
@@ -50,10 +57,70 @@ def r_compare(request, file_name):
     data = pd.read_excel(root, index_col=None)
     data.to_csv('csvfile.csv', encoding='utf-8')
     data_sum = data['학점'].sum()
-    
     return render(request, "compare.html", {"gs_sum":gs_sum , "data_sum":data_sum })
 
+# 셀레니움 파트 -------------------------------------------------------------------------------------
+
+def get_Driver_uis(url):
+    options = webdriver.ChromeOptions()
+    # 크롬창을 열지않고 백그라운드로 실행
+    # options.add_argument("headless")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    # 다운로드될 경로 지정
+    root = os.getcwd() + '\\app\\uploaded_media'
+    options.add_experimental_option('prefs', {'download.default_directory' : root} )
+    driver = webdriver.Chrome('./chromedriver.exe', options=options)
+    driver.get(url)
+    return driver
+
+def selenium_uis(id, pw):
+    url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+    driver = get_Driver_uis(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+    #id , pw 입력할 곳 찾기
+    tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
+    tag_pw = driver.find_element_by_id("password")
+    tag_id.clear()
+    #id , pw 보내기
+    tag_id.send_keys(id)
+    tag_pw.send_keys(pw)  
+    #로그인버튼 클릭
+    login_btn = driver.find_element_by_id('logbtn')
+    login_btn.click()
+    # 프레임전환
+    driver.switch_to.frame(2)
+    # 수업/성적 메뉴선택
+    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
+    # 성적 및 강의평가 선택
+    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
+    time.sleep(1)
+    # 기이수성적조회로 클릭 이동
+    driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
+    time.sleep(1)
+    # 최상위(default) 프레임으로 이동
+    driver.switch_to.default_content()
+    # 프레임 경우의 수 다 찾고 이동
+    driver.switch_to.frame(3)
+    driver.switch_to.frame(0)
+    # 다운로드 버튼 x_path 클릭
+    x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
+    x.click()
+    time.sleep(5)
+    return
+
+def f_login(request):
+    # 셀레니움으로 서버에 엑셀 다운
+    selenium_uis(request.POST.get('id'), request.POST.get('pw'))
+    # 다운로드 후 이름 변경
+    file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+    Initial_path = './app/uploaded_media'
+    filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+    shutil.move(filename,os.path.join(Initial_path,file_name))
+    return r_compare(request, file_name)
+
 #-------------------------------------------------------------------------------------
+
+
+# 비교 분석 파트 -------------------------------------------------------------------------------------
 
 def make_group(list_):
     group_list = []
@@ -83,11 +150,10 @@ def make_lack(my_list, list_, group_):
                     list_.pop(s_num)
                 else:
                     my_lack.append(s_num)
-                    
-                
     return my_lack
-
+'''
 def f_test(request):
+    
     # 셀레니움으로 넘어올 학과 - 입학년도
     p_major = '디지털콘텐츠'
     p_year = 16
@@ -108,16 +174,14 @@ def f_test(request):
     num_cs = gs_row.core_selection      # core_selection
     num_b = gs_row.basic                # basic
     print(num_ss, num_me, num_ms, num_ce, num_cs, num_b)
-
+    
     # 2. 중필(교필) 필수과목 리스트 and 그룹번호로 바꾼 리스트
     # ind로 필수과목 추출.
     ce_row = CoreEssential.objects.get(ind = p_ind)
     list_ce = [int(s) for s in ce_row.subject_num_list.split(',')]
     dic_ce = defaultdict(int)
-    
-    
 
-    '''
+    
     # 필수과목에 해당하는 그룹번호 리스트 만들기 / make_group 함수 위에 있음
     group_ce = make_group(list_ce)
     print("중필")
@@ -142,7 +206,7 @@ def f_test(request):
 
 #-------------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
-    data = pd.read_excel('./app/uploaded_media/기이수성적2.xls', index_col=None)
+    data = pd.read_excel('./app/uploaded_media/21-01-03 22_37_19.xls', index_col=None)
     data.to_csv('csvfile.csv', encoding='utf-8')
     # 논패과목 삭제
     for i in range(data.shape[0]):
@@ -205,7 +269,7 @@ def f_test(request):
             print('전선 학점이 부족했지만 전필에서 ', remain, '학점이 남아 기준을 만족했습니다.')
         else:
             print(num_ms-my_num_ms,'학점이 부족합니다.')
-
+    
     # 4. 중필 검사
     # 학점 검사는 필요없지만 일단 넣음
     print('중필')
@@ -232,158 +296,6 @@ def f_test(request):
             print(row.subject_num)
     
    
-
-            
-            
-        
-
-    
-
-'''
     return HttpResponse('테스트 완료, 터미널 확인')
 
-
-
-
-
-'''
-#excel to csv to dataframe
-data = pd.read_excel('/Users/hon99oo/Desktop/21CS/RawGrade.xls', index_col=None)
-#논패과목 삭제
-for i in range(data.shape[0]):
-    if data['등급'][i]=='NP':
-        data = data.drop(data.index[i])
-data.reset_index(inplace=True, drop=True)
-#user의 기이수 과목 항목별 나누기
-#전공필수(Major Required)
-MR = data[data['이수구분'].isin(['전필'])]
-MR.reset_index(inplace=True,drop=True)
-#전공선택(Major Choice)
-MC = data[data['이수구분'].isin(['전선'])]
-MC.reset_index(inplace=True,drop=True)
-#교양필수(중핵필수)(Elective Required)
-ER = data[data['이수구분'].isin(['교필'])]
-ER.reset_index(inplace=True,drop=True)
-#기초교양(Elective Basic)
-EB = data[data['이수구분'].isin(['기교'])]
-EB.reset_index(inplace=True,drop=True)
-#교양선택(중핵필수선택)(Elective Choice)
-EC = data[data['이수구분'].isin(['교선1','교선2','교선3'])]
-EC.reset_index(inplace=True,drop=True)
-
-
-#각 항목 이수 학점
-mr_sum = MR['학점'].sum()
-mc_sum = MC['학점'].sum()
-ec_sum = EC['학점'].sum()
-eb_sum = EB['학점'].sum()
-er_sum = ER['학점'].sum()
-total_sum = mr_sum + mc_sum + ec_sum + eb_sum + er_sum
-
-
-# # 2016 졸업기준 DATAFRAME
-#항목별 최소 이수 학점
-total_credit_pass_16 = pd.DataFrame({'이수구분':['전필','전선','교필','기교','교선','전체'], 
-                               '최소학점':[37,35,15,15,15,130]}, columns=['이수구분','최소학점'])
-#전공필수 중 인증제도 과목
-MR_subject_pass_16 = [['C프로그래밍및실습',9912],['고급C프로그래밍및실습',9913]]
-#교양필수 과목
-ER_subject_pass_16 = [['English for Professional Purposes 1',9063],['English for Professional Purposes 2',9064],
-                     ['English Writing 1', 9065], ['Esglish Writing 2', 9066], ['문제해결을위한글쓰기와발표', 9067],
-                     ['세종사회봉사1',8364],['서양철학:쟁점과토론',9068],['신입생세미나1',8360],['취업역량개발론',9030]]
-#기초교양 과목
-EB_subject_pass_16 = [['전산개론-I',8377],['미적분학및연습1',2647],
-                     ['공업수학1', 304], ['일반물리학및실험1', 2647], ['통계학개론', 3353]]
-#교양선택 중 필수 과목
-EC_subject_pass_16 = [['세계사인간과문명',9489],['고급프로그래밍입문-P',9790],
-                     ['정보사회의사이버윤리', 6279], ['Technical Writing 기초', 9936]]
-#교양선택 영역 5가지
-EC_category_pass_16 = ['사상과역사','사회와문화','융합과창업','자연과과학기술','세계와지구촌']
-
-
-# 졸업여부 확인 Algorithm
-#이수학점 기준 통과 여부
-total_credit_result = pd.DataFrame({'이수구분':['전필','전선','교필','기교','교선','전체'],
-                                    '최소학점':[37,35,15,15,15,130],
-                                    '이수학점':[mr_sum, mc_sum, er_sum, eb_sum, ec_sum, total_sum],
-                                    '통과여부':[mr_sum>=37,mc_sum>=35,er_sum>=15,eb_sum>=15,ec_sum>=15,total_sum>=130]},
-                                   columns=['이수구분','최소학점','이수학점','통과여부'])
-total_credit_result
-#전공필수 중 필수 과목 체크
-MR_subject_tmp_16 = MR_subject_pass_16
-MR_subject_rest_16 = []
-for i in range(len(MR_subject_tmp_16)):
-    for j in range(MR.shape[0]):
-        if MR_subject_pass_16[i][1] == (MR['학수번호'][j]):
-            MR_subject_tmp_16[i][1] = 0
-            n=n-1
-MR_subject_tmp_16
-for i in range(len(MR_subject_tmp_16)):
-    if MR_subject_tmp_16[i][1] != 0:
-        MR_subject_rest_16 = MR_subject_tmp_16[i][0]
-MR_subject_rest_16#결과값, NULL값이면 PASS
-
-#교양필수(중핵필수) 과목 체크
-ER_subject_tmp_16 = ER_subject_pass_16
-ER_subject_rest_16 = []
-for i in range(len(ER_subject_tmp_16)):
-    for j in range(ER.shape[0]):
-        if ER_subject_pass_16[i][1] == (ER['학수번호'][j]):
-            ER_subject_tmp_16[i][1] = 0
-for i in range(len(ER_subject_tmp_16)):
-    if ER_subject_tmp_16[i][1] != 0:
-        ER_subject_rest_16.append(ER_subject_tmp_16[i][0])
-ER_subject_rest_16#결과값, NULL값이면 PASS
-
-
-#기초교양 과목 체크
-EB_subject_tmp_16 = EB_subject_pass_16
-EB_subject_rest_16 = []
-for i in range(len(EB_subject_tmp_16)):
-    for j in range(EB.shape[0]):
-        if EB_subject_pass_16[i][1] == (EB['학수번호'][j]):
-            EB_subject_tmp_16[i][1] = 0
-for i in range(len(EB_subject_tmp_16)):
-    if EB_subject_tmp_16[i][1] != 0:
-        EB_subject_rest_16.append(EB_subject_tmp_16[i][0])
-EB_subject_rest_16#결과값, NULL값이면 PASS
-
-
-#교양선택(중핵필수선택) 과목 체크
-EC_subject_tmp_16 = EC_subject_pass_16
-EC_subject_rest_16 = []
-for i in range(len(EC_subject_tmp_16)):
-    for j in range(EC.shape[0]):
-        if EC_subject_pass_16[i][1] == (EC['학수번호'][j]):
-            EC_subject_tmp_16[i][1] = 0
-for i in range(len(EC_subject_tmp_16)):
-    if EC_subject_tmp_16[i][1] != 0:
-        EC_subject_rest_16.append(EC_subject_tmp_16[i][0])
-EC_subject_rest_16#결과값, NULL값이면 PASS
-
-
-#교양선택(중핵필수선택) 선택 영역 체크
-EC_category_tmp_16 = EC_category_pass_16
-EC_category_rest_16 = []
-n = len(EC_category_tmp_16)
-for i in range(len(EC_category_tmp_16)):
-    for j in range(EC.shape[0]):
-        if EC_category_pass_16[i] == (EC['선택영역'][j]):
-            print("1")
-            EC_category_tmp_16[i] = 0
-for i in range(len(EC_category_tmp_16)):
-    if EC_category_tmp_16[i] != 0:
-        EC_category_rest_16.append(EC_category_tmp_16[i])
-EC_category_rest_16#결과값, NULL값이면 PASS
-
-#결과값 데이터프레임 형식으로 유지
-MR_df = pd.DataFrame({'전필':MR_subject_rest_16})
-ER_df = pd.DataFrame({'교필':ER_subject_rest_16})
-EB_df = pd.DataFrame({'기교':EB_subject_rest_16})
-EC_df = pd.DataFrame({'교선':EC_subject_rest_16})
-CA_df = pd.DataFrame({'영역':EC_category_rest_16})
-
-#결과값 Merge
-result = pd.concat([total_credit_result,MR_df,ER_df,EB_df,EC_df,CA_df],axis=1)
-result.fillna(0)
 '''
