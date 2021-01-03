@@ -33,9 +33,9 @@
 
 ### graduate_help 덤프파일 import 하기
 1. MySQL에서 `create database graduate_help` 로 'graduate_help' 데이터베이스 생성후 quit
-2. 압축을 푼 graduate_help.sql 파일을 원하는 위치에 가져다 놓는다.4
+2. 압축을 푼 graduate_help.sql 파일을 원하는 위치에 가져다 놓는다.
 3. 터미널 실행 후 동일한 위치로 터미널 이동 (MySQL 접속 X)
-3. `mysqldump -u root -p graduate_help > graduate_help.dump` 명령어 실행해서 import
+3. `mysql -u root -p graduate_help < graduate_help.sql` 명령어 실행해서 import
 
 ### Django - MySQL 연동하기
 > 철자 실수로 프로젝트 세팅 폴더명이 project 가 아닌 projcet임
