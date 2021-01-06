@@ -1,7 +1,32 @@
+.mytd {
+    color: black;
+    border-right :1px solid #dadada;
+}
 
+.mytable {
+    margin:0 auto;
+    width: 90%;
+    text-align: center;
+    font-size: 1rem;
+    padding-top : 3rem;
+    padding-bottom : 4rem;
+}
 
-.my_span{
-    color : red;
+.myth {
+    height: 3rem;
+    background-color: white;
+    font-weight: bolder;
+    font-size: 1.2rem;
+}
+
+.mytr {
+    color: #6e6e6eb9;
+    height: 3rem    ;
+    border-bottom: 1px solid rgb(214, 214, 214);
+}
+
+.mytr:hover {
+    background-color: #f1f1f1;
 }
 
 body {
@@ -189,10 +214,15 @@ a {
         margin-top: -20px;
 
     }
+    
     .smtxt {
         width: 500px;
         font-size: 16px;
 
+    }
+    .cap{
+        width: 100px;
+        height: 100px;
     }
     .lgtxt {
 
@@ -237,9 +267,9 @@ a {
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 420px;
-    height: 300px;
-    margin: 40px 55px 40px;
+    width: 405px;
+    height: 285px;
+    margin: 45px 35px 20px;
     border-color: black;
     border-style: solid;
     border-width: 2px;
@@ -248,13 +278,13 @@ a {
     background-color:  white;
 }
 .container0 {
-    min-width: 800px;
-    height: 400px;
+    min-width: 735px;
+    height: 370px;
 }
 
 .name {
     margin-bottom: 0;
-    margin-top: 20px;
+    margin-top: 30px;
     position: relative;
 
     top: -20px;
@@ -287,7 +317,7 @@ a {
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: nowrap;
-    
+    font-size: 18px;
     border-radius: 15px;
     margin-right: 0px;
     margin-left: 0;
@@ -296,7 +326,7 @@ a {
     position: relative;
     left : -22px;
     width: 180px;
-    height: 230px;
+    height: 220px;
 }
 .rbutton{
     width: 150px;
@@ -324,17 +354,23 @@ a {
     margin: 0;
     
     width: 350px;
-    height: 300px;
+    height: 280px;
 }
 .gbox{
     display: flex;
     font-size: 20px;
     font-weight: 600;
-    margin: 15px;
+    margin: 8px;
+    position: relative;
+    top :0px;
     letter-spacing: 2px;
     margin-bottom: 5px;
     justify-content: space-around;
     flex-direction: row;
+}
+.q{
+    position: relative;
+    top: -10px;
 }
 .t{
     position: relative;
@@ -344,10 +380,10 @@ a {
     text-align: center;
 }
 .T{
-    font-size: 22px;
-    margin-top: 10px;
+    font-size: 24px;
+    margin-top: 5px;
     position: relative;
-top: 15px;
+top: 25px;
     left: -50px;
     width: 500px;
     background-color: none;
@@ -360,7 +396,7 @@ top: 15px;
 .total_strong {
     position: relative;
     top: -105px;
-    left: -165px;
+    left: -175px;
     font-size: 38px;
 
 }
@@ -375,34 +411,35 @@ strong {
     left: -99px;
     text-decoration: none;
 
-    font-size: 20px;
+    font-size: 18px;
 }
 .tooltip{
     cursor: pointer;
 }
 .tooltip_text{
     background-color: #FAFAFA;
-    top: -105px;
+    bottom: 2.5rem;
     left: -35px;
     width: 250px;
-    height: 60px;
-    z-index: 2;
+    
+    height: auto;
+    
     box-shadow: 3px 3px 5px black;
     
-    padding: 20px;
+    padding: 17px;
     color: black;
     border-color: lightgrey;
     border-style: solid;
     border-width: 1.5px;
     display: none;
     
-    letter-spacing: 1.5px;
+    letter-spacing: 3px;
     border-radius: 30px;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 15px;
     position: absolute;
-    
 }
+
 .r{
     width: 50px;
 }
@@ -419,20 +456,24 @@ strong {
 .p{
     position: relative;
     font-weight: 600;
-    font-size: 18px;
     
-    top : 6px;
-    right: -52px;
-    letter-spacing: 6px;
+    font-size: 17px;
+    
+    top : 5px;
+    right: -50px;
+    letter-spacing: 5px;
 
 }
+
 .y{
     width: 60px;
     top:1px;
    
     margin: 0;
     margin-right: 10px;
+    
 }
+
 .Y{
     position: relative;
     width: auto;
@@ -445,8 +486,9 @@ strong {
   
     font-weight: 500;
     position: relative;
+    top:1px;
     
-    font-size: 20px;
+    font-size: 18px;
     margin-left: 10px;
     margin-right: 10px;
 
@@ -456,6 +498,70 @@ strong {
 .tooltip_text.active{
     display: block;
 }
+
 .name title{
     font-size: 50px;
 }
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 5rem;
+    border: 1px solid #888;
+    width: 80%;
+    height: 70%;
+    /* Could be more or less, depending on screen size */                          
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.Gbox{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.cap{
+    
+position: relative;
+display: block;
+height: 10px;
+top : 2px;
+
+left: -55px;
+
+
+    margin: 0;
+    
+    font-size: 35px;
+}
+
+

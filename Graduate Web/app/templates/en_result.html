@@ -1,0 +1,389 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+<div class="lcontainer">
+
+    <!-- 공학인증 총 학점 -->
+    <div class="fcontainer">
+        <div class="resultbox container0">
+            <div class="name name0">공학 인증 Total
+
+            </div>
+            <div class="box">
+                <div id="chart0">
+                    <strong class="total_strong"></strong>
+                </div>
+                <div class="Sbox">
+                    <div class="gbox">
+                        <span class="grade Grade">학번</span>
+                        <span class="t" id="studentnumber"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade Grade">이름</span>
+                        <span class="t" id="name"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade Grade">총 기준 학점
+                        </span>
+                        <span class="t" id="totalgrade"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade Grade">총 이수 학점
+                            </span>
+
+                            <span class="t" id="mytotalgrade"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="gbox Gbox">
+                            <span class="cap"><i class="fas fa-graduation-cap"></i></span>
+
+                            <div class="T" id="cangraduate"> </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rcontainer">
+
+        <!-- 전공 -->
+        <div class="resultbox container1">
+            <div class="name name1">전공
+                <span class="tooltip t1">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text text1">전공 필수 과목을 35학점 이상 이수하면 통과할 수 있습니다
+                    <div class="point"></div>
+                </div>
+            </div>
+            <div class="box">
+                <div id="chart1">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade1"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade1"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn1">Recommend</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전문교양 -->
+        <div class="resultbox container2">
+            <div class="name name1">전문 교양
+                <span class="tooltip t2">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text text2">전공 선택 과목을 41학점 이상 이수하면 통과할 수 있습니다
+                    <div class="point"></div>
+                </div>
+            </div>
+            <div class="box">
+
+                <div id="chart2">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade2"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade2"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn2">Recommend</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BSM -->
+        <div class="resultbox container3">
+            <div class="name name1">BSM
+                <span class="tooltip t3">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text text3">중핵 필수 과목을 모두 이수하면 통과할 수 있습니다.
+                    <div class="point"></div>
+                </div>
+            </div>
+            <div class="box">
+
+                <div id="chart3">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade3"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade3"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn3">Recommend</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 추천 모달-->
+
+<!-- 전공 -->
+<div id="myModal1" class="modal modal1">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>111111111111</p>
+    </div>
+</div>
+
+<!-- 전문 교양 -->
+<div id="myModal2" class="modal modal2">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>22222222222222</p>
+    </div>
+</div>
+
+<!-- BSM-->
+<div id="myModal3" class="modal modal3">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>333333333333333</p>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+<!-- js 파트 -->
+{% block js_section %}
+
+<!-- 원그래프 js 참조 -->
+{% load static %}
+<script src="{% static 'js/circle-progress.js' %}"></script>
+
+<script>
+    var Studentnumber = "15011161";
+    var Name = "권정현";
+
+    var Grade1 = 37;
+    var Grade2 = 42;
+    var Grade3 = 20;
+
+
+    var Mygrade1 = 27;
+    var Mygrade2 = 30;
+    var Mygrade3 = 20;
+
+
+    var Myarea1 = "Pass";
+    var Totalgrade = 137;
+    var Mytotalgrade = 136;
+
+    var pernum0 = (Mytotalgrade / Totalgrade) * 100;
+    var pernum1 = (Mygrade1 / Grade1) * 100;
+    var pernum2 = (Mygrade2 / Grade2) * 100;
+    var pernum3 = (Mygrade3 / Grade3) * 100;
+
+    if (pernum0 == 100) {
+        var Cangraduate = "축하합니다! 졸업 가능합니다!!";
+        document.querySelector('.T').style.fontSize = '24px';
+    } else {
+        document.querySelector('.cap').style.display = 'none';
+        document.querySelector('.T').style.fontSize = '23px';
+        var Cangraduate = "졸업까지 " + (
+            Totalgrade - Mytotalgrade
+        ) + "학점이 필요합니다!!";
+    }
+    const toggleb = document.querySelector('.navbar_toggle');
+    const menu = document.querySelector('.navbar_menu');
+    let tooltipeb = document.querySelectorAll('.tooltip');
+    let text = document.querySelectorAll('.tooltip_text');
+
+    var modal1 = document.getElementById('myModal1');
+    var modal2 = document.getElementById('myModal2');
+    var modal3 = document.getElementById('myModal3');
+
+    var btn1 = document.getElementById("myBtn1");
+    var btn2 = document.getElementById("myBtn2");
+    var btn3 = document.getElementById("myBtn3");
+
+
+    var span1 = document.getElementsByClassName("close")[0];
+    var span2 = document.getElementsByClassName("close")[1];
+    var span3 = document.getElementsByClassName("close")[2];
+
+
+    document
+        .getElementById("name")
+        .innerHTML = Name;
+    document
+        .getElementById("studentnumber")
+        .innerHTML = Studentnumber;
+
+    document
+        .getElementById("grade1")
+        .innerHTML = Grade1;
+    document
+        .getElementById("grade2")
+        .innerHTML = Grade2;
+    document
+        .getElementById("grade3")
+        .innerHTML = Grade3;
+
+    document
+        .getElementById("mygrade1")
+        .innerHTML = Mygrade1;
+    document
+        .getElementById("mygrade2")
+        .innerHTML = Mygrade2;
+    document
+        .getElementById("mygrade3")
+        .innerHTML = Mygrade3;
+
+
+    document
+        .getElementById("mytotalgrade")
+        .innerHTML = Mytotalgrade;
+    document
+        .getElementById("totalgrade")
+        .innerHTML = Totalgrade;
+
+    document
+        .getElementById("cangraduate")
+        .innerHTML = Cangraduate;
+
+
+
+    toggleb.addEventListener('click', () => {
+        menu
+            .classList
+            .toggle('active');
+    });
+
+    var CircleProgress = function (x, y, z) {
+        if (x == 100) {
+            $(y)
+                .circleProgress({
+                    value: x / 100,
+                    startAngle: 300,
+                    size: z,
+                    animation: {
+                        duration: 2200,
+                        easing: "swing"
+                    },
+                    thickness: 15,
+                    fill: {
+
+                        gradient: ["#99A89E", "#BBC7BA"]
+                    }
+                })
+                .on('circle-animation-progress', function (event, progress, stepValue) {
+
+                    $(this)
+                        .find('strong')
+                        .html(Math.round(x * progress) + '<i>%</i>');
+                });
+        } else {
+            $(y)
+                .circleProgress({
+                    value: x / 100,
+                    startAngle: 300,
+                    size: z,
+                    animation: {
+                        duration: 2200,
+                        easing: "swing"
+                    },
+                    thickness: 15,
+                    fill: {
+
+                        gradient: ["#ECA4A6", "#b87577"]
+                    }
+                })
+                .on('circle-animation-progress', function (event, progress, stepValue) {
+
+                    $(this)
+                        .find('strong')
+                        .html(Math.round(x * progress) + '<i>%</i>');
+                });
+        }
+    }
+    var Tooltipeb = function (x, y) {
+        x.addEventListener('click', () => {
+            y
+                .classList
+                .toggle('active');
+        });
+    }
+    var Btnclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "block";
+        }
+
+    }
+    var Spanclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "none";
+        }
+
+    }
+
+    for (i = 0; i < 3; i++) {
+        Tooltipeb(tooltipeb[i], text[i]);
+    }
+    Btnclick(btn1, modal1);
+    Btnclick(btn2, modal2);
+    Btnclick(btn3, modal3);
+
+
+    Spanclick(span1, modal1);
+    Spanclick(span2, modal2);
+    Spanclick(span3, modal3);
+
+
+    CircleProgress(pernum0, '#chart0', 250);
+    CircleProgress(pernum1, '#chart1', 150);
+    CircleProgress(pernum2, '#chart2', 150);
+    CircleProgress(pernum3, '#chart3', 150);
+
+
+    window.onclick = function (event) {
+        if (event.target == modal1) {
+            modal1.style.display = "none";
+        }
+        if (event.target == modal2) {
+            modal2.style.display = "none";
+        }
+        if (event.target == modal3) {
+            modal3.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}

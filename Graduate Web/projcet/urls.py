@@ -30,13 +30,19 @@ urlpatterns = [
 
     # 페이지 렌더링
     path('dbcheck/', views.r_dbcheck),
-    path('upload/', views.r_upload),
+    path('login/', views.r_upload),
+    path('en_result/', views.r_en_result),
+
     #path('compare/', views.r_compare),
 
     # 다른 함수사용 url 패턴
     #path('f_upload/', views.f_upload),
     path('f_test/', views.f_test),
     path('f_login/', views.f_login),
+
+    # 테스트용
+    path('result_test/', views.result_test),
+
 ]
 
 # 미디어 루트 설정
