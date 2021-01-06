@@ -48,16 +48,134 @@ def r_compare(request, file_name):
     # 메시지를 html로 넘긴다.
     messages.info(request, '업로드 성공. app/uploaded_media 폴더 확인!!')
 
+
+#-------------------------------------------------------------------
+    p_major = '디지털콘텐츠'
+    p_year = 16
+
+    # 파이썬 변수를 가지고 ind로 매핑
+    ic_row = IndCombi.objects.get(major=p_major, year=p_year)
+    p_ind = ic_row.ind  # 매핑된 ind
+    print(p_ind)
+
+    # ---------------------------------------------------------
+
     # 이수학점 기준 모델 불러오기
     gs = GraduateScore.objects.all()
-    gs_sum = gs[0].sum_score
+    gs_sum = gs[p_ind-1].sum_score
 
+    #-----------------------------------------------
+    # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
+    # 1. 이수학점 수치 기준
+    gs_row = GraduateScore.objects.get(ind=p_ind)
+    num_ss = gs_row.sum_score  # sum_score
+    num_me = gs_row.major_essential  # major_essential
+    num_ms = gs_row.major_selection  # major_selection
+    num_ce = gs_row.core_essential  # core_essential
+    num_cs = gs_row.core_selection  # core_selection
+    num_b = gs_row.basic  # basic
+
+
+
+
+#-----------------------------------------------------------------------
     # dataframe 작업
     root = './app/uploaded_media/' + file_name
     data = pd.read_excel(root, index_col=None)
     data.to_csv('csvfile.csv', encoding='utf-8')
     data_sum = data['학점'].sum()
-    return render(request, "compare.html", {"gs_sum":gs_sum , "data_sum":data_sum })
+    # ---------------------------------------------------------------
+    df_me = data[data['이수구분'].isin(['전필'])]
+    df_me.reset_index(inplace=True, drop=True)
+    my_num_me = df_me['학점'].sum()
+    # 전선
+    df_ms = data[data['이수구분'].isin(['전선'])]
+    df_ms.reset_index(inplace=True, drop=True)
+    my_num_ms = df_ms['학점'].sum()
+    # 중필(교필)
+    df_ce = data[data['이수구분'].isin(['교필'])]
+    df_ce.reset_index(inplace=True, drop=True)
+    my_num_ce = df_ce['학점'].sum()  # 사용자의 중필학점 총합
+    my_dic_ce = df_make_dic(df_ce['학수번호'].tolist())  # 사용자 학수-그룹번호 딕셔너리
+    # 중선(교선)
+    df_cs = data[data['이수구분'].isin(['교선1'])]
+    df_cs.reset_index(inplace=True, drop=True)
+    my_num_cs = df_cs['학점'].sum()
+    my_dic_cs = df_make_dic(df_cs['학수번호'].tolist())
+    # 기교
+    df_b = data[data['이수구분'].isin(['기교'])]
+    df_b.reset_index(inplace=True, drop=True)
+    my_num_b = df_b['학점'].sum()
+    my_dic_b = df_make_dic(df_b['학수번호'].tolist())
+
+    # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
+    # ind로 필수과목 추출후 딕셔너리 만들기
+    ce_row = CoreEssential.objects.get(ind=p_ind)
+    dic_ce = db_make_dic(ce_row)
+    print("중필")
+    print(dic_ce)
+
+    # 3. 중선(교선1) 필수과목
+    cs_row = CoreSelection.objects.get(ind=p_ind)
+    dic_cs = db_make_dic(cs_row)
+    print("중선")
+    print(dic_cs)
+
+    # 4. 기교 필수과목
+    b_row = Basic.objects.get(ind=p_ind)
+    dic_b = db_make_dic(b_row)
+    print("기교")
+    print(dic_b)
+
+    #2. 전필검사
+    print('<전필>')
+    remain = 0
+    need_me_score=0
+    if num_me <= my_num_me:
+        print('전필 학점 기준을 만족했습니다.')
+        if num_me < my_num_me:
+            remain = my_num_me - num_me
+    else:
+        need_me_score=num_me-my_num_me
+        print(need_me_score, '학점이 부족합니다.')
+    print("")
+
+    # 3. 전선 검사
+    need_ms_score=0
+    final_num_my_ms=my_num_ms+remain
+    print('<전선>')
+    if num_ms <= my_num_ms :
+        print('전선 학점 기준을 만족했습니다.')
+    else:
+        if num_ms <= final_num_my_ms:
+            print('전선 학점이 부족했지만 전필에서 ', remain, '학점이 남아 기준을 만족했습니다.')
+        else:
+            need_ms_score=num_ms-my_num_ms
+            print(need_ms_score,'학점이 부족합니다.')
+    print("")
+
+    # 4. 중필 검사
+    # 학점 검사는 필요없지만 일단 넣음
+    print('<중필>')
+    recom_ce_list=[]
+    if num_ce <= my_num_ce:
+        print('총 학점 기준을 만족했습니다.')
+    else:
+        print(num_ce - my_num_ce, '학점이 부족합니다.')
+    # 추천과목 매핑 후 추출
+    recom_ce = make_recommend_list(my_dic_ce, dic_ce)
+    if not recom_ce:
+        print('모든 필수과목을 들었습니다!')
+    else:
+        print('들어야하는 과목입니다.')
+        for s_num in recom_ce:
+            al = AllLecture.objects.get(subject_num=s_num)
+            recom_ce_list.append(al.subject_name);
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+    print("")
+
+    #-----------------------------------------------------------------------------
+    return render(request, "compare.html", {"recom_ce":recom_ce,"recom_ce_list":recom_ce_list,"need_me_score":need_me_score,"need_ms_score":need_ms_score,"final_num_my_ms":final_num_my_ms,"gs_sum":gs_sum , "data_sum":data_sum , "remain":remain, "num_me":num_me,"my_num_me":my_num_me , "num_ms":num_ms,"my_num_ms":my_num_ms})
 
 # 셀레니움 파트 -------------------------------------------------------------------------------------
 
@@ -331,4 +449,49 @@ def f_test(request):
     print("")
    
 
+
+    #-------------------------------------------------------------------------------------------
+    #6. 중선
+    print("<중선>")
+    cs_list=["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]
+    print(my_dic_cs)
+    my_cs_list=[]
+    for s_num in my_dic_cs:
+        al = AllLecture.objects.get(subject_num=s_num)
+        my_cs_list.append(al.selection)
+
+
+    my_cs_list=set(my_cs_list)
+    my_cs_list = list(my_cs_list)
+
+
+
+
+
+    if(len(my_cs_list)>=3):
+        print("영역 3가지를 만족하였습니다")
+        print("만족한 영역은:")
+        for i in cs_list:
+            if i in my_cs_list:
+                print(i)
+
+    else:
+        print("영역 3가지를 만족하지못했습니다");
+        print("만족하지 못한 영역은:")
+        for i in cs_list:
+            if i not in my_cs_list:
+                print(i)
+
+
+
+    # 추천과목 매핑 후 추출
+    recom_cs = make_recommend_list(my_dic_cs, dic_cs)
+    if not recom_cs:
+        print('모든 필수과목을 들었습니다!')
+    else:
+        print('들어야하는 과목입니다.')
+        for s_num in recom_cs:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+    #-------------------------------------------------------------------------------------------
     return HttpResponse('테스트 완료, 터미널 확인')
