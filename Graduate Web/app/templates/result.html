@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="../static/js/circle-progress.js"></script>
+    <script src="https://kit.fontawesome.com/e8a335040d.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+    <title>result</title>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar_logo">
+            <img src="LogoMakr-4uW6co.png" />
+
+        </div>
+
+        <ul class="navbar_menu">
+            <li>
+                <a href="#">Home</a>
+            </li>
+            <li>
+                <a href="#">Signup</a>
+            </li>
+        </ul>
+
+        <a href="#" class="navbar_toggle">
+            <i class="fas fa-bars"></i>
+        </a>
+    </nav>
+
+    <div class="lcontainer">
+        <div class="fcontainer">
+            <div class="resultbox container0">
+                <div class="name name0">Total
+
+                </div>
+                <div class="box">
+                    <div id="chart0">
+                        <strong class="total_strong"></strong>
+                    </div>
+                    <div class="Sbox">
+                        <div class="gbox">
+                            <span class="grade Grade">학번</span>
+                            <span class="t" id="studentnumber"></span>
+                        </div>
+                        <div class="gbox">
+                            <span class="grade Grade">이름</span>
+                            <span class="t" id="name"></span>
+                        </div>
+                        <div class="gbox Gbox">
+                            <span class="grade Grade">총 기준 학점
+                            </span>
+                            <span class="t" id="totalgrade"></span>
+                        </div>
+                        <div>
+                            <div class="gbox Gbox">
+                                <span class="grade Grade">총 이수 학점
+                                </span>
+                                <span class="t" id="mytotalgrade"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="gbox Gbox">
+
+                                <div class="T" id="cangraduate"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rcontainer">
+            <div class="resultbox container1">
+                <div class="name name1">전공 필수
+                    <span class="tooltip t1">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text1">전공 필수 과목을 35학점 이상 이수하면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div id="chart1">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade1"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade1"></span>
+                            </div>
+                        </div>
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container2">
+                <div class="name name1">전공 선택
+                    <span class="tooltip t2">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text2">전공 선택 과목을 41학점 이상 이수하면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart2">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade2"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade2"></span>
+                            </div>
+                        </div>
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container3">
+                <div class="name name1">중핵 필수
+                    <span class="tooltip t3">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text3">중핵 필수 과목을 모두 이수하면 통과할 수 있습니다.
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart3">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade3"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade3"></span>
+                            </div>
+                        </div>
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container4">
+                <div class="name name1">교양 선택
+                    <span class="tooltip t4">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text4">교양 선택 과목을 15학점 이상 이수하고 다섯가지 영역 중 세가지 영역을 채우면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart4">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade4"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade4"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 영역</span>
+                                <span class="r" id="myarea1"></span>
+                            </div>
+                        </div>
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container5">
+                <div class="name name1">교양 필수
+                    <span class="tooltip t5">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text5">교양 필수 과목을 모두 이수하면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart5">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade5"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade5"></span>
+                            </div>
+                        </div>
+
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container6">
+                <div class="name name1">공학 인증
+                    <span class="tooltip t6">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text6">공학 인증 과목들을 모두 이수하면 인증할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart6">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">기준 학점
+                            </span>
+                            <span class="r" id="grade6"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">이수 학점
+                                </span>
+                                <span class="r" id="mygrade6"></span>
+                            </div>
+                        </div>
+                        <button class="rbutton">Recommend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container7">
+                <div class="name name1">고전 독서 인증
+                    <span class="tooltip t7">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text7">동서양(3권) 동양(3권) 서양(3권) 과학사(3권) 4가지영역의 권수를 모두 이수하면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart7">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox Y">
+                        <div class="gbox">
+                            <span class="grade p">이수 기준
+
+
+                        </div>
+                        <div class="gbox">
+                            <span class="grade y">동서양
+                            </span>
+                            <span class="book" id="swbook"></span>/ 3권
+                        </div>
+                        <div class="gbox">
+                            <span class="grade y">동양
+                            </span>
+                            <span class="book" id="wbook"></span>/ 3권
+                        </div>
+
+                        <div class="gbox">
+                            <span class="grade y">서양
+                            </span>
+                            <span class="book" id="sbook"></span>/ 3권
+                        </div>
+                        <div class="gbox">
+                            <span class="grade y">과학사
+                            </span>
+                            <span class="book" id="scbook"></span>/ 1권
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="resultbox container8">
+                <div class="name name1">영어 인증
+                    <span class="tooltip t8">
+                        <i class="fas fa-question-circle"></i>
+                    </span>
+                    <div class="tooltip_text text8">TOEIC 700점 이상의 증빙서류를 제출하거나 INTENCIVE 과목을 수료하면 통과할 수 있습니다
+                        <div class="point"></div>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div id="chart8">
+                        <strong></strong>
+                    </div>
+                    <div class="sbox">
+                        <div class="gbox">
+                            <span class="grade">TOEIC 700점 이상</span>
+                            <span id="grade6"></span>
+                        </div>
+                        <div>
+                            <div class="gbox">
+                                <span class="grade">ENGLISH INTENCIVE</span>
+                                <span id="mygrade6"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+<script>
+
+    var Studentnumber = "15011161";
+    var Name = "권정현";
+
+    var Grade1 = 37;
+    var Grade2 = 42;
+    var Grade3 = 20;
+    var Grade4 = 15;
+    var Grade5 = 20;
+    var Grade6 = 21;
+
+    var Mygrade1 = 27;
+    var Mygrade2 = 30;
+    var Mygrade3 = 20;
+    var Mygrade4 = 15;
+    var Mygrade5 = 15;
+    var Mygrade6 = 16;
+
+    var Myarea1 = "Pass";
+    var Totalgrade = 137;
+    var Mytotalgrade = 101;
+    //var Cangraduate = "졸업 가능합니다!!";
+    var Cangraduate = "졸업까지 " + (
+        Totalgrade - Mytotalgrade
+    ) + "학점이 필요합니다!";
+
+    var Swbook = 3 + "권";
+    var Wbook = 3 + "권";;
+    var Sbook = 2 + "권";;
+    var Scbook = 0 + "권";;
+
+
+    document
+        .getElementById("name")
+        .innerHTML = Name;
+    document
+        .getElementById("studentnumber")
+        .innerHTML = Studentnumber;
+
+    document
+        .getElementById("grade1")
+        .innerHTML = Grade1;
+    document
+        .getElementById("grade2")
+        .innerHTML = Grade2;
+    document
+        .getElementById("grade3")
+        .innerHTML = Grade3;
+    document
+        .getElementById("grade4")
+        .innerHTML = Grade4;
+    document
+        .getElementById("grade5")
+        .innerHTML = Grade5;
+    document
+        .getElementById("grade6")
+        .innerHTML = Grade6;
+
+    document
+        .getElementById("mygrade1")
+        .innerHTML = Mygrade1;
+    document
+        .getElementById("mygrade2")
+        .innerHTML = Mygrade2;
+    document
+        .getElementById("mygrade3")
+        .innerHTML = Mygrade3;
+    document
+        .getElementById("mygrade4")
+        .innerHTML = Mygrade4;
+    document
+        .getElementById("mygrade5")
+        .innerHTML = Mygrade5;
+    document
+        .getElementById("mygrade6")
+        .innerHTML = Mygrade6;
+
+    document
+        .getElementById("myarea1")
+        .innerHTML = Myarea1;
+
+    document
+        .getElementById("mytotalgrade")
+        .innerHTML = Mytotalgrade;
+    document
+        .getElementById("totalgrade")
+        .innerHTML = Totalgrade;
+
+    document
+        .getElementById("cangraduate")
+        .innerHTML = Cangraduate;
+
+    document
+        .getElementById("swbook")
+        .innerHTML = Swbook;
+    document
+        .getElementById("sbook")
+        .innerHTML = Sbook;
+    document
+        .getElementById("wbook")
+        .innerHTML = Wbook;
+    document
+        .getElementById("scbook")
+        .innerHTML = Scbook;
+    var pernum0 = (Mytotalgrade / Totalgrade) * 100;
+    var pernum1 = (Mygrade1 / Grade1) * 100;
+    var pernum2 = (Mygrade2 / Grade2) * 100;
+    var pernum3 = (Mygrade3 / Grade3) * 100;
+    var pernum4 = (Mygrade4 / Grade4) * 100;
+    var pernum5 = (Mygrade5 / Grade5) * 100;
+    var pernum6 = (Mygrade6 / Grade6) * 100;
+    var pernum7 = 100;
+    var pernum8 = 100;
+
+    $('#chart0')
+        .circleProgress({
+            value: pernum0 / 100,
+            startAngle: 300,
+            size: 250,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 15,
+            fill: {
+
+                gradient: ["#99A89E", "#BBC7BA"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum0 * progress) + '<i>%</i>');
+        });
+
+    $('#chart1')
+        .circleProgress({
+            value: pernum1 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum1 * progress) + '<i>%</i>');
+        });
+
+    $('#chart2')
+        .circleProgress({
+            value: pernum2 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum2 * progress) + '<i>%</i>');
+        });
+
+    $('#chart3')
+        .circleProgress({
+            value: pernum3 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum3 * progress) + '<i>%</i>');
+        });
+
+    $('#chart4')
+        .circleProgress({
+            value: pernum4 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum4 * progress) + '<i>%</i>');
+        });
+
+    $('#chart5')
+        .circleProgress({
+            value: pernum5 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum5 * progress) + '<i>%</i>');
+        });
+
+    $('#chart6')
+        .circleProgress({
+            value: pernum6 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum6 * progress) + '<i>%</i>');
+        });
+
+    $('#chart7')
+        .circleProgress({
+            value: pernum7 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum7 * progress) + '<i>%</i>');
+        });
+
+    $('#chart8')
+        .circleProgress({
+            value: pernum8 / 100,
+            startAngle: 300,
+            size: 150,
+            animation: {
+                duration: 2200,
+                easing: "swing"
+            },
+            thickness: 13,
+            fill: {
+                gradient: ["#ECA4A6", "#b87577"]
+            }
+        })
+        .on('circle-animation-progress', function (event, progress, stepValue) {
+
+            $(this)
+                .find('strong')
+                .html(Math.round(pernum8 * progress) + '<i>%</i>');
+        });
+</script>
+<script>
+    const toggleb = document.querySelector('.navbar_toggle');
+    const menu = document.querySelector('.navbar_menu');
+    let tooltipeb = document.querySelectorAll('.tooltip');
+    let text = document.querySelectorAll('.tooltip_text');
+
+    toggleb.addEventListener('click', () => {
+        menu
+            .classList
+            .toggle('active');
+    });
+
+    tooltipeb[0].addEventListener('click', () => {
+        text[0]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[1].addEventListener('click', () => {
+        text[1]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[2].addEventListener('click', () => {
+        text[2]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[3].addEventListener('click', () => {
+        text[3]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[4].addEventListener('click', () => {
+        text[4]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[5].addEventListener('click', () => {
+        text[5]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[6].addEventListener('click', () => {
+        text[6]
+            .classList
+            .toggle('active');
+    });
+    tooltipeb[7].addEventListener('click', () => {
+        text[7]
+            .classList
+            .toggle('active');
+    });
+</script>
+
+</html>

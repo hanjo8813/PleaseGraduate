@@ -124,8 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, '/app/static')
 
 # media root 추가
 # app폴더의 하위폴더로 루트 설정.
 MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
 MEDIA_URL = '/app/uploaded_media/'
+

@@ -31,10 +31,10 @@ urlpatterns = [
     # 페이지 렌더링
     path('dbcheck/', views.r_dbcheck),
     path('upload/', views.r_upload),
-    path('compare/', views.r_compare),
+    #path('compare/', views.r_compare),
 
     # 다른 함수사용 url 패턴
-    path('f_upload/', views.f_upload),
+    #path('f_upload/', views.f_upload),
     path('f_test/', views.f_test),
     path('f_login/', views.f_login),
 ]
