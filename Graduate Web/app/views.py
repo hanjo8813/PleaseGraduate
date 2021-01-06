@@ -22,6 +22,9 @@ from .models import *
 def r_index(request):
     return render(request, "index.html")
 
+def r_head(request):
+    return render(request, "head.html")
+
 def r_dbcheck(request):
     # model의 test_table 테이블을 변수에 저장
     tt = TestTable.objects.all()
@@ -48,7 +51,6 @@ def r_compare(request, file_name):
     # 메시지를 html로 넘긴다.
     messages.info(request, '업로드 성공. app/uploaded_media 폴더 확인!!')
 
-
 #-------------------------------------------------------------------
     p_major = '디지털콘텐츠'
     p_year = 16
@@ -74,9 +76,6 @@ def r_compare(request, file_name):
     num_ce = gs_row.core_essential  # core_essential
     num_cs = gs_row.core_selection  # core_selection
     num_b = gs_row.basic  # basic
-
-
-
 
 #-----------------------------------------------------------------------
     # dataframe 작업
@@ -168,14 +167,15 @@ def r_compare(request, file_name):
         print('모든 필수과목을 들었습니다!')
     else:
         print('들어야하는 과목입니다.')
-        for s_num in recom_ce:
-            al = AllLecture.objects.get(subject_num=s_num)
-            recom_ce_list.append(al.subject_name);
-            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
-    print("")
+    
 
-    #-----------------------------------------------------------------------------
+    for s_num in recom_ce:
+        al = AllLecture.objects.get(subject_num=s_num)
+        recom_ce_list.append(al.subject_name)
+        print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
     return render(request, "compare.html", {"recom_ce":recom_ce,"recom_ce_list":recom_ce_list,"need_me_score":need_me_score,"need_ms_score":need_ms_score,"final_num_my_ms":final_num_my_ms,"gs_sum":gs_sum , "data_sum":data_sum , "remain":remain, "num_me":num_me,"my_num_me":my_num_me , "num_ms":num_ms,"my_num_ms":my_num_ms})
+
 
 # 셀레니움 파트 -------------------------------------------------------------------------------------
 

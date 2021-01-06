@@ -25,9 +25,10 @@ urlpatterns = [
     # 첫페이지 url 설정
     path('', views.r_index),
 
-    # 뒤에 붙일 url주소는 page2, view에서 불러오는 함수는 i_to_p2,
-    # 해당 패턴의 이름은 i_to_p2로 설정
-    # 페이지 이동 url 패턴
+    # 
+    path('head/', views.r_head),
+
+    # 페이지 렌더링
     path('dbcheck/', views.r_dbcheck),
     path('upload/', views.r_upload),
     path('compare/', views.r_compare),

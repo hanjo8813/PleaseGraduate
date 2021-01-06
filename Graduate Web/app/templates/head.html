@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="https://kit.fontawesome.com/e8a335040d.js" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+        <title>nav bar</title>
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <div class="navbar_logo">
+              <img src="../static/img/LogoMakr-4uW6co.png"/>
+      
+            </div>
+
+            <ul class="navbar_menu">
+                <li>
+                    <a href="#">Home</a>
+                </li>
+                <li>    
+                    <a href="#">Signup</a>
+                </li>
+            </ul>
+
+            <a href="#" class="navbar_toggle">
+                <i class="fas fa-bars"></i>
+            </a>
+        </nav>
+
+        <div class="container">
+            <div class="txtcontainer">
+                <p class="lgtxt">
+                    당신이 졸업을 할 수 있을지 확인하세요
+
+                </p>
+
+                <p class="smtxt">
+                    PleaseGraduate에서 최소한의 정보만 입력하여 모자란 학점, 부족한 영역, 들어야할 과목 추천등을 한눈에 확인하세요
+
+                </p>
+                <a class="signup" href="/upload/">
+                    Signup
+                </a>
+            </div>
+            <div class="imgcontainer">
+                <img
+                    src="https://cdn.dribbble.com/users/43577/screenshots/5962634/specify-dribbble-03_4x.png?compress=1&resize=1200x900"/>
+            </div>
+
+        </div>
+
+    </body>
+    <script>
+        const toggleb = document.querySelector('.navbar_toggle');
+        const menu = document.querySelector('.navbar_menu');
+
+        toggleb.addEventListener('click', () => {
+            menu
+                .classList
+                .toggle('active');
+        });
+    </script>
+
+</html>

@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mathfilters',
     'app',
 ]
 
@@ -80,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'graduate_help',
         'USER': 'root',
-        'PASSWORD': 'k13131204',
+        'PASSWORD': '8813',
         'HOST': 'localhost',
         'PORT': '3306',
     }
