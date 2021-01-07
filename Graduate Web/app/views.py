@@ -6,6 +6,7 @@ import shutil
 import pandas as pd
 import numpy as np
 from collections import defaultdict
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,6 +19,15 @@ from django.contrib import messages
 # 모델 참조
 from .models import *
 
+
+# DB 감지 테스트
+def r_dbcheck(request):
+    # model의 test_table 테이블을 변수에 저장
+    tt = TestTable.objects.all()
+    # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
+    return render(request, "dbcheck.html", {"t_h":tt})
+
+
 # 이 함수가 호출되면 -> index.html을 렌더링한다.
 def r_index(request):
     return render(request, "index.html")
@@ -25,24 +35,282 @@ def r_index(request):
 def r_head(request):
     return render(request, "head.html")
 
-def r_dbcheck(request):
-    # model의 test_table 테이블을 변수에 저장
-    tt = TestTable.objects.all()
-    # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
-    return render(request, "dbcheck.html", {"t_h":tt})
-
-def r_upload(request):
+def r_login(request):
     return render(request, "login.html")
 
-def r_result(request, file_name):
-    return render(request, "result.html")
+def r_result(request, file_name, info):
 
-def r_en_result(request, ):
+    # 셀레니움으로 넘어온 변수들
+    p_year = info["year"]
+    p_major = info["major"]
+
+    user_info = {
+        'id' : info["id"],
+        'name' : info["name"],
+        'major' : info["major"],
+        'W' : info["book"][0],
+        'E' : info["book"][1],
+        'EW' : info["book"][2],
+        'S' : info["book"][3],
+    }
+
+    # 파이썬 변수를 가지고 ind로 매핑
+    s_row = Standard.objects.get(user_dep = p_major, user_year=p_year)
+
+    #---------------------------------------------------------
+    # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
+    # 1. 이수학점 수치 기준
+    standard_num ={
+        'ss' : s_row.sum_score,          # sum_score
+        'me' : s_row.major_essential,    # major_essential
+        'ms' : s_row.major_selection,    # major_selection
+        'ce' : s_row.core_essential,     # core_essential   
+        'cs' : s_row.core_selection,     # core_selection
+        'b' : s_row.basic,               # basic
+    }
+    
+    # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
+    # ind로 필수과목 추출후 딕셔너리 만들기
+    dic_ce = make_dic([int(s_num) for s_num in s_row.ce_list.split(',')])
+    # 3. 중선(교선1) 필수과목
+    dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
+    # 4. 기교 필수과목 
+    dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')])
+
+    standard_list = {
+        'ce' : list_to_query(dic_ce.keys()),
+        'cs' : list_to_query(dic_cs.keys()),
+        'b' : list_to_query(dic_b.keys()),
+    }
+
+    #------------------------------------------------------------------------------
+    # 입력받은 엑셀 파일 dataframe으로 변환
+    data = pd.read_excel('./app/uploaded_media/기이수성적_재현.xls', index_col=None)
+
+    # 논패, F과목 삭제
+    n = data.shape[0]
+    flag = 0
+    while(True):
+        for i in range(n):
+            if i == n-1 :
+                flag = 1
+            if data['등급'][i]=='NP':
+                data = data.drop(data.index[i])
+                n -= 1
+                data.reset_index(inplace=True, drop=True)
+                break
+            elif data['등급'][i]=='F':
+                data = data.drop(data.index[i])
+                n -= 1
+                data.reset_index(inplace=True, drop=True)
+                break
+        if flag == 1:
+            break
+
+    # 이수 구분마다 df 생성
+    # 전필
+    df_me = data[data['이수구분'].isin(['전필'])]
+    df_me.reset_index(inplace=True,drop=True)
+    # 전선
+    df_ms = data[data['이수구분'].isin(['전선'])]
+    df_ms.reset_index(inplace=True,drop=True)
+    # 중필(교필)
+    df_ce = data[data['이수구분'].isin(['교필'])]
+    df_ce.reset_index(inplace=True,drop=True)
+    # 중선(교선)
+    df_cs = data[data['이수구분'].isin(['교선1'])]
+    df_cs.reset_index(inplace=True,drop=True)
+    # 기교
+    df_b = data[data['이수구분'].isin(['기교'])]
+    df_b.reset_index(inplace=True,drop=True)
+
+    # 내 이수학점 수치
+    my_num ={
+        'ss' : data['학점'].sum(),          # sum_score
+        'me' : df_me['학점'].sum(),         # major_essential
+        'ms' : df_ms['학점'].sum(),         # major_selection
+        'ce' : df_ce['학점'].sum() ,        # core_essential   
+        'cs' : df_cs['학점'].sum(),         # core_selection
+        'b' : df_b['학점'].sum(),           # basic
+    }
+
+    # 사용자가 들은 dic 추출
+    my_dic_ce = make_dic(df_ce['학수번호'].tolist())
+    my_dic_cs = make_dic(df_cs['학수번호'].tolist())
+    my_dic_b = make_dic(df_b['학수번호'].tolist())
+
+    #-------------------------------------------------------------------------------------
+    # 추천과목 리스트 생성 (최신과목으로)
+    recom_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
+    recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
+    recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
+
+    recommend_ess = {
+        'ce' : list_to_query(recom_ce),
+        'cs' : list_to_query(recom_cs),
+        'b' : list_to_query(recom_b),
+    }
+
+    # 영역 추출
+    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
+    my_cs_part =[]
+    for s_num in my_dic_cs.keys():
+        al = AllLecture.objects.get(subject_num=s_num)
+        my_cs_part.append(al.selection)
+    # 사용자가 들은 영역
+    my_cs_part = list(set(my_cs_part))
+    # 사용자의 부족 영역
+    recom_cs_part = list(set(cs_part) - set(my_cs_part))
+    
+
+    context = {
+        'my_num' : my_num,
+        'user_info' : user_info,
+        'standard_num' : standard_num,
+        'standard_list' : standard_list,
+        'recommend_ess' : recommend_ess,
+    }
+
+    return render(request, "result.html", context)
+
+
+def r_en_result(request):
     return render(request, "en_result.html")
 
 
+# --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
+
+def get_Driver(url):
+    options = webdriver.ChromeOptions()
+    # 크롬창을 열지않고 백그라운드로 실행
+    # options.add_argument("headless")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    # 다운로드될 경로 지정
+    root = os.getcwd() + '\\app\\uploaded_media'
+    options.add_experimental_option('prefs', {'download.default_directory' : root} )
+    driver = webdriver.Chrome('./chromedriver.exe', options=options)
+    driver.get(url)
+    return driver
+
+def selenium_uis(id, pw):
+    url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+    driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+    #id , pw 입력할 곳 찾기
+    tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
+    tag_pw = driver.find_element_by_id("password")
+    tag_id.clear()
+    #id , pw 보내기
+    tag_id.send_keys(id)
+    tag_pw.send_keys(pw)  
+    #로그인버튼 클릭
+    login_btn = driver.find_element_by_id('logbtn')
+    login_btn.click()
+    # 프레임전환
+    driver.switch_to.frame(2)
+    # 수업/성적 메뉴선택
+    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
+    # 성적 및 강의평가 선택
+    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
+    time.sleep(1)
+    # 기이수성적조회로 클릭 이동
+    driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
+    time.sleep(1)
+    # 최상위(default) 프레임으로 이동
+    driver.switch_to.default_content()
+    # 프레임 경우의 수 다 찾고 이동
+    driver.switch_to.frame(3)
+    driver.switch_to.frame(0)
+    # 다운로드 버튼 x_path 클릭
+    x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
+    x.click()
+    time.sleep(5)
+    driver.quit()
+    return
+
+def selenium_book(id, pw):
+    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+    driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+    checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+    if checked:
+        driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+        alert = driver.switch_to_alert()
+        print(alert.text)
+        alert.dismiss()
+    time.sleep(1)
+    # id , pw 입력할 곳 찾기
+    tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+    tag_pw = driver.find_element_by_id("password")
+    tag_id.clear()
+    time.sleep(1)
+    # id , pw 보내기
+    tag_id.send_keys(id)
+    tag_pw.send_keys(pw)
+    time.sleep(1)
+    # 로그인버튼 클릭
+    login_btn = driver.find_element_by_id('loginBtn')
+    login_btn.click()
+    driver.switch_to.frame(0)
+    driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+    #------------------------------------------------------------------------------------------------- selenium part
+    html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+    # 독서 권수 리스트에 저장
+    soup = BeautifulSoup(html, 'html.parser')
+    soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+    i = 0
+    book = []  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+    for td in soup1:
+        if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+            continue
+        book.append((int)(td.string.strip().strip().replace('권', '')))
+    
+    # 유저 학과 저장
+    soup_major = soup.select_one("li > dl > dd")
+    major = soup_major.string.strip().strip()
+    for dd in soup_major:
+        if dd.string.strip() == '' :  # 공백제거 및 필요없는 문자 지우기
+            continue
+        major = dd.string.strip().replace('학과', '')
+    # 유저 이름 저장
+    soup_name = soup.select("li > dl > dd")
+    name = soup_name[2].string
+    driver.quit()
+
+    # 넘겨줄 변수
+    info = {
+        'book' : book,
+        'major' : major,
+        'id' : id,
+        'year' : id[:2],
+        'name' : name,
+    }
+    return info 
+
+def f_login(request):
+    # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
+    selenium_uis(request.POST.get('id'), request.POST.get('pw'))
+    # 다운로드 후 이름 변경
+    file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+    Initial_path = './app/uploaded_media'
+    filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+    shutil.move(filename,os.path.join(Initial_path,file_name))
+    # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
+    context = selenium_book(request.POST.get('id'), request.POST.get('pw'))
+    return r_result(request, file_name, context)
+
+#---------------------------------------------------------------------------------------------------------------
 
 
+
+
+
+
+
+
+
+
+
+
+# ----------------------------------------------- (웹 연동 테스트) --------------------------------------------------------------------
 
 def list_to_query(list_):
     al = AllLecture.objects.none()
@@ -141,7 +409,6 @@ def result_test(request):
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
     data = pd.read_excel('./app/uploaded_media/기이수성적_재현.xls', index_col=None)
-    data.to_csv('./app/csv_files/filename.csv', encoding='utf-8')
 
     # 논패, F과목 삭제
     n = data.shape[0]
@@ -233,77 +500,12 @@ def result_test(request):
 
     return render(request, "result.html", context)
 
-# 셀레니움 파트 -------------------------------------------------------------------------------------
-
-def get_Driver_uis(url):
-    options = webdriver.ChromeOptions()
-    # 크롬창을 열지않고 백그라운드로 실행
-    # options.add_argument("headless")
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    # 다운로드될 경로 지정
-    root = os.getcwd() + '\\app\\uploaded_media'
-    options.add_experimental_option('prefs', {'download.default_directory' : root} )
-    driver = webdriver.Chrome('./chromedriver.exe', options=options)
-    driver.get(url)
-    return driver
-
-def selenium_uis(id, pw):
-    url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
-    driver = get_Driver_uis(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-    #id , pw 입력할 곳 찾기
-    tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
-    tag_pw = driver.find_element_by_id("password")
-    tag_id.clear()
-    #id , pw 보내기
-    tag_id.send_keys(id)
-    tag_pw.send_keys(pw)  
-    #로그인버튼 클릭
-    login_btn = driver.find_element_by_id('logbtn')
-    login_btn.click()
-    # 프레임전환
-    driver.switch_to.frame(2)
-    # 수업/성적 메뉴선택
-    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
-    # 성적 및 강의평가 선택
-    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
-    time.sleep(1)
-    # 기이수성적조회로 클릭 이동
-    driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
-    time.sleep(1)
-    # 최상위(default) 프레임으로 이동
-    driver.switch_to.default_content()
-    # 프레임 경우의 수 다 찾고 이동
-    driver.switch_to.frame(3)
-    driver.switch_to.frame(0)
-    # 다운로드 버튼 x_path 클릭
-    x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
-    x.click()
-    time.sleep(5)
-    return
-
-def f_login(request):
-    # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
-    selenium_uis(request.POST.get('id'), request.POST.get('pw'))
-    # 다운로드 후 이름 변경
-    file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-    Initial_path = './app/uploaded_media'
-    filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
-    shutil.move(filename,os.path.join(Initial_path,file_name))
-    return r_result(request, file_name)
-
-#-------------------------------------------------------------------------------------
 
 
 
 
 
-
-
-
-
-
-
-# (터미널 테스트) -------------------------------------------------------------------------------------
+#  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 
 def f_test(request):
@@ -507,149 +709,3 @@ def f_test(request):
 
 
 # 쓰레기통 -------------------------------------------------------------------------------------------
-
-'''
-def f_upload(request):
-    # 만약 post 형식으로 제출됐는데 file이 있다면.
-    if 'file' in request.FILES:
-        uploaded_file = request.FILES['file']
-        # 일단 미디어 폴더에 저장.
-        fs = FileSystemStorage()
-        fs.save(uploaded_file.name , uploaded_file)
-        # 그 파일을 compare 렌더링하는 함수로 넘긴다.
-        return r_compare(request, uploaded_file.name)
-    # file이 없다면.
-    else:
-        return HttpResponse('업로드 실패')
-'''
-
-'''
-def r_compare(request, file_name):
-    
-    # 메시지를 html로 넘긴다.
-    messages.info(request, '업로드 성공. app/uploaded_media 폴더 확인!!')
-    #-------------------------------------------------------------------
-    p_major = '디지털콘텐츠'
-    p_year = 16
-
-    # 파이썬 변수를 가지고 ind로 매핑
-    ic_row = IndCombi.objects.get(major=p_major, year=p_year)
-    p_ind = ic_row.ind  # 매핑된 ind
-    print(p_ind)
-
-    # ---------------------------------------------------------
-
-    # 이수학점 기준 모델 불러오기
-    gs = GraduateScore.objects.all()
-    gs_sum = gs[p_ind-1].sum_score
-
-    #-----------------------------------------------
-    # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
-    # 1. 이수학점 수치 기준
-    gs_row = GraduateScore.objects.get(ind=p_ind)
-    num_ss = gs_row.sum_score  # sum_score
-    num_me = gs_row.major_essential  # major_essential
-    num_ms = gs_row.major_selection  # major_selection
-    num_ce = gs_row.core_essential  # core_essential
-    num_cs = gs_row.core_selection  # core_selection
-    num_b = gs_row.basic  # basic
-
-    #-----------------------------------------------------------------------
-    # dataframe 작업
-    root = './app/uploaded_media/' + file_name
-    data = pd.read_excel(root, index_col=None)
-    data.to_csv('csvfile.csv', encoding='utf-8')
-    data_sum = data['학점'].sum()
-    # ---------------------------------------------------------------
-    df_me = data[data['이수구분'].isin(['전필'])]
-    df_me.reset_index(inplace=True, drop=True)
-    my_num_me = df_me['학점'].sum()
-    # 전선
-    df_ms = data[data['이수구분'].isin(['전선'])]
-    df_ms.reset_index(inplace=True, drop=True)
-    my_num_ms = df_ms['학점'].sum()
-    # 중필(교필)
-    df_ce = data[data['이수구분'].isin(['교필'])]
-    df_ce.reset_index(inplace=True, drop=True)
-    my_num_ce = df_ce['학점'].sum()  # 사용자의 중필학점 총합
-    my_dic_ce = df_make_dic(df_ce['학수번호'].tolist())  # 사용자 학수-그룹번호 딕셔너리
-    # 중선(교선)
-    df_cs = data[data['이수구분'].isin(['교선1'])]
-    df_cs.reset_index(inplace=True, drop=True)
-    my_num_cs = df_cs['학점'].sum()
-    my_dic_cs = df_make_dic(df_cs['학수번호'].tolist())
-    # 기교
-    df_b = data[data['이수구분'].isin(['기교'])]
-    df_b.reset_index(inplace=True, drop=True)
-    my_num_b = df_b['학점'].sum()
-    my_dic_b = df_make_dic(df_b['학수번호'].tolist())
-
-    # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
-    # ind로 필수과목 추출후 딕셔너리 만들기
-    ce_row = CoreEssential.objects.get(ind=p_ind)
-    dic_ce = db_make_dic(ce_row)
-    print("중필")
-    print(dic_ce)
-
-    # 3. 중선(교선1) 필수과목
-    cs_row = CoreSelection.objects.get(ind=p_ind)
-    dic_cs = db_make_dic(cs_row)
-    print("중선")
-    print(dic_cs)
-
-    # 4. 기교 필수과목
-    b_row = Basic.objects.get(ind=p_ind)
-    dic_b = db_make_dic(b_row)
-    print("기교")
-    print(dic_b)
-
-    #2. 전필검사
-    print('<전필>')
-    remain = 0
-    need_me_score=0
-    if num_me <= my_num_me:
-        print('전필 학점 기준을 만족했습니다.')
-        if num_me < my_num_me:
-            remain = my_num_me - num_me
-    else:
-        need_me_score=num_me-my_num_me
-        print(need_me_score, '학점이 부족합니다.')
-    print("")
-
-    # 3. 전선 검사
-    need_ms_score=0
-    final_num_my_ms=my_num_ms+remain`
-    print('<전선>')
-    if num_ms <= my_num_ms :
-        print('전선 학점 기준을 만족했습니다.')
-    else:
-        if num_ms <= final_num_my_ms:
-            print('전선 학점이 부족했지만 전필에서 ', remain, '학점이 남아 기준을 만족했습니다.')
-        else:
-            need_ms_score=num_ms-my_num_ms
-            print(need_ms_score,'학점이 부족합니다.')
-    print("")
-
-    # 4. 중필 검사
-    # 학점 검사는 필요없지만 일단 넣음
-    print('<중필>')
-    recom_ce_list=[]
-    if num_ce <= my_num_ce:
-        print('총 학점 기준을 만족했습니다.')
-    else:
-        print(num_ce - my_num_ce, '학점이 부족합니다.')
-    # 추천과목 매핑 후 추출
-    recom_ce = make_recommend_list(my_dic_ce, dic_ce)
-    if not recom_ce:
-        print('모든 필수과목을 들었습니다!')
-    else:
-        print('들어야하는 과목입니다.')
-    
-    for s_num in recom_ce:
-        al = AllLecture.objects.get(subject_num=s_num)
-        recom_ce_list.append(al.subject_name)
-        print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
-
-    return render(request, "compare.html", {"recom_ce":recom_ce,"recom_ce_list":recom_ce_list,"need_me_score":need_me_score,"need_ms_score":need_ms_score,"final_num_my_ms":final_num_my_ms,"gs_sum":gs_sum , "data_sum":data_sum , "remain":remain, "num_me":num_me,"my_num_me":my_num_me , "num_ms":num_ms,"my_num_ms":my_num_ms})
-
-'''

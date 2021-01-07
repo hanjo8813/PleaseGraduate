@@ -1,28 +1,30 @@
 .mytd {
-    color: rgb(43, 255, 0);
-    border-right :1px solid #62ca5e;
+    color: rgb(0, 0, 0);
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
 }
 
 .mytable {
     margin:0 auto;
-    width: 90%;
+    width: 70%;
     text-align: center;
     font-size: 1rem;
-    padding-top : 3rem;
+    padding-top : 2rem;
     padding-bottom : 4rem;
 }
 
 .myth {
-    height: 3rem;
+    height: 2.5rem;
     background-color: white;
     font-weight: bolder;
     font-size: 1.2rem;
+    border-bottom: 1px solid #dadada;
 }
 
 .mytr {
     color: #6e6e6eb9;
-    height: 3rem    ;
-    border-bottom: 1px solid rgb(214, 214, 214);
+    height: 2.5rem ;
+    border-bottom: 1px solid #dadada;
 }
 
 .mytr:hover {
@@ -524,7 +526,7 @@ strong {
     padding: 5rem;
     border: 1px solid #888;
     width: 80%;
-    height: 70%;
+    height: auto;
     /* Could be more or less, depending on screen size */                          
 }
 

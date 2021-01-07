@@ -335,10 +335,10 @@
 
 <!-- 중필/교필 -->
 <div id="myModal3" class="modal">
-    <div class="modal-content" style="text-align: center;">
+    <div class="modal-content">
         <span class="close">&times;</span>
         <br>
-        <div style = "padding: 1rem;">
+        <div style = "padding: 1rem; text-align: center;">
             <!-- 필수과목 -->
             <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 목록
             </div>
@@ -361,14 +361,29 @@
                 </tr>
                 {% endfor %}
             </table>
-
             <!-- 추천과목 -->
             <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
             </div>
-            <hr><br><br>
-            이것 저것 요것
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
+                </tr>
+                {% for q in recommend_ess.ce %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-
     </div>
 </div>
 
@@ -376,7 +391,53 @@
 <div id="myModal4" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>444444444444444</p>
+        <br>
+        <div style = "padding: 1rem; text-align: center;">
+            <!-- 필수과목 -->
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 목록
+            </div>
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
+                </tr>
+                {% for q in standard_list.cs %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <!-- 추천과목(필수) -->
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목(필수)
+            </div>
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
+                </tr>
+                {% for q in recommend_ess.cs %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 </div>
 
@@ -384,7 +445,53 @@
 <div id="myModal5" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>55555555555555555555</p>
+        <br>
+        <div style = "padding: 1rem; text-align: center;">
+            <!-- 필수과목 -->
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 목록
+            </div>
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
+                </tr>
+                {% for q in standard_list.b %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <!-- 추천과목 -->
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
+            </div>
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
+                </tr>
+                {% for q in recommend_ess.b %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 </div>
 
@@ -447,10 +554,10 @@
 
 
     // 인증권수
-    var Swbook = 3 + "권";
-    var Wbook = 3 + "권";
-    var Sbook = 2 + "권";
-    var Scbook = 0 + "권";
+    var Swbook = '{{user_info.W}}' + "권";
+    var Wbook = '{{user_info.E}}' + "권";
+    var Sbook = '{{user_info.EW}}' + "권";
+    var Scbook = '{{user_info.S}}' + "권";
 
     // pass 여부
     var Myarea1 = "Pass";       // 교선 이수영역 

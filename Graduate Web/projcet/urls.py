@@ -25,18 +25,15 @@ urlpatterns = [
     # 첫페이지 url 설정
     path('', views.r_index),
 
-    # 
+    # 정현이 head
     path('head/', views.r_head),
 
     # 페이지 렌더링
     path('dbcheck/', views.r_dbcheck),
-    path('login/', views.r_upload),
+    path('login/', views.r_login),
     path('en_result/', views.r_en_result),
 
-    #path('compare/', views.r_compare),
-
     # 다른 함수사용 url 패턴
-    #path('f_upload/', views.f_upload),
     path('f_test/', views.f_test),
     path('f_login/', views.f_login),
 
