@@ -1,6 +1,6 @@
 .mytd {
-    color: rgb(43, 255, 0);
-    border-right :1px solid #62ca5e;
+    color: red;
+    border-right :1px solid #ff0000;
 }
 
 .mytable {

@@ -42,6 +42,59 @@ def r_en_result(request, ):
 
 
 
+
+
+def list_to_query(list_):
+    al = AllLecture.objects.none()
+    for s_num in list_:
+        temp = AllLecture.objects.filter(subject_num = s_num)
+        al = temp | al
+    return al
+
+def make_dic(my_list):
+    dic = defaultdict(lambda:-1)
+    for s_num in my_list:
+        dic[s_num]
+        sg = SubjectGroup.objects.filter(subject_num = s_num)
+        if sg.exists():
+            dic[s_num] = sg[0].group_num
+    return dic
+
+def make_recommend_list(my_dic_, dic_):
+    # 만족한 학수번호는 딕셔너리에서 pop
+    for s_num in my_dic_.keys():
+        # 1차로 학수번호 검사
+        # 있다면? -> 기준 딕셔너리에서 팝.
+        if s_num in dic_.keys():
+            dic_.pop(s_num)
+        # 없다면? 2차 검사
+        else :
+            g_num = my_dic_[s_num]
+            if g_num != -1 and (g_num in dic_.values()):
+                dic_.pop(s_num)
+        
+    # 추천 리스트 알고리즘
+    recommend = []
+    for s_num in dic_.keys():
+        nl = NewLecture.objects.filter(subject_num = s_num)
+        # 부족 과목이 열리고 있다면
+        if nl.exists():
+            recommend.append(nl[0].subject_num.subject_num)
+        # 더이상 열리지 않는다면 -> 그룹번호로 동일과목 찾은 후 열리는 것만 저장
+        else:
+            g_num = dic_[s_num]
+            # 동일과목도 없고 과목이 없어졌다?
+            if g_num == -1:
+                recommend.append(s_num)
+            # 아니면 동일과목중 열리고 있는 강의를 찾자
+            else:
+                sg = SubjectGroup.objects.filter(group_num = g_num)
+                for s in sg:
+                    nl2 = NewLecture.objects.filter(subject_num = s.subject_num)
+                    if nl2.exists():
+                        recommend.append(nl2[0].subject_num.subject_num)
+    return recommend
+
 # result 페이지 테스트용.
 def result_test(request):
    # 셀레니움으로 넘어올 변수들
@@ -78,6 +131,12 @@ def result_test(request):
     dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
     dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')])
+
+    standard_list = {
+        'ce' : list_to_query(dic_ce.keys()),
+        'cs' : list_to_query(dic_cs.keys()),
+        'b' : list_to_query(dic_b.keys()),
+    }
 
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
@@ -136,116 +195,40 @@ def result_test(request):
     my_dic_cs = make_dic(df_cs['학수번호'].tolist())
     my_dic_b = make_dic(df_b['학수번호'].tolist())
 
-
     #-------------------------------------------------------------------------------------
-    # 검사 단계
+    # 필수과목 중 부족과목의 최신과목 학수번호 추출하기
 
-    '''
-    # 1. 총 학점 비교
-    print('<총 학점>')
-    if num_ss <= my_num_ss :
-        print('총 학점 기준을 만족했습니다.')
-    else:
-        print(num_ss-my_num_ss,'학점이 부족합니다.')
-    print("")
+    
+    # 추천과목 리스트 생성 (최신과목으로)
+    recom_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
+    recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
+    recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
 
-    # 2. 전필 검사
-    print('<전필>')
-    remain = 0
-    if num_me <= my_num_me :
-        print('전필 학점 기준을 만족했습니다.')
-        if num_me < my_num_me:
-            remain = my_num_me - num_me
-    else:
-        print(num_me-my_num_me, '학점이 부족합니다.')
-    print("")
+    recommend_ess = {
+        'ce' : list_to_query(recom_ce),
+        'cs' : list_to_query(recom_cs),
+        'b' : list_to_query(recom_b),
+    }
 
-    # 3. 전선 검사
-    print('<전선>')
-    if num_ms <= my_num_ms :
-        print('전선 학점 기준을 만족했습니다.')
-    else:
-        if num_ms <= my_num_ms + remain:
-            print('전선 학점이 부족했지만 전필에서 ', remain, '학점이 남아 기준을 만족했습니다.')
-        else:
-            print(num_ms-my_num_ms,'학점이 부족합니다.')
-    print("")
-
-    # 4. 중필 검사
-    # 학점 검사는 필요없지만 일단 넣음
-    print('<중필>')
-    if num_ce <= my_num_ce :
-        print('총 학점 기준을 만족했습니다.')
-    else:
-        print(num_ce-my_num_ce,'학점이 부족합니다.')
-
-    # 추천과목 매핑 후 추출
-    recom_ce = make_recommend_list(my_dic_ce, dic_ce)
-    if not recom_ce:
-        print('모든 필수과목을 들었습니다!')
-    else:
-        print('들어야하는 과목입니다.')
-        for s_num in recom_ce:
-            al = AllLecture.objects.get(subject_num=s_num)
-            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
-    print("")
-
-
-    # 5. 기교 검사
-    print('<기교>')
-    if num_b <= my_num_b :
-        print('총 학점 기준을 만족했습니다.')
-    else:
-        print(num_b-my_num_b,'학점이 부족합니다.')
-    # 추천과목 매핑 후 추출
-    recom_b = make_recommend_list(my_dic_b, dic_b)
-    if not recom_b:
-        print('모든 필수과목을 들었습니다!')
-    else:
-        print('들어야하는 과목입니다.')
-        for s_num in recom_b:
-            al = AllLecture.objects.get(subject_num=s_num)
-            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
-    print("")
-
-    #-------------------------------------------------------------------------------------------
-    #6. 중선
-    print("<중선>")
-    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]
-
+    # 영역 추출
+    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
     my_cs_part =[]
     for s_num in my_dic_cs.keys():
         al = AllLecture.objects.get(subject_num=s_num)
         my_cs_part.append(al.selection)
-
-    recom_cs_part = list(set(cs_part) - set(my_cs_part))
+    # 사용자가 들은 영역
     my_cs_part = list(set(my_cs_part))
+    # 사용자의 부족 영역
+    recom_cs_part = list(set(cs_part) - set(my_cs_part))
+    
 
-    if(len(my_cs_part)>=3):
-        print("영역 3가지를 만족하였습니다")
-        print("만족한 영역은:")
-        print(my_cs_part)
-    else:
-        print("영역 3가지를 만족하지못했습니다")
-        print("만족하지 못한 영역은:")
-        print(recom_cs_part)
-
-
-    # 추천과목 매핑 후 추출
-    recom_cs = make_recommend_list(my_dic_cs, dic_cs)
-    if not recom_cs:
-        print('모든 필수과목을 들었습니다!')
-    else:
-        print('들어야하는 과목입니다.')
-        for s_num in recom_cs:
-            al = AllLecture.objects.get(subject_num=s_num)
-            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
-    '''
 
     context = {
-        'standard_num' : standard_num,
         'my_num' : my_num,
         'user_info' : user_info,
+        'standard_num' : standard_num,
+        'standard_list' : standard_list,
+        'recommend_ess' : recommend_ess,
     }
 
     return render(request, "result.html", context)
@@ -310,51 +293,18 @@ def f_login(request):
 
 #-------------------------------------------------------------------------------------
 
-# 비교 분석 파트 (터미널 테스트) -------------------------------------------------------------------------------------
 
-def make_dic(my_list):
-    dic = defaultdict(lambda:-1)
-    for s_num in my_list:
-        dic[s_num]
-        sg = SubjectGroup.objects.filter(subject_num = s_num)
-        if sg.exists():
-            dic[s_num] = sg[0].group_num
-    return dic
 
-def make_recommend_list(my_dic_, dic_):
-    # 만족한 학수번호는 딕셔너리에서 pop
-    for s_num in my_dic_.keys():
-        # 1차로 학수번호 검사
-        # 있다면? -> 기준 딕셔너리에서 팝.
-        if s_num in dic_.keys():
-            dic_.pop(s_num)
-        # 없다면? 2차 검사
-        else :
-            g_num = my_dic_[s_num]
-            if g_num != -1 and (g_num in dic_.values()):
-                dic_.pop(s_num)
-        
-    # 추천 리스트 알고리즘
-    recommend = []
-    for s_num in dic_.keys():
-        nl = NewLecture.objects.filter(subject_num = s_num)
-        # 부족 과목이 열리고 있다면
-        if nl.exists():
-            recommend.append(nl[0].subject_num.subject_num)
-        # 더이상 열리지 않는다면 -> 그룹번호로 동일과목 찾은 후 열리는 것만 저장
-        else:
-            g_num = dic_[s_num]
-            # 동일과목도 없고 과목이 없어졌다?
-            if g_num == -1:
-                recommend.append(s_num)
-            # 아니면 동일과목중 열리고 있는 강의를 찾자
-            else:
-                sg = SubjectGroup.objects.filter(group_num = g_num)
-                for s in sg:
-                    nl2 = NewLecture.objects.filter(subject_num = s.subject_num)
-                    if nl2.exists():
-                        recommend.append(nl2[0].subject_num.subject_num)
-    return recommend
+
+
+
+
+
+
+
+
+# (터미널 테스트) -------------------------------------------------------------------------------------
+
 
 def f_test(request):
     # 셀레니움으로 넘어올 변수들
@@ -391,10 +341,11 @@ def f_test(request):
     print("기교")
     print(dic_b)
 
+    list_to_query(dic_ce.keys())
+
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
     data = pd.read_excel('./app/uploaded_media/기이수성적_재현.xls', index_col=None)
-    data.to_csv('./app/csv_files/filename.csv', encoding='utf-8')
 
     # 논패, F과목 삭제
     n = data.shape[0]
@@ -552,8 +503,10 @@ def f_test(request):
 
 
 
-# 쓰레기통 -------------------------------------------------------------------------------------------
 
+
+
+# 쓰레기통 -------------------------------------------------------------------------------------------
 
 '''
 def f_upload(request):
@@ -665,7 +618,7 @@ def r_compare(request, file_name):
 
     # 3. 전선 검사
     need_ms_score=0
-    final_num_my_ms=my_num_ms+remain
+    final_num_my_ms=my_num_ms+remain`
     print('<전선>')
     if num_ms <= my_num_ms :
         print('전선 학점 기준을 만족했습니다.')

@@ -345,26 +345,21 @@
             <hr>
             <table class="mytable">
                 <tr class="myth" style="background-color: #f8f8f8;">
-                    <th style="border-right :1px solid #cccccc; width:20%">학수번호</th>
-                    <th style="border-right :1px solid #cccccc; width:20%">과목명</th>
-                    <th style="border-right :1px solid #cccccc; width:20%">이수구분</th>
-                    <th style="border-right :1px solid #cccccc; width:20%">선택영역</th>
-                    <th style="width:20%">학점</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                    <th style="width:15%">학점</th>
                 </tr>
+                {% for q in standard_list.ce %}
                 <tr class="mytr">
-                    <td class="mytd">123</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd" style="border-right :0px">dd</td>
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
                 </tr>
-                <tr class="mytr">
-                    <td class="mytd">123</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd">dd</td>
-                    <td class="mytd" style="border-right :0px">dd</td>
-                </tr>
+                {% endfor %}
             </table>
 
             <!-- 추천과목 -->
