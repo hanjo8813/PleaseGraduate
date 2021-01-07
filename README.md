@@ -43,4 +43,4 @@
 > 철자 실수로 프로젝트 세팅 폴더명이 project 가 아닌 projcet임
 1. 각자 로컬에서 MySQL 실행
 2. projcet > settings.py > DATABASE 파트에서 PASSWORD를 자신의 MySQL 비밀번호로 설정
-3. `python manage.py inspectdb` 명령어로 연동 DB 감지 테스트
+3. `python manage.py inspectdb` 명령어로 연동 DB 감지 테스트.
