@@ -24,6 +24,13 @@
 
 ## 서버 환경 세팅
 
+### Mac - Windows 호환 안되는 부분
+```python
+    root = os.getcwd() + '\\app\\uploaded_media' # Windows
+    root = os.getcwd() + '/app/uploaded_media'   # Mac
+```
+-  views.py 에서 위의 코드 검색 후 자신의 os에 맞는 경로로 설정
+
 ### 설치해야하는 라이브러리 목록
 > 가상환경은 사용하지 않고 각자 로컬에 설치하기로 함.
 - `pip install django`
