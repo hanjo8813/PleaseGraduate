@@ -120,7 +120,6 @@ def recom_machine_learning(what,file_name, recom_cs_part):
     score = [] #유사도점수
     for item_id in item_ids :
         a = model.predict(user, item_id, actual_rating)
-        print(a)
         item.append(a[1])
         score.append(a[3])
     df = pd.DataFrame({'item':item,'score':score})
@@ -153,6 +152,9 @@ def recom_machine_learning(what,file_name, recom_cs_part):
     return zipped
 
 def r_result(request, file_name, info):
+    # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
+    info['eng'] = 0
+
     # 셀레니움으로 넘어온 변수들        
     p_year = info["year"]
     p_major = info["major"]
@@ -165,6 +167,7 @@ def r_result(request, file_name, info):
         'E' : info["book"][1],
         'EW' : info["book"][2],
         'S' : info["book"][3],
+        'eng' : info['eng'],
     }
 
     # 파이썬 변수를 가지고 ind로 매핑
@@ -276,18 +279,25 @@ def r_result(request, file_name, info):
     for s_num in my_dic_cs.keys():
         al = AllLecture.objects.get(subject_num=s_num)
         my_cs_part.append(al.selection)
-    # 사용자의 부족 영역
-    bo = True
+    my_cs_part = list(set(my_cs_part))
+    # 영역 통과 여부
+    bo = 1
+    # 사용자가 안들은 영역들.
     recom_cs_part = []
     if len(my_cs_part) < 3:
-        bo = False
+        bo = 0
         recom_cs_part = list(set(cs_part) - set(my_cs_part))
-    
+    # 사용자의 부족 영역 체크
+    part_check = ['이수' for _ in range(5)]
+    for i, c in enumerate(cs_part):
+        if c not in my_cs_part:
+            part_check[i] = '미이수'
     cs_part = {
-        'all' : cs_part,
-        'recom' : recom_cs_part,
         'bo' : bo,
+        'check' : part_check,
+        'all' : cs_part,
     }
+
     #------------------------------------------------------------------------------------
     # 전필/전선/중선 >> 추천과목 리스트 생성 (최신과목으로)
     path_dir = './app/uploaded_media/' #엑셀 저장 디렉토리 지정
@@ -406,7 +416,6 @@ def selenium_book(id, pw):
     if checked:
         driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
         alert = driver.switch_to_alert()
-        print(alert.text)
         alert.dismiss()
     time.sleep(1)
     # id , pw 입력할 곳 찾기
@@ -634,8 +643,6 @@ def result_test(request):
     for i, c in enumerate(cs_part):
         if c not in my_cs_part:
             part_check[i] = '미이수'
-    print(part_check)
-    print(bo)
     cs_part = {
         'bo' : bo,
         'check' : part_check,
