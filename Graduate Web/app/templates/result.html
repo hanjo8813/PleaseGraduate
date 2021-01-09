@@ -111,8 +111,7 @@
                     <div class="gbox">
                         <span class="grade">이수 학점</span>
                         <span class="" id="mygrade2"></span>
-                        +
-                        <span class="tooltip" id="myremain" style="color:red; text-decoration: underline;">
+                        <span class="tooltip" id="myremain" style="color:#d32f2f; ">
                         </span>
                         <div class="tooltip_text">
                             전필 영역에서 기준 학점 초과시 전선 학점으로 인정됩니다.
@@ -366,7 +365,7 @@
         <br>
         <div style = "padding: 1rem; text-align: center;">
             <!-- 필수과목 -->
-            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 목록
+            <div style="font-size : 1.5rem;"><i id='ess' class="fas fa-check-circle"></i> 필수과목 목록
             </div>
             <hr>
             <table class="mytable">
@@ -566,7 +565,7 @@
     var Grade5 = '{{standard_num.b}}';          // 기교
 
     // 전필 학점 초과시
-    var remain = 0
+    var remain = 2
     if (Grade1 < Mygrade1) {
         remain = Mygrade1 - Grade1;
     }
@@ -614,6 +613,9 @@
     const menu = document.querySelector('.navbar_menu');
     let tooltipeb = document.querySelectorAll('.tooltip');
     let text = document.querySelectorAll('.tooltip_text');
+
+    var Ess = document.getElementById('ess');
+    var Mytable =document.querySelector('mytable');
 
     var modal1 = document.getElementById('myModal1');
     var modal2 = document.getElementById('myModal2');
@@ -672,9 +674,13 @@
     document
         .getElementById("mygrade2")
         .innerHTML = Mygrade2;
-    document
-        .getElementById("myremain")
-        .innerHTML = remain;
+
+    if(remain!=0){
+        document
+            .getElementById("myremain")
+            .innerHTML = '+'+remain;
+   }
+
     document
         .getElementById("mygrade3")
         .innerHTML = Mygrade3;
@@ -715,6 +721,12 @@
 
     toggleb.addEventListener('click', () => {
         menu
+            .classList
+            .toggle('active');
+    });
+
+    Ess.addEventListener('click', () => {
+        Mytable
             .classList
             .toggle('active');
     });
