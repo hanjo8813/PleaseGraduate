@@ -40,7 +40,6 @@ def r_head(request):
 def r_login(request):
     return render(request, "login.html")
 
-    
 
 def make_recome_df(rec,file_name):
     #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
@@ -73,7 +72,7 @@ def make_recome_df(rec,file_name):
     return result
 
 def r_result(request, file_name, info):
-    # 셀레니움으로 넘어온 변수들
+    # 셀레니움으로 넘어온 변수들        
     p_year = info["year"]
     p_major = info["major"]
 
@@ -301,6 +300,7 @@ def selenium_uis(id, pw):
     #로그인버튼 클릭
     login_btn = driver.find_element_by_id('logbtn')
     login_btn.click()
+
     # 프레임전환
     driver.switch_to.frame(2)
     # 수업/성적 메뉴선택
@@ -319,9 +319,9 @@ def selenium_uis(id, pw):
     # 다운로드 버튼 x_path 클릭
     x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
     x.click()
-    time.sleep(5)
-    driver.quit()
-    return
+    time.sleep(2)
+
+    return 
 
 def selenium_book(id, pw):
     url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
@@ -390,8 +390,8 @@ def f_login(request):
     filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
     shutil.move(filename,os.path.join(Initial_path,file_name))
     # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
-    context = selenium_book(request.POST.get('id'), request.POST.get('pw'))
-    return r_result(request, file_name, context)
+    info = selenium_book(request.POST.get('id'), request.POST.get('pw'))
+    return r_result(request, file_name, info)
 
 #---------------------------------------------------------------------------------------------------------------
 
