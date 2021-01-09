@@ -5,7 +5,6 @@
 }
 
 .mytable {
-    display: none;
     margin:0 auto;
     width: 70%;
     text-align: center;
@@ -13,13 +12,11 @@
     padding-top : 2rem;
     padding-bottom : 4rem;
 }
-.mytable .active{
-    display: block;
-}
+
 
 .myth {
     height: 2.5rem;
-    background-color: white;
+    background-color: #f8f8f8;
     font-weight: bolder;
     font-size: 1.2rem;
     border-bottom: 1px solid #dadada;
@@ -34,6 +31,21 @@
 .mytr:hover {
     background-color: #f1f1f1;
 }
+
+.mydiv{
+    padding : 0.5rem;
+    font-size: 1rem;
+    color :rgb(199, 199, 199)
+}
+
+.partdiv{
+    padding-top : 4rem;
+    padding-bottom: 4rem;
+}
+
+
+
+
 
 body {
     margin: 0;

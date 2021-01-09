@@ -29,15 +29,16 @@ urlpatterns = [
     path('head/', views.r_head),
 
     # 페이지 렌더링
-    path('dbcheck/', views.r_dbcheck),
     path('login/', views.r_login),
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴
-    path('f_test/', views.f_test),
     path('f_login/', views.f_login),
+    
 
     # 테스트용
+    path('f_test/', views.f_test),
+    path('dbcheck/', views.r_dbcheck),
     path('result_test/', views.result_test),
 
 ]
