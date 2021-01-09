@@ -31,6 +31,8 @@
 - `pip install pandas`
 - `pip install xlrd`
 - `pip install selenium`
+- `pip install beutifulsoup4`
+- `pip install surprise`
 - `pip install pylint-django` (vs코드 쓰는 사람만설치)
 
 ### graduate_help 덤프파일 import 하기

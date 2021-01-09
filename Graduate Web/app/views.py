@@ -5,6 +5,8 @@ import time
 import shutil
 import pandas as pd
 import numpy as np
+from surprise import SVD, accuracy
+from surprise import Reader, Dataset
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -38,8 +40,39 @@ def r_head(request):
 def r_login(request):
     return render(request, "login.html")
 
-def r_result(request, file_name, info):
+    
 
+def make_recome_df(rec,file_name):
+    #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
+    user = file_name#유저이름
+    tab = pd.crosstab(rec['이름'],rec['학수번호']) #사용자가 어떤 과목을 듣지 않았는지 확인하기 위하여 데이터프레임 shape 변경
+    tab_t = tab.transpose().reset_index()
+    item_ids =[] #유저가 듣지 않은 과목
+    for i in range(tab_t.shape[0]):
+        if tab_t[user][i] == 0:
+            item_ids.append(tab_t['학수번호'][i])
+    #학습준비
+    reader = Reader(rating_scale=(0,2)) #이건 이제 
+    data = Dataset.load_from_df(df=rec, reader=reader)
+    train = data.build_full_trainset()
+    test = train.build_testset()
+    #모델학습
+    model = SVD(n_factors=100, n_epochs=20,random_state=123)
+    model.fit(train) # 모델 학습 하는 코드
+    actual_rating = 0
+    #학습결과 데이터프레임화
+    item = [] #과목명
+    score = [] #유사도점수
+    for item_id in item_ids :
+        a = model.predict(user, item_id, actual_rating)
+        print(a)
+        item.append(a[1])
+        score.append(a[3])
+    df = pd.DataFrame({'item':item,'score':score})
+    result = df.sort_values(by=['score'],axis=0,ascending=False).reset_index(drop=True) #결과 데이터프레임
+    return result
+
+def r_result(request, file_name, info):
     # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
     p_major = info["major"]
@@ -85,7 +118,8 @@ def r_result(request, file_name, info):
 
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
-    data = pd.read_excel('./app/uploaded_media/기이수성적_재현.xls', index_col=None)
+    root = './app/uploaded_media/' + file_name
+    data = pd.read_excel(root, index_col=None)
 
     # 논패, F과목 삭제
     n = data.shape[0]
@@ -140,7 +174,7 @@ def r_result(request, file_name, info):
     my_dic_b = make_dic(df_b['학수번호'].tolist())
 
     #-------------------------------------------------------------------------------------
-    # 추천과목 리스트 생성 (최신과목으로)
+    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)
     recom_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
     recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
@@ -161,7 +195,67 @@ def r_result(request, file_name, info):
     my_cs_part = list(set(my_cs_part))
     # 사용자의 부족 영역
     recom_cs_part = list(set(cs_part) - set(my_cs_part))
-    
+
+
+    #-------------------------------------------------------------------------------------
+    # 전필/전선/중선 >> 추천과목 리스트 생성 (최신과목으로)
+    path_dir = './app/uploaded_media/' #엑셀 저장 디렉토리 지정
+    file_list = os.listdir(path_dir) # 디렉토리내 파일 읽어서 리스트형식으로 저장
+    data = []
+    for i in range(len(file_list)): # .DS_Store 쓰레기 값 제거 (디렉토리에 있는지 확인해봐야함)
+        if file_list[i][0] =='.':
+            del file_list[i]
+            break
+    for i in range(len(file_list)): # 엑셀 to 데이터프레임 변경 후 data 리스트에 저장
+        data.append(pd.read_excel(path_dir+file_list[i], index_col=None))
+    #데이터 전처리
+    MR = [] # 전공필수
+    MC = [] # 전공선택
+    EC = [] # 교양선택
+    for i in range(len(file_list)): 
+        del data[i]['학기'] #필요없는 컬럼 삭제
+        del data[i]['교과목명']
+        del data[i]['교직영역']
+        del data[i]['선택영역']
+        del data[i]['학점']
+        del data[i]['평가방식']
+        del data[i]['등급']
+        del data[i]['개설학과코드']
+        data[i] = data[i].rename({'년도':'이름'},axis='columns') #년도 컬럼 이름 컬럼으로 컬럼명 변경
+        data[i]['이름'] = file_list[i] #이름 컬럼에 이름 덮어씀
+        MR.append(data[i][data[i]['이수구분'].isin(['전필'])]) #전필만 모아서 저장
+        MC.append(data[i][data[i]['이수구분'].isin(['전선'])]) #전선만 모아서 저장
+        EC.append(data[i][data[i]['이수구분'].isin(['교선1'])]) #교선만 모아서 저장
+        del MR[i]['이수구분'] #필요없는 컬럼 삭제
+        del MC[i]['이수구분']
+        del EC[i]['이수구분']
+        MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
+        MC[i]['평점'] = 1
+        EC[i]['평점'] = 1
+    # 해당 이수구분에 맞게 데이터 merge
+    MR_train = pd.concat(MR,ignore_index=True) #전필용 train set
+    MC_train = pd.concat(MC,ignore_index=True) #전선용 train set
+    EC_train = pd.concat(EC,ignore_index=True) #교선용 train set
+    result_MR = make_recome_df(MR_train,file_name)
+    result_MC = make_recome_df(MC_train,file_name)
+    result_EC = make_recome_df(EC_train,file_name)
+    MR_item = result_MR['item'].tolist()
+    MR_score = result_MR['score'].tolist()
+    MC_item = result_MC['item'].tolist()
+    MC_score = result_MC['score'].tolist()
+    EC_item = result_EC['item'].tolist()
+    EC_score = result_EC['score'].tolist()
+
+    recommend_sel_item = {
+        'me' : list_to_query(MR_item),
+        'ms' : list_to_query(MC_item),
+        'cs' : list_to_query(EC_item),
+    }
+    recommend_sel_score = {
+        'me' : MR_score,
+        'ms' : MC_score,
+        'cs' : EC_score,
+    }
 
     context = {
         'my_num' : my_num,
@@ -169,6 +263,8 @@ def r_result(request, file_name, info):
         'standard_num' : standard_num,
         'standard_list' : standard_list,
         'recommend_ess' : recommend_ess,
+        'recommend_sel_item' : recommend_sel_item,
+        'recommend_sel_score' : recommend_sel_score,
     }
 
     return render(request, "result.html", context)

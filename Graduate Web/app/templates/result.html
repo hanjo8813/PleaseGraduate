@@ -321,7 +321,33 @@
 <div id="myModal1" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>111111111111</p>
+        <br>
+        <div style = "padding: 1rem; text-align: center;">
+            <!-- 추천과목 -->
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
+            </div>
+            <hr>
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:12%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
+                    <th style="border-right :1px solid #cccccc; width:12%">학점</th>
+                    <th style="width:12%">추천지수</th>
+                </tr>
+                {% for q in recommend_sel_item.me %}
+                <tr class="mytr">
+                    <td class="mytd">{{ q.subject_num }}</td>
+                    <td class="mytd">{{ q.subject_name }}</td>
+                    <td class="mytd">{{ q.classification }}</td>
+                    <td class="mytd">{{ q.selection }}</td>
+                    <td class="mytd">{{ q.grade }}</td>
+                    <td class="mytd" style="border-right :0px"> 여기 안됨</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 </div>
 
