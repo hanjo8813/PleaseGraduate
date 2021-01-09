@@ -1,0 +1,19 @@
+{% extends 'menubar.html' %}
+{% block content %}
+
+<div style="background-color: rgb(199, 199, 199); padding:2rem;">
+    uis로 로그인
+    <br><br>
+    <form action="/f_login/" method="post">
+        {% csrf_token %}
+        <label>아이디</label>
+        <input type="text" name="id" placeholder="ID">
+        <br>
+        <label>비밀번호</label>
+        <input type="password" name="pw" placeholder="PW">
+        <br>
+        <input type="submit" value="로그인">
+    </form>
+</div>
+
+{% endblock %}
