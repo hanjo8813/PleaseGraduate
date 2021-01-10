@@ -1,23 +1,31 @@
-{% extends 'menubar.html' %}
-{% block content %}
+<html>
 
-<br><br>
-<!--
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?after">
+</head>
+
+<body>
+    <!--
         url태그 사용하기.
         1. href의 이름을 가지고 urls.py로 가서 해당 url 이름을 찾는다. OR href의 별명을 가지고 해당 url의 별명을 찾는다 
         2. 찾았다면 해당 패턴의 views 함수를 실행
         3. views에서 해당 함수를 실행하게됨.
     -->
-<div style="padding : 10rem; padding-left:15rem;">
-    <a href="/head/"> 정현 front</a>
-    <br><br>
-    <a href="/dbcheck/">DB 연동 체크</a>
-    <br><br>
-    <a href="/result_test/"> 웹 테스트용</a>
-    <br><br>
-    <a href="/f_test/">py 테스트용</a>
-    <br><br>
-</div>
+    <div style="padding : 10rem; padding-left:15rem;">
+        <p class="csstest"> css 테스트 </p>
+        <br><br><br><br><br>
+        <a href="/head/"> 정현 front</a>
+        <br><br>
+        <a href="/dbcheck/">DB 연동 체크</a>
+        <br><br>
+        <a href="/result_test/"> 웹 테스트용</a>
+        <br><br>
+        <a href="/f_test/">py 테스트용</a>
+        <br><br>
+    </div>
+</body>
 
-
-{% endblock %}
+</html>

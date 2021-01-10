@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- static 폴더 참조 -->
     <!-- 원그래프 js는 각 페이지에서 소환해야됨 (일회성 호출이라서.) -->
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}?after">
 
     <!-- 웹 참조-->
@@ -19,14 +19,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
 
-    <title>졸업을 부탁해</title>
+    <title>Please Graduate</title>
+
+    <!-- loading.html 때문에 만듬 -->
+    {% block meta %}
+    {% endblock %}
 </head>
 
 <body>
     <!-- 로고 / 메뉴바-->
     <nav class="navbar">
         <div class="navbar_logo">
-            <a href="/head/"><img src="../static/img/LogoMakr-4uW6co.png"></a>
+            <a href="/head/"><img src="../static/img/logo.png"></a>
         </div>
 
         <ul class="navbar_menu">
@@ -34,7 +38,12 @@
                 <a href="/head/">Home</a>
             </li>
             <li>
-                <a href="#">Signup</a>
+                <!-- 로그인 세션 활용 -->
+                {% if not request.session.id  %}
+                <a id="loginBtn">Login</a>
+                {% else %}
+                <a href='/f_logout/'>Logout</a>
+                {% endif %}
             </li>
         </ul>
 
@@ -45,10 +54,100 @@
 
     {% block content %}
     {% endblock %}
-    
+
+    <!--푸터-->
+    <footer class="footer">
+        <ul class="footer_list">
+            <li>
+                Contact Us : 000-0000-0000
+            </li>
+            <li>
+                Email : AAAAA@gmail.com
+            </li>
+            <li>
+                Adress : 서울시 중랑구 사가정로 41길 9
+            </li>
+        </ul>
+        <ul class="footer_list">
+            <li>
+                이용약관
+            </li>
+            <li>
+                개인정보처리방침
+            </li>
+        </ul>
+        <h2 class="copyright">copyright
+            <i class="far fa-copyright"></i>
+            2021 PleaseGraduate
+        </h2>
+    </footer>
+
+    <!--로그인 모달-->
+    <div id="loginModal" class="modal loginmodal">
+
+        <div class="modal-content login-content">
+            <p>
+                <span class="logincap">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span class="close loginclose">&times;</span>
+                </span>
+            <div class="welcome">
+                PleaseGraduate에 오신 것을 환영합니다
+            </div>
+
+            <!-- 로그인 폼 -->
+            <div class="loginform">
+                <form action="/loading/" method="post">
+                    {% csrf_token %}
+                    <div class="textbox">
+                        <input type="text" name="id" placeholder="Uis 아이디">
+                        <input type="password" name="pw" placeholder="Uis 비밀번호">
+                    </div>
+                    <input type="submit" class="login" onclick='exception()' value="로그인">
+                </form>
+            </div>
+
+            <div class="explain">계속 진행하면 PleaseGraduate의
+                <div class="inexplain">서비스 약관, 개인정보 보호정책</div>에 동의한 것으로 간주됩니다.
+            </div>
+
+            <div class="caution">#주의사항#
+            </div>
+            <div>PleaseGraduate는 웹 chrome브라우저 환경에서만 가능합니다</div>
+            <div>Uis와 대양센터의 아이디, 비밀번호가 전부 일치해야합니다</div>
+            </p>
+        </div>
+    </div>
+
 </body>
 
 {% block js_section %}
 {% endblock %}
+
+<script>
+    var loginmodal = document.getElementById('loginModal');
+    var loginbtn = document.getElementById("loginBtn");
+    var span = document.getElementsByClassName("close")[0];
+
+    var loginException = true;  //로그인 예외처리 변수
+
+    loginbtn.onclick = function () {
+        loginmodal.style.display = "block";
+    }
+
+    span.onclick = function () {
+        loginmodal.style.display = "none";
+    }
+
+    //로그인 예외처리 경고창
+    function exception() {
+        if (loginException == true) {
+            window.location.href = "loading.html";
+        }
+        else {
+            alert("Uis 아이디와 비밀번호가 틀렸습니다. 다시 확인하세요.")
+        }
+    }
+</script>
 
 </html>

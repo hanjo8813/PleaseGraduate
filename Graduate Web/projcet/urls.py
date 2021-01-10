@@ -29,11 +29,12 @@ urlpatterns = [
     path('head/', views.r_head),
 
     # 페이지 렌더링
-    path('login/', views.r_login),
+    path('loading/', views.r_loading),
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴
     path('f_login/', views.f_login),
+    path('f_logout/', views.f_logout),
     
 
     # 테스트용

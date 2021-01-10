@@ -632,7 +632,15 @@
 <script src="{% static 'js/circle-progress.js' %}"></script>
 
 <script>
-
+    // 초과권수 작업
+    function del_remain(book, standard){
+        if(book >= standard){
+            return standard
+        }
+        else{
+            return book
+        }
+    }
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
@@ -669,6 +677,7 @@
     var Wbook = '{{user_info.E}}' + "권";
     var Sbook = '{{user_info.EW}}' + "권";
     var Scbook = '{{user_info.S}}' + "권";
+    Mybook = del_remain('{{user_info.W}}', 4)+del_remain('{{user_info.E}}', 2)+del_remain('{{user_info.EW}}', 3)+del_remain('{{user_info.S}}', 1)
 
     // pass 여부
     // 교선 영역
@@ -684,16 +693,16 @@
     var Grade6 = "Pass";
     
     // 영어인증
-    var Grade8;
     if('{{user_info.eng}}' == 1){      
-        Grade8 = "Pass";
+        var Grade8 = "Pass";
+        var pernum8 = 100;
     }   
     else{
-        Grade8 = "Non-Pass";
+        var Grade8 = "Non-Pass";
+        var pernum8 = 0;
     }
 
-    
-    // 퍼센트화
+    // 이수 학점 퍼센트화
     var pernum0 = to_percent(Mytotalgrade, Totalgrade);
     var pernum1 = to_percent(Mygrade1, Grade1);
     var pernum2 = to_percent(Mygrade2, Grade2);
@@ -701,8 +710,8 @@
     var pernum4 = to_percent(Mygrade4, Grade4);
     var pernum5 = to_percent(Mygrade5, Grade5);
     var pernum6 = 100;
-    var pernum7 = 100;
-    var pernum8 = 100;
+    var pernum7 = to_percent(Mybook, 10);
+
 
     if (pernum0 >= 100) {
         var Cangraduate = "축하합니다! 졸업 가능합니다!!";

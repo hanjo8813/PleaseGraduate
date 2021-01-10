@@ -38,10 +38,15 @@ def r_index(request):
 def r_head(request):
     return render(request, "head.html")
 
-def r_login(request):
-    return render(request, "login.html")
+def f_logout(request):
+    request.session.clear()
+    return redirect('/head/')
 
-
+def r_loading(request):
+    # 사용자 id(학번)과 pw을 세션에 저장 (request의 세션부분에 저장되는것)
+    request.session['id']=request.POST.get('id')
+    request.session['pw']=request.POST.get('pw')
+    return render(request, "loading.html")
 
 
 def list_to_query(list_):
@@ -467,15 +472,18 @@ def selenium_book(id, pw):
     return info 
 
 def f_login(request):
+    # 세션에서 ID/PW 뽑아냄
+    s_id = request.session.get('id')
+    s_pw = request.session.get('pw')
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
-    selenium_uis(request.POST.get('id'), request.POST.get('pw'))
+    selenium_uis(s_id,s_pw)
     # 다운로드 후 이름 변경
     file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
     Initial_path = './app/uploaded_media'
     filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
     shutil.move(filename,os.path.join(Initial_path,file_name))
     # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
-    info = selenium_book(request.POST.get('id'), request.POST.get('pw'))
+    info = selenium_book(s_id, s_pw)
     return r_result(request, file_name, info)
 
 #---------------------------------------------------------------------------------------------------------------
@@ -498,7 +506,7 @@ def f_login(request):
 def result_test(request):
     file_name = '기이수_재현_최신.xls'
     info = {
-        'book' : [4, 4, 4, 1],
+        'book' : [4, 4, 4, 1, 13],
         'major' : '디지털콘텐츠',
         'id' : '16011140',
         'year' : '16',
@@ -506,7 +514,7 @@ def result_test(request):
         'eng' : 0,
     }
 
-    # 셀레니움으로 넘어온 변수들        
+    # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
     p_major = info["major"]
 
