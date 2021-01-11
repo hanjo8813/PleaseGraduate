@@ -1,7 +1,7 @@
 /* 재원 CSS 커스텀 */
 
 .csstest{
-    color:red;
+    color:blue;
 }
 
 .mytd {
@@ -311,6 +311,7 @@ a {
 }
 
 .name {
+    background-color: none;
     margin-bottom: 0;
     margin-top: 30px;
     position: relative;
@@ -327,7 +328,7 @@ a {
     display: flex;
     flex-direction: row;
     width: 100%;
-    background-color: white;
+    background-color: none;
     justify-content: space-evenly;
     align-content: center;
     border-radius: 30px;
@@ -377,7 +378,6 @@ a {
 
 }
 .Sbox {
-    background-color: white;
     margin: 0;
 
     width: 350px;
@@ -618,6 +618,7 @@ strong {
     margin-left: 130px;
 }
 .copyright {
+    text-align: center;
     font-size: 0.7rem;
     color: grey;
     margin-left: 150px;

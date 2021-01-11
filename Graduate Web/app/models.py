@@ -40,9 +40,10 @@ class Standard(models.Model):
     build = models.IntegerField()
     pro_acc_list = models.CharField(max_length=100)
     bsm_ess_list = models.CharField(max_length=100)
-    bsm_sel_list = models.CharField(max_length=100)
+    bsm_sel_list = models.CharField(max_length=100, blank=True, null=True)
     build_ess_list = models.CharField(max_length=100)
     build_sel_list = models.CharField(max_length=100)
+    engine_major_list = models.CharField(max_length=200)
 
     class Meta:
         managed = False

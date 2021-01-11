@@ -160,7 +160,7 @@ def r_result(request, file_name, info):
     # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
     info['eng'] = 0
 
-    # 셀레니움으로 넘어온 변수들        
+    # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
     p_major = info["major"]
 
@@ -172,7 +172,6 @@ def r_result(request, file_name, info):
         'E' : info["book"][1],
         'EW' : info["book"][2],
         'S' : info["book"][3],
-        'eng' : info['eng'],
     }
 
     # 파이썬 변수를 가지고 ind로 매핑
@@ -272,6 +271,17 @@ def r_result(request, file_name, info):
     recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
 
+    # 필수과목 패스 여부
+    pass_ce = 0
+    pass_cs = 0
+    pass_b = 0
+    if not recom_ce:
+        pass_ce = 1
+    if not recom_cs:
+        pass_cs = 1
+    if not recom_b:
+        pass_b = 1
+    
     recommend_ess = {
         'ce' : list_to_query(recom_ce),
         'cs' : list_to_query(recom_cs),
@@ -287,7 +297,7 @@ def r_result(request, file_name, info):
     my_cs_part = list(set(my_cs_part))
     # 영역 통과 여부
     bo = 1
-    # 사용자가 안들은 영역들.
+    # 사용자가 안들은 영역 추출
     recom_cs_part = []
     if len(my_cs_part) < 3:
         bo = 0
@@ -298,7 +308,6 @@ def r_result(request, file_name, info):
         if c not in my_cs_part:
             part_check[i] = '미이수'
     cs_part = {
-        'bo' : bo,
         'check' : part_check,
         'all' : cs_part,
     }
@@ -345,14 +354,23 @@ def r_result(request, file_name, info):
         'cs' : recom_machine_learning(EC,file_name,recom_cs_part),    # 교선
     }
 
+    pass_obj = {
+        'l_ce' : pass_ce,       # 중필 필수과목 
+        'l_cs' : pass_cs,       # 중선 필수과목
+        'p_cs' : bo,            # 중선 필수영역
+        'l_b' : pass_b,         # 기교 필수과목
+        'eng' : info['eng'],    # 영어인증
+    }
+
     context = {
-        'user_info' : user_info,
-        'my_num' : my_num,
-        'standard_num' : standard_num,
-        'standard_list' : standard_list,
-        'recommend_ess' : recommend_ess,
-        'recommend_sel' : recommend_sel,
-        'cs_part' : cs_part,
+        'user_info' : user_info,            # 사용자 정보
+        'my_num' : my_num,                  # 사용자 이수학점들
+        'standard_num' : standard_num,      # 기준 수치 
+        'standard_list' : standard_list,    # 기준 필수과목 리스트
+        'recommend_ess' : recommend_ess,    # 필수과목 추천리스트
+        'recommend_sel' : recommend_sel,    # 선택과목 추천리스트
+        'cs_part' : cs_part,                # 중선 영역
+        'pass_obj' : pass_obj               # 패스 여부
     }
 
     return render(request, "result.html", context)
@@ -526,7 +544,6 @@ def result_test(request):
         'E' : info["book"][1],
         'EW' : info["book"][2],
         'S' : info["book"][3],
-        'eng' : info['eng'],
     }
 
     # 파이썬 변수를 가지고 ind로 매핑
@@ -626,6 +643,17 @@ def result_test(request):
     recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
 
+    # 필수과목 패스 여부
+    pass_ce = 0
+    pass_cs = 0
+    pass_b = 0
+    if not recom_ce:
+        pass_ce = 1
+    if not recom_cs:
+        pass_cs = 1
+    if not recom_b:
+        pass_b = 1
+    
     recommend_ess = {
         'ce' : list_to_query(recom_ce),
         'cs' : list_to_query(recom_cs),
@@ -641,7 +669,7 @@ def result_test(request):
     my_cs_part = list(set(my_cs_part))
     # 영역 통과 여부
     bo = 1
-    # 사용자가 안들은 영역들.
+    # 사용자가 안들은 영역 추출
     recom_cs_part = []
     if len(my_cs_part) < 3:
         bo = 0
@@ -652,7 +680,6 @@ def result_test(request):
         if c not in my_cs_part:
             part_check[i] = '미이수'
     cs_part = {
-        'bo' : bo,
         'check' : part_check,
         'all' : cs_part,
     }
@@ -699,14 +726,23 @@ def result_test(request):
         'cs' : recom_machine_learning(EC,file_name,recom_cs_part),    # 교선
     }
 
+    pass_obj = {
+        'l_ce' : pass_ce,       # 중필 필수과목 
+        'l_cs' : pass_cs,       # 중선 필수과목
+        'p_cs' : bo,            # 중선 필수영역
+        'l_b' : pass_b,         # 기교 필수과목
+        'eng' : info['eng'],    # 영어인증
+    }
+
     context = {
-        'user_info' : user_info,
-        'my_num' : my_num,
-        'standard_num' : standard_num,
-        'standard_list' : standard_list,
-        'recommend_ess' : recommend_ess,
-        'recommend_sel' : recommend_sel,
-        'cs_part' : cs_part,
+        'user_info' : user_info,            # 사용자 정보
+        'my_num' : my_num,                  # 사용자 이수학점들
+        'standard_num' : standard_num,      # 기준 수치 
+        'standard_list' : standard_list,    # 기준 필수과목 리스트
+        'recommend_ess' : recommend_ess,    # 필수과목 추천리스트
+        'recommend_sel' : recommend_sel,    # 선택과목 추천리스트
+        'cs_part' : cs_part,                # 중선 영역
+        'pass_obj' : pass_obj               # 패스 여부
     }
 
     return render(request, "result.html", context)

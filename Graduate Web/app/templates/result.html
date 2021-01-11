@@ -77,7 +77,6 @@
                         <span class="grade">기준 학점</span>
                         <span class="r" id="grade1"></span>
                     </div>
-
                     <div class="gbox">
                         <span class="grade">이수 학점</span>
                         <span class="r" id="mygrade1"></span>
@@ -139,6 +138,7 @@
                 <div id="chart3">
                     <strong></strong>
                 </div>
+                
                 <div class="sbox">
                     <div class="gbox">
                         <span class="grade">기준 학점</span>
@@ -148,17 +148,17 @@
                         <span class="grade">이수 학점</span>
                         <span class="r" id="mygrade3"></span>
                     </div>
+                    <div class="gbox">
+                        <span class="grade">필수 과목</span>
+                        <span class="r" id="ce_p"></span>
+                    </div>
                     <button class="rbutton" id="myBtn3">Recommend</button>
                 </div>
             </div>
         </div>
 
         <!-- 교선/중선 -->
-        {% if cs_part.bo %}
-        <div class="resultbox container4">
-        {% else %}
-        <div class="resultbox container4" style="background-color: #c27979;">
-        {% endif %}
+        <div class="resultbox container4" >
             <div class="name name1">
                 교양(중핵) 선택
                 <span class="tooltip t4">
@@ -181,6 +181,10 @@
                     <div class="gbox">
                         <span class="grade">이수 학점</span>
                         <span class="r" id="mygrade4"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade">필수 과목</span>
+                        <span class="r" id="cs_p"></span>
                     </div>
                     <div class="gbox">
                         <span class="grade">이수 영역</span>
@@ -215,6 +219,10 @@
                     <div class="gbox">
                         <span class="grade">이수 학점</span>
                         <span class="r" id="mygrade5"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade">필수 과목</span>
+                        <span class="r" id="b_p"></span>
                     </div>
                     <button class="rbutton" id="myBtn5">Recommend</button>
                 </div>
@@ -473,7 +481,7 @@
                 </tr>
             </table>
             <div class="partdiv" style="padding-top : 2rem; padding-bottom: 4rem; font-size : 1.5rem; color:#d32f2f">
-                {% if cs_part.bo %}
+                {% if pass_obj.p_cs %}
                 필수영역 조건을 만족하셨습니다.
                 {% else %}
                 필수영역이 부족합니다.
@@ -619,7 +627,6 @@
     </div>
 </div>
 
-
 {% endblock %}
 
 
@@ -679,38 +686,76 @@
     var Scbook = '{{user_info.S}}' + "권";
     Mybook = del_remain('{{user_info.W}}', 4)+del_remain('{{user_info.E}}', 2)+del_remain('{{user_info.EW}}', 3)+del_remain('{{user_info.S}}', 1)
 
+    // 이수 학점 퍼센트화
+    var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
+    var pernum1 = to_percent(Mygrade1, Grade1);         // 전필
+    var pernum2 = to_percent(Mygrade2, Grade2);         // 전선
+    var pernum3 = to_percent(Mygrade3, Grade3);         // 교필
+    var pernum4 = to_percent(Mygrade4, Grade4);         // 교선
+    var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
+    var pernum6 = 100;                                  // 공학인증
+    var pernum7 = to_percent(Mybook, 10);               // 고전독서
+
     // pass 여부
-    // 교선 영역
-    var Myarea1;
-    if('{{cs_part.bo}}' == 1){
-        Myarea1 = "Pass";
-    }
-    else{
-        Myarea1 = "Non-Pass";
-    }
-        
     // 공학인증
     var Grade6 = "Pass";
     
     // 영어인증
-    if('{{user_info.eng}}' == 1){      
+    if('{{pass_obj.eng}}' == 1){      
         var Grade8 = "Pass";
         var pernum8 = 100;
     }   
     else{
-        var Grade8 = "Non-Pass";
+        var Grade8 = "NP";
         var pernum8 = 0;
     }
 
-    // 이수 학점 퍼센트화
-    var pernum0 = to_percent(Mytotalgrade, Totalgrade);
-    var pernum1 = to_percent(Mygrade1, Grade1);
-    var pernum2 = to_percent(Mygrade2, Grade2);
-    var pernum3 = to_percent(Mygrade3, Grade3);
-    var pernum4 = to_percent(Mygrade4, Grade4);
-    var pernum5 = to_percent(Mygrade5, Grade5);
-    var pernum6 = 100;
-    var pernum7 = to_percent(Mybook, 10);
+    // 교선 영역
+    var Myarea1;
+    if('{{pass_obj.p_cs}}' == 1){
+        Myarea1 = "Pass";
+    }
+    else{
+        Myarea1 = "NP";
+        if(pernum4 == 100){
+            pernum4 -=1;
+        }
+    }
+
+    // 필수과목
+    // 교선
+    var Cs_p;
+    if('{{pass_obj.l_cs}}' == 1){
+        Cs_p = "Pass";
+    }
+    else{
+        Cs_p = "NP";
+        if(pernum4 == 100){
+            pernum4 -=1;
+        }
+    }
+    // 교필
+    var Ce_p;
+    if('{{pass_obj.l_ce}}' == 1){
+        Ce_p = "Pass";
+    }
+    else{
+        Ce_p = "NP";
+        if(pernum3 == 100){
+            pernum3 -=1;
+        }
+    }
+    // 기교
+    var B_p;
+    if('{{pass_obj.l_b}}' == 1){
+        B_p = "Pass";
+    }
+    else{
+        B_p = "NP";
+        if(pernum5 == 100){
+            pernum5 -=1;
+        }
+    }
 
 
     if (pernum0 >= 100) {
@@ -829,6 +874,16 @@
     document
         .getElementById("scbook")
         .innerHTML = Scbook;
+
+    document
+        .getElementById("ce_p")
+        .innerHTML = Ce_p;
+    document
+        .getElementById("cs_p")
+        .innerHTML = Cs_p;
+    document
+        .getElementById("b_p")
+        .innerHTML = B_p;
 
     toggleb.addEventListener('click', () => {
         menu
