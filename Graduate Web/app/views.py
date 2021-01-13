@@ -6,6 +6,7 @@ import shutil
 import pandas as pd
 import numpy as np
 import platform
+import random
 from surprise import SVD, accuracy
 from surprise import Reader, Dataset
 from collections import defaultdict
@@ -22,7 +23,6 @@ from django.contrib import messages
 # 모델 참조
 from .models import *
 
-
 # DB 감지 테스트
 def r_dbcheck(request):
     # model의 test_table 테이블을 변수에 저장
@@ -30,12 +30,11 @@ def r_dbcheck(request):
     # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
     return render(request, "dbcheck.html", {"t_h":tt})
 
-
-# 이 함수가 호출되면 -> index.html을 렌더링한다.
 def r_index(request):
     return render(request, "index.html")
 
 def r_head(request):
+    request.session.clear()
     return render(request, "head.html")
 
 def f_logout(request):
@@ -49,6 +48,9 @@ def r_loading(request):
     return render(request, "loading.html")
 
 
+
+
+
 def list_to_query(list_):
     al = AllLecture.objects.none()
     for s_num in list_:
@@ -57,6 +59,7 @@ def list_to_query(list_):
     return al
 
 def make_dic(my_list):
+    my_list.sort()
     dic = defaultdict(lambda:-1)
     for s_num in my_list:
         dic[s_num]
@@ -65,19 +68,28 @@ def make_dic(my_list):
             dic[s_num] = sg[0].group_num
     return dic
 
-def make_recommend_list(my_dic_, dic_):
+def make_recommend_list(my_dic, dic):
+    my_dic_ = my_dic.copy()
+    dic_ = dic.copy()
+    check = dic.copy()
+    for k in check.keys():
+        check[k] = 0
     # 만족한 학수번호는 딕셔너리에서 pop
     for s_num in my_dic_.keys():
         # 1차로 학수번호 검사
         # 있다면? -> 기준 딕셔너리에서 팝.
         if s_num in dic_.keys():
+            check[s_num] = 1
             dic_.pop(s_num)
         # 없다면? 2차 검사
         else :
             g_num = my_dic_[s_num]
+            for k, v in dic_.items():
+                if v == g_num :
+                    s_num = k
             if g_num != -1 and (g_num in dic_.values()):
+                check[s_num] = 1
                 dic_.pop(s_num)
-        
     # 추천 리스트 알고리즘
     recommend = []
     for s_num in dic_.keys():
@@ -98,11 +110,12 @@ def make_recommend_list(my_dic_, dic_):
                     nl2 = NewLecture.objects.filter(subject_num = s.subject_num)
                     if nl2.exists():
                         recommend.append(nl2[0].subject_num.subject_num)
-    return recommend
+    return recommend, list(check.values())
 
-def recom_machine_learning(what,file_name, recom_cs_part):
+def recom_machine_learning(what, file_name):
     # 해당 이수구분에 맞게 데이터 merge
-    rec = pd.concat(what,ignore_index=True) # train set
+    del what['선택영역']
+    rec = what
     #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
     user = file_name
     tab = pd.crosstab(rec['이름'],rec['학수번호']) #사용자가 어떤 과목을 듣지 않았는지 확인하기 위하여 데이터프레임 shape 변경
@@ -141,22 +154,16 @@ def recom_machine_learning(what,file_name, recom_cs_part):
         if nl.exists() == 0:
             item.pop(i)
             score.pop(i)
-    '''
-    # 중선인 경우 부족 영역인 것만 추출
-    if what == EC :
-        for i, z in enumerate(zip(item,score)):
-            al = AllLecture.objects.none()
-            for p in recom_cs_part:
-                al = AllLecture.objects.filter(subject_num=z[0], selection=p) | al
-            if al.exists() == 0:
-                item.pop(i)
-                score.pop(i)
-    '''
     zipped = zip(list_to_query(item), score)
     
     return zipped
 
-def r_result(request, file_name, info):
+# --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
+
+def r_result(request):
+    # 세션에 담긴 변수 추출
+    file_name = request.session.get('file_name')
+    info = request.session.get('info')
     # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
     info['eng'] = 0
 
@@ -167,7 +174,6 @@ def r_result(request, file_name, info):
     user_info = {
         'id' : info["id"],
         'name' : info["name"],
-        'major' : info["major"],
         'W' : info["book"][0],
         'E' : info["book"][1],
         'EW' : info["book"][2],
@@ -196,12 +202,6 @@ def r_result(request, file_name, info):
     dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
     dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')])
-
-    standard_list = {
-        'ce' : list_to_query(dic_ce.keys()),
-        'cs' : list_to_query(dic_cs.keys()),
-        'b' : list_to_query(dic_b.keys()),
-    }
 
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
@@ -266,22 +266,16 @@ def r_result(request, file_name, info):
     my_dic_b = make_dic(df_b['학수번호'].tolist())
 
     #-------------------------------------------------------------------------------------
-    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)
-    recom_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
-    recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
-    recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
+    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
+    recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
+    recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
+    recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
+    standard_list = {
+        'ce' : zip(list_to_query(dic_ce.keys()), check_ce),
+        'cs' : zip(list_to_query(dic_cs.keys()), check_cs),
+        'b' : zip(list_to_query(dic_b.keys()), check_b),
+    }
 
-    # 필수과목 패스 여부
-    pass_ce = 0
-    pass_cs = 0
-    pass_b = 0
-    if not recom_ce:
-        pass_ce = 1
-    if not recom_cs:
-        pass_cs = 1
-    if not recom_b:
-        pass_b = 1
-    
     recommend_ess = {
         'ce' : list_to_query(recom_ce),
         'cs' : list_to_query(recom_cs),
@@ -290,11 +284,7 @@ def r_result(request, file_name, info):
 
     # 영역 추출
     cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
-    my_cs_part =[]
-    for s_num in my_dic_cs.keys():
-        al = AllLecture.objects.get(subject_num=s_num)
-        my_cs_part.append(al.selection)
-    my_cs_part = list(set(my_cs_part))
+    my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
     # 영역 통과 여부
     bo = 1
     # 사용자가 안들은 영역 추출
@@ -331,7 +321,6 @@ def r_result(request, file_name, info):
         del data[i]['학기'] #필요없는 컬럼 삭제
         del data[i]['교과목명']
         del data[i]['교직영역']
-        del data[i]['선택영역']
         del data[i]['학점']
         del data[i]['평가방식']
         del data[i]['등급']
@@ -347,14 +336,48 @@ def r_result(request, file_name, info):
         MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
         MC[i]['평점'] = 1
         EC[i]['평점'] = 1
-    
+
+    mr_train = pd.concat(MR,ignore_index=True) 
+    mc_train = pd.concat(MC,ignore_index=True) 
+    ec_train = pd.concat(EC,ignore_index=True) 
+    store = []
+    cs_ml = []
+    if recom_cs_part:
+        for i in recom_cs_part:
+            is_in = ec_train['선택영역'] == i
+            store.append(ec_train[is_in])
+        ec_train = pd.concat(store).sort_values(by=['이름'], axis=0)
+        ec_train = ec_train.reset_index(drop = True)
+        new_data = {'이름': file_name, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
+        ec_train = ec_train.append(new_data,ignore_index=True)
+        
     recommend_sel = {
-        'me' : recom_machine_learning(MR,file_name,recom_cs_part),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(MC,file_name,recom_cs_part),    # 전선
-        'cs' : recom_machine_learning(EC,file_name,recom_cs_part),    # 교선
+        'me' : recom_machine_learning(mr_train, file_name),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, file_name),    # 전선
+        'cs' : recom_machine_learning(ec_train, file_name),   # 교선
     }
 
+    pass_me = 0
+    pass_ms = 0
+    pass_ce = 0
+    pass_cs = 0
+    pass_b = 0
+    if standard_num['me'] <= my_num['me']:
+        pass_me = 1
+    if standard_num['ms'] <= my_num['me'] + my_num['remain']:
+        pass_ms = 1
+    if not recom_ce:
+        pass_ce = 1
+    if not recom_cs:
+        pass_cs = 1
+    if not recom_b:
+        pass_b = 1
+
     pass_obj = {
+        'n_me' : pass_me,
+        'lack_me' : standard_num['me'] - my_num['me'],
+        'lack_ms' : standard_num['ms'] - my_num['ms'] - my_num['remain'],
+        'n_ms' : pass_ms,
         'l_ce' : pass_ce,       # 중필 필수과목 
         'l_cs' : pass_cs,       # 중선 필수과목
         'p_cs' : bo,            # 중선 필수영역
@@ -376,8 +399,189 @@ def r_result(request, file_name, info):
     return render(request, "result.html", context)
 
 
+# --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
+
 def r_en_result(request):
-    return render(request, "en_result.html")
+    '''
+    # 테스트용
+    file_name = 'test12.xls'
+    info = {
+        'book' : [4, 4, 4, 1, 13],
+        'major' : '소프트웨어',
+        'id' : '16011140',
+        'year' : '18',
+        'name' : '안재현',
+        'eng' : 0,
+    }
+    '''
+
+    # 세션에 담긴 변수 추출
+    file_name = request.session.get('file_name')
+    info = request.session.get('info')
+
+    p_year = info["year"]
+    p_major = info["major"]
+
+    user_info = {
+        'id' : info["id"],
+        'name' : info["name"],
+    }
+
+    s_row = Standard.objects.get(user_dep = p_major, user_year=p_year)
+
+    # df 생성
+    root = './app/uploaded_media/' + file_name
+    data = pd.read_excel(root, index_col=None)
+
+    # 사용자가 들은 과목리스트 전부를 딕셔너리로.
+    my_engine_admit = make_dic(data['학수번호'].tolist())
+
+    # 1.전문 교양
+    dic_pro = make_dic([int(s_num) for s_num in s_row.pro_acc_list.split(',')])
+    recom_pro, check_pro = make_recommend_list(my_engine_admit, dic_pro)
+    mynum_pro = data[data['학수번호'].isin(dic_pro.keys())]['학점'].sum()
+
+    # 2. bsm 필수
+    dic_bsm_ess = make_dic([int(s_num) for s_num in s_row.bsm_ess_list.split(',')])
+    recom_bsm_ess, check_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
+    mynum_bsm_ess = data[data['학수번호'].isin(dic_bsm_ess.keys())]['학점'].sum()
+
+    # 3. bsm 선택 (16학번일때만 해당)
+    if s_row.bsm_sel_list:
+        dic_bsm_sel = make_dic([int(s_num) for s_num in s_row.bsm_sel_list.split(',')])
+        mynum_bsm_ess += data[data['학수번호'].isin(dic_bsm_sel.keys())]['학점'].sum()  # bsm 선택 이수학점을 더한다.
+
+    # 4. 전공 설계
+    # 4-1. 전공 전체 학점
+    dic_build = make_dic([int(s_num) for s_num in s_row.engine_major_list.split(',')])
+    recom_build, check_build =make_recommend_list(my_engine_admit,dic_build)
+    mynum_build = data[data['학수번호'].isin(dic_build.keys())]['학점'].sum()
+ 
+    # int화
+    df_e = data[data['학수번호'] == 9993]
+    if not df_e.empty:
+        num_df_e = df_e['년도'].sum()
+        num_df_2 = int(df_e['학기'].sum().replace('학기', ''))
+    df_e2 = data[data['학수번호'] == 9960]
+    num_df_e2 = df_e2['년도'].sum()
+
+    # 소설기부터 df 추출
+    data2 = data
+    n = data2.shape[0]
+    flag = 0
+    while (True):
+        for i in range(n):
+            if i == n - 1:
+                flag = 1
+            if not df_e.empty:
+                if data2['년도'][i] < num_df_e:  # 소설기이전 학기 삭제
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+                elif data2['년도'][i] == num_df_e and data2['학기'][i] == "1학기":
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+            if not df_e2.empty:
+                if data2['년도'][i] > num_df_e2:  # 캡스톤 이후 학기 삭제
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+        if flag == 1:
+            break
+    # 사용자가 소설기부터 들은 강의의 학수번호 리스트->딕셔너리
+    my_engine_admit2 = make_dic(data2['학수번호'].tolist())
+
+    # 4-2. 설계 필수과목 안들은 리스트
+    dic_build_ess = make_dic([int(s_num) for s_num in s_row.build_ess_list.split(',')])
+    recom_build_ess, check_build_ess = make_recommend_list(my_engine_admit2, dic_build_ess)
+
+    # 4-3. 설계 선택과목 중 안들은 리스트
+    dic_build_sel = make_dic([int(s_num) for s_num in s_row.build_sel_list.split(',')])
+    recom_build_sel, check_build_sel = make_recommend_list(my_engine_admit2, dic_build_sel)
+
+
+    standard_num ={
+        'total' : s_row.sum_eng,    # 공학인증 총학점 기준 - 92
+        'pro' : s_row.pro,          # 전문교양 기준 학점
+        'bsm' : s_row.bsm,          # bsm 기준 학점
+        'build' : s_row.build,      # 설계과목 기준학점
+    }
+
+    my_num = {
+        'total' : mynum_pro+mynum_build+mynum_bsm_ess,              
+        'pro' : mynum_pro,
+        'bsm' : mynum_bsm_ess,        
+        'build' : mynum_build,
+    }
+
+    standard_list = {
+        'pro' : zip(list_to_query(dic_pro.keys()),check_pro),
+        'bsm_ess' : zip(list_to_query(dic_bsm_ess.keys()), check_bsm_ess),
+        'bsm_sel' : [],
+        'build_ess' : zip(list_to_query(dic_build_ess.keys()),check_build_ess),
+        'build_sel' : zip(list_to_query(dic_build_sel.keys()),check_build_sel),
+    }
+
+    # 전공영역 추천 과목 중 부족학점만큼 랜덤으로 골라주기
+    n = standard_num['build'] - my_num['build']
+    random.shuffle(recom_build)
+    recom_build = recom_build[:n//3+1]
+
+    recommend = {
+        'pro' : list_to_query(recom_pro),
+        'bsm_ess' : list_to_query(recom_bsm_ess), # bsm 추천시 합쳐서 추천.
+        'build' : list_to_query(recom_build),
+    }
+
+    # 필수과목 패스 여부
+    pass_pro = 0
+    pass_bsm_ess = 0
+    pass_build_ess = 0
+    pass_build_sel = 0
+    if not recom_pro:
+        pass_pro = 1
+    if not recom_bsm_ess:
+        pass_bsm_ess = 1
+    if not recom_build_ess:
+        pass_build_ess = 1
+    # 설계선택 여부
+    if sum(check_build_sel) >= 3 :
+        pass_build_sel = 1
+    if len(recom_build_ess) == 2:  # 소설기도 안들은 경우
+        pass_build_sel = -1
+    
+    pass_obj = {
+        'pro' : pass_pro,
+        'bsm_ess' : pass_bsm_ess,
+        'build_ess' : pass_build_ess,
+        'build_sel' : pass_build_sel,
+        'n' : n,
+    }
+
+    # 16학번일 경우에 bsm 선택과목 추가.
+    if s_row.bsm_sel_list:
+        pass_bsm_sel = 0
+        if len(recom_bsm_ess) <= 1:
+            pass_bsm_sel = 1
+        pass_obj['bsm_sel'] = pass_bsm_sel
+        standard_list['bsm_sel'] = list_to_query(dic_bsm_sel.keys())
+    
+    context={
+        'user_info' : user_info,
+        'standard_num' : standard_num,
+        'my_num' : my_num,
+        'standard_list' : standard_list,
+        'recommend' : recommend,
+        'pass_obj' : pass_obj,
+    }
+   
+    return render(request, "en_result.html", context)
+
+
 
 
 # --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
@@ -502,9 +706,27 @@ def f_login(request):
     shutil.move(filename,os.path.join(Initial_path,file_name))
     # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
     info = selenium_book(s_id, s_pw)
-    return r_result(request, file_name, info)
+    # 세션에 변경 파일이름과 유저 정보를 저장
+    request.session['file_name']=file_name
+    request.session['info']=info
+    return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -522,12 +744,13 @@ def f_login(request):
 
 # result 페이지 테스트용.
 def result_test(request):
-    file_name = '기이수_재현_최신.xls'
+    file_name = 'test12.xls'
+
     info = {
         'book' : [4, 4, 4, 1, 13],
-        'major' : '디지털콘텐츠',
-        'id' : '16011140',
-        'year' : '16',
+        'major' : '소프트웨어',
+        'id' : '19011140',
+        'year' : '18',
         'name' : '안재현',
         'eng' : 0,
     }
@@ -539,7 +762,6 @@ def result_test(request):
     user_info = {
         'id' : info["id"],
         'name' : info["name"],
-        'major' : info["major"],
         'W' : info["book"][0],
         'E' : info["book"][1],
         'EW' : info["book"][2],
@@ -568,12 +790,6 @@ def result_test(request):
     dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
     dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')])
-
-    standard_list = {
-        'ce' : list_to_query(dic_ce.keys()),
-        'cs' : list_to_query(dic_cs.keys()),
-        'b' : list_to_query(dic_b.keys()),
-    }
 
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
@@ -638,22 +854,17 @@ def result_test(request):
     my_dic_b = make_dic(df_b['학수번호'].tolist())
 
     #-------------------------------------------------------------------------------------
-    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)
-    recom_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
-    recom_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
-    recom_b = make_recommend_list(my_dic_b, dic_b)      # 기교
+    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
+    recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
+    recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
+    recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
 
-    # 필수과목 패스 여부
-    pass_ce = 0
-    pass_cs = 0
-    pass_b = 0
-    if not recom_ce:
-        pass_ce = 1
-    if not recom_cs:
-        pass_cs = 1
-    if not recom_b:
-        pass_b = 1
-    
+    standard_list = {
+        'ce' : zip(list_to_query(dic_ce.keys()), check_ce),
+        'cs' : zip(list_to_query(dic_cs.keys()), check_cs),
+        'b' : zip(list_to_query(dic_b.keys()), check_b),
+    }
+
     recommend_ess = {
         'ce' : list_to_query(recom_ce),
         'cs' : list_to_query(recom_cs),
@@ -662,11 +873,7 @@ def result_test(request):
 
     # 영역 추출
     cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
-    my_cs_part =[]
-    for s_num in my_dic_cs.keys():
-        al = AllLecture.objects.get(subject_num=s_num)
-        my_cs_part.append(al.selection)
-    my_cs_part = list(set(my_cs_part))
+    my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
     # 영역 통과 여부
     bo = 1
     # 사용자가 안들은 영역 추출
@@ -703,7 +910,6 @@ def result_test(request):
         del data[i]['학기'] #필요없는 컬럼 삭제
         del data[i]['교과목명']
         del data[i]['교직영역']
-        del data[i]['선택영역']
         del data[i]['학점']
         del data[i]['평가방식']
         del data[i]['등급']
@@ -719,14 +925,48 @@ def result_test(request):
         MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
         MC[i]['평점'] = 1
         EC[i]['평점'] = 1
-    
+
+    mr_train = pd.concat(MR,ignore_index=True) 
+    mc_train = pd.concat(MC,ignore_index=True) 
+    ec_train = pd.concat(EC,ignore_index=True) 
+    store = []
+    cs_ml = []
+    if recom_cs_part:
+        for i in recom_cs_part:
+            is_in = ec_train['선택영역'] == i
+            store.append(ec_train[is_in])
+        ec_train = pd.concat(store).sort_values(by=['이름'], axis=0)
+        ec_train = ec_train.reset_index(drop = True)
+        new_data = {'이름': file_name, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
+        ec_train = ec_train.append(new_data,ignore_index=True)
+        
     recommend_sel = {
-        'me' : recom_machine_learning(MR,file_name,recom_cs_part),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(MC,file_name,recom_cs_part),    # 전선
-        'cs' : recom_machine_learning(EC,file_name,recom_cs_part),    # 교선
+        'me' : recom_machine_learning(mr_train,file_name),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train,file_name),    # 전선
+        'cs' : recom_machine_learning(ec_train,file_name),   # 교선
     }
 
+    pass_me = 0
+    pass_ms = 0
+    pass_ce = 0
+    pass_cs = 0
+    pass_b = 0
+    if standard_num['me'] <= my_num['me']:
+        pass_me = 1
+    if standard_num['ms'] <= my_num['me'] + my_num['remain']:
+        pass_ms = 1
+    if not recom_ce:
+        pass_ce = 1
+    if not recom_cs:
+        pass_cs = 1
+    if not recom_b:
+        pass_b = 1
+
     pass_obj = {
+        'n_me' : pass_me,
+        'lack_me' : standard_num['me'] - my_num['me'],
+        'lack_ms' : standard_num['ms'] - my_num['ms'] - my_num['remain'],
+        'n_ms' : pass_ms,
         'l_ce' : pass_ce,       # 중필 필수과목 
         'l_cs' : pass_cs,       # 중선 필수과목
         'p_cs' : bo,            # 중선 필수영역
@@ -753,6 +993,7 @@ def result_test(request):
 
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
+
 
 
 def f_test(request):
@@ -943,6 +1184,184 @@ def f_test(request):
     else:
         print('들어야하는 과목입니다.')
         for s_num in recom_cs:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
+
+
+
+
+    #공학인증
+
+    df_e = data[data['학수번호'] == 9993]
+    if not df_e.empty:
+        num_df_e = df_e['년도'].sum()
+        num_df_2 = int(df_e['학기'].sum().replace('학기', ''))
+
+    if df_e.empty:
+        print("sw설계 기초 안들었다")
+    else:
+        print("들었다")
+
+    df_e2 = data[data['학수번호'] == 9960]
+    num_df_e2 = df_e2['년도'].sum()
+
+    if df_e2.empty:  # 캡스톤들었는지 여부 확인
+        print("안 들었다")
+    else:
+        print("들었다.")
+
+    data2 = data
+    n = data2.shape[0]
+    flag = 0
+    while (True):
+        for i in range(n):
+            if i == n - 1:
+                flag = 1
+            if not df_e.empty:
+                if data2['년도'][i] < num_df_e:  # 소설기이전 학기 삭제
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+                elif data2['년도'][i] == num_df_e and data2['학기'][i] == "1학기":
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+            if not df_e2.empty:
+                if data2['년도'][i] > num_df_e2:  # 캡스톤 이후 학기 삭제
+                    data2 = data2.drop(data2.index[i])
+                    n -= 1
+                    data2.reset_index(inplace=True, drop=True)
+                    break
+        if flag == 1:
+            break
+    print(data2)
+
+
+    # 공학인증
+
+    # db에서 ind 를 가지고 공학인증 비교 기준 뽑아내기
+    # 1. 이수학점 수치 기준
+    num_engin_sum = s_row.sum_eng  # 공학인증 총학점
+    num_pro = s_row.pro  # 전문 교양 학점
+    num_bsm = s_row.bsm  # bsm 학점
+    num_build = s_row.build  # 설계과목 학점
+
+    print(num_engin_sum, num_pro, num_bsm, num_build)
+
+    df_engin = data
+    df_engin.reset_index(inplace=True, drop=True)
+    my_engine_admit = make_dic(df_engin['학수번호'].tolist())
+
+    # 1.전문 교양
+    print("전문교양")
+    dic_pro = make_dic([int(s_num) for s_num in s_row.pro_acc_list.split(',')])
+    recom_pro = make_recommend_list(my_engine_admit, dic_pro)
+    if not recom_pro:
+        print('모든 전문교양 필수과목을 들었습니다!')
+    else:
+        print('전문교양 중 들어야하는 과목입니다.')
+        for s_num in recom_pro:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
+    # 2. bsm 필수
+    print("bsm필수")
+    dic_bsm_ess = make_dic([int(s_num) for s_num in s_row.bsm_ess_list.split(',')])
+    recom_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
+    if not recom_bsm_ess:
+        print('모든 bsm 필수과목을 들었습니다!')
+    else:
+        print('bsm필수 중 들어야하는 과목입니다.')
+        for s_num in recom_bsm_ess:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
+    # 3. bsm 선택
+    print("ss",s_row.bsm_sel_list)
+    if  s_row.bsm_sel_list:
+        dic_bsm_sel = make_dic([int(s_num) for s_num in s_row.bsm_sel_list.split(',')])
+        recom_bsm_sel = make_recommend_list(my_engine_admit, dic_bsm_sel)
+        print('bsm선택')
+        if (len(recom_bsm_sel) <= 1):  # bsm선택중 남은과목이 한개 이상
+            print("bsm 선택과목2개중", 2 - len(recom_bsm_sel), "과목 을 이수하였습니다.")
+        else:
+            print('bsm선택 중 들어야하는 과목입니다. 이중 하나만 수강하면 됩니다.')
+            for s_num in recom_bsm_sel:
+                al = AllLecture.objects.get(subject_num=s_num)
+                print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
+
+    # 4.설계과목
+    df_engin2 = data2
+    df_engin2.reset_index(inplace=True, drop=True)
+    my_engine_admit2 = make_dic(df_engin2['학수번호'].tolist())
+
+    # 설계 필수과목
+    print("설계과목필수")
+    dic_build_ess = make_dic([int(s_num) for s_num in s_row.build_ess_list.split(',')])
+    recom_build_ess = make_recommend_list(my_engine_admit2, dic_build_ess)
+
+    if not recom_build_ess:
+        print('모든 설계 필수과목을 들었습니다!')
+    else:
+        print('설계 필수과목 중 들어야하는 과목입니다.')
+        for s_num in recom_build_ess:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+
+    # 설계 선택과목
+    print("설계과목선택")
+    dic_build_sel = make_dic([int(s_num) for s_num in s_row.build_sel_list.split(',')])
+
+    num_build_sel = len(dic_build_sel)
+    recom_build_sel = make_recommend_list(my_engine_admit2, dic_build_sel)
+
+
+
+    df_engine_major = data
+    df_engine_major.reset_index(inplace=True, drop=True)
+    my_dic_engine_major = make_dic(df_engine_major['학수번호'].tolist())
+
+    dic_engine_major=make_dic([int(s_num) for s_num in s_row.engine_major_list.split(',')])
+    num_em=0
+    for s_num in dic_engine_major:
+        al=AllLecture.objects.get(subject_num=s_num)
+        num_em+=al.grade
+
+
+    print("설계인증 전공학점 총합:",num_em)
+    recom_engine_major=make_recommend_list(my_dic_engine_major,dic_engine_major)
+    print("sSSS")
+    temp=0
+    for s_num in recom_engine_major:
+        al = AllLecture.objects.get(subject_num=s_num)
+        temp+=al.grade
+    print("내가안들은 설계 인증 전공학점:",temp)
+
+    my_num_em=num_em-temp
+    print("전공영역 60점중 내가 이수한 학점:",my_num_em)
+    if my_num_em<60:
+        for s_num in recom_engine_major:
+            al = AllLecture.objects.get(subject_num=s_num)
+            print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
+    print("이것중",60-my_num_em,"학점을 더 수강하여야 합니다.")
+
+    print("내가들은학점", num_build_sel - len(recom_build_sel))
+
+    if (num_build_sel - len(
+            recom_build_sel) >= 3):  # (11은 설계 선택과목  db에 저장되어있는 갯수)=num_build_sel, recom_build_sel은 내가 듣지않은 설계선택 학수번호가 들어가있는 리스트여서 len()으로 내가 안들은 수업 갯수 를 11에서 빼면 내가들은 수업의 갯수
+        print("설계 선택과목 필수학점 9점외 선택과목 3점을 만족하였습니다.")
+        if (my_num_em >= num_build):
+            print("설계 영역을 만족하였습니다.")
+        else:
+            print("공학인증 설계영역 전공학점", num_build - my_num_em, "학점이 부족합니다.")
+    else:
+        print("설계 선택과목 필수학점9점외에 선택과목 3점중", num_build_sel - len(recom_build_sel), "점을 수강하였습니다.",
+              3 - num_build_sel + (len(recom_build_sel)), "개의 과목을 더 수강하여야합니다.")
+        for s_num in recom_build_sel:
             al = AllLecture.objects.get(subject_num=s_num)
             print(" >> ", al.subject_num, al.subject_name, al.classification, al.selection, al.grade)
 

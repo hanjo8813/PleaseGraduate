@@ -1,54 +1,3 @@
-/* 재원 CSS 커스텀 */
-
-.csstest{
-    color:blue;
-}
-
-.mytd {
-    color: rgb(0, 0, 0);
-    border-right :1px solid #dadada;
-    border-bottom: 1px solid #dadada;
-}
-
-.mytable {
-    margin:0 auto;
-    width: 70%;
-    text-align: center;
-    font-size: 1rem;
-    padding-top : 2rem;
-    padding-bottom : 4rem;
-}
-
-.myth {
-    height: 2.5rem;
-    background-color: #f8f8f8;
-    font-weight: bolder;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #dadada;
-}
-
-.mytr {
-    color: #6e6e6eb9;
-    height: 2.5rem ;
-    border-bottom: 1px solid #dadada;
-}
-
-.mytr:hover {
-    background-color: #f1f1f1;
-}
-
-.mydiv{
-    padding : 0.5rem;
-    font-size: 1rem;
-    color :rgb(199, 199, 199)
-}
-
-.partdiv{
-    padding-top : 4rem;
-    padding-bottom: 4rem;
-}
-
-
 
 
 /* 정현 CSS 커스텀 */
@@ -337,7 +286,6 @@ a {
 
 }
 .sbox {
-
     margin: 0;
     padding: 0;
     display: flex;
@@ -359,7 +307,8 @@ a {
 .rbutton {
     width: 150px;
     position: relative;
-    background-color: white;
+    background-color: #444444;
+    color : white;
     border: none;
     outline: 0;
     border-style: solid;
@@ -371,10 +320,12 @@ a {
     font-weight: 700;
     height: 40px;
     cursor: pointer;
-
 }
+
 .rbutton:hover {
-    background-color: #D7DBD1;
+    background-color: white;
+    color: #272727;
+
 
 }
 .Sbox {
@@ -447,8 +398,7 @@ strong {
     background-color: #FAFAFA;
     bottom: 2.5rem;
     left: -35px;
-    width: 250px;
-    
+    width: auto;
     height: auto;
     
     box-shadow: 3px 3px 5px black;
@@ -722,3 +672,91 @@ strong {
       transform: scale(1.0); 
     } 
   }
+
+
+
+
+  /* 재원 CSS 커스텀 */
+.csstest{
+    color:red;
+}
+
+.l{
+    font-size:17px;
+}
+
+.p_div {
+    width: 100%;
+}
+
+.t_div{
+    padding : 1rem;
+    font-size: 0.8rem;
+}
+
+.modal_div {
+    padding: 1rem; 
+    display : flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+.mytd {
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.mytable {
+    margin:0 auto;
+    width: 70%;
+    text-align: center;
+    font-size: 1rem;
+    padding-top : 2rem;
+    padding-bottom : 1rem;
+}
+
+.myth {
+    height: 2.5rem;
+    background-color: #f8f8f8;
+    font-weight: bolder;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #dadada;
+}
+
+.mytr {
+    color: black;
+    height: 2.5rem ;
+    border-bottom: 1px solid #dadada;
+}
+
+.mytr:hover {
+    background-color: #f1f1f1;
+}
+
+.mydiv{
+    padding : 0.5rem;
+    font-size: 1rem;
+    color :rgb(199, 199, 199)
+}
+
+.partdiv{
+    padding-top : 2rem; 
+    padding-bottom: 5rem; 
+    font-size : 1.5rem;
+    letter-spacing: 1.5px;
+}
+
+.gear{
+    animation: i 5s linear infinite;
+    font-size: 60px;
+    transform-origin: 50% 50%;
+}
+
+@keyframes i{
+    100% {
+        transform: rotate(360deg);
+     }
+ }
