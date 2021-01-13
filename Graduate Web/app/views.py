@@ -165,7 +165,6 @@ def r_result(request):
     file_name = request.session.get('file_name')
     info = request.session.get('info')
     # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
-    info['eng'] = 0
 
     # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
@@ -597,11 +596,18 @@ def get_Driver(url):
     else:
         root = os.getcwd() + '/app/uploaded_media'
     options.add_experimental_option('prefs', {'download.default_directory' : root} )
-    driver = webdriver.Chrome('./chromedriver.exe', options=options)
+
+
+    if platform.system() == 'Windows':
+        driver = webdriver.Chrome('./chromedriver.exe', options=options)
+
+    else:
+        driver = webdriver.Chrome('./chromedriver_mac', options=options)
+
     driver.get(url)
     return driver
 
-def selenium_uis(id, pw):
+def selenium_uis(id, pw): # 엑셀 및 영어성
     url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
     driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
     #id , pw 입력할 곳 찾기
@@ -615,6 +621,7 @@ def selenium_uis(id, pw):
     login_btn = driver.find_element_by_id('logbtn')
     login_btn.click()
     # 프레임전환
+    time.sleep(1)
     driver.switch_to.frame(2)
     # 수업/성적 메뉴선택
     driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
@@ -633,10 +640,44 @@ def selenium_uis(id, pw):
     x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
     x.click()
     time.sleep(2)
-    driver.quit()
-    return 
+    #---------------------------------------------------------------- 영어성적 가져오기
+    driver.switch_to_default_content()
+    driver.switch_to.frame(2)
+    driver.execute_script("javaScript:frameResize(this);")
+    time.sleep(1)
+    driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
+    time.sleep(1)  # 자바스크립트 실행시간 기다려줘야함 must need
+    driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
+    # k = driver.switch_to_window()
+    time.sleep(1)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
+    mywindow = driver.window_handles[0]  # uis 창
+    popup =  driver.window_handles[1]  # 팝업 창
+    driver.switch_to_window(popup)
+    time.sleep(1)
+    driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
 
-def selenium_book(id, pw):
+    driver.find_element_by_xpath('//*[@id="ckb2_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
+    driver.find_element_by_id('btnClose_btn').click()
+    time.sleep(2)
+    # print(driver.current_window_handle)
+    driver.switch_to_window(     driver.window_handles[0])  # 다시 uis 창으로 윈도우 바꿔놓기
+    driver.switch_to_frame(3)  # 이 사이트에서는 프레임 0 - 3 총 4개
+    soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
+    # print(soup)
+    # print("이부분이 첫번째프레임")
+    # 3  , 1
+    driver.switch_to_frame(0)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
+    k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')  # 영어 합격 불합격 저장하는변수 , true false 로 변경 예정
+    if k == '불합격':
+        eng = 0
+    elif k == '합격':
+        eng = 1
+    driver.quit()
+    print(eng)
+    return eng
+
+def selenium_book(id, pw): # 대휴칼
     url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
     driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
     checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
@@ -698,7 +739,7 @@ def f_login(request):
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
-    selenium_uis(s_id,s_pw)
+    eng = selenium_uis(s_id,s_pw)
     # 다운로드 후 이름 변경
     file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
     Initial_path = './app/uploaded_media'
@@ -707,8 +748,10 @@ def f_login(request):
     # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
     info = selenium_book(s_id, s_pw)
     # 세션에 변경 파일이름과 유저 정보를 저장
+    info['eng'] = eng
     request.session['file_name']=file_name
     request.session['info']=info
+
     return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
