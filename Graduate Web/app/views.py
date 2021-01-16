@@ -629,6 +629,7 @@ def selenium_uis(id, pw):
     # 프레임 경우의 수 다 찾고 이동
     driver.switch_to.frame(3)
     driver.switch_to.frame(0)
+    time.sleep(1)
     # 다운로드 버튼 x_path 클릭
     x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
     x.click()
@@ -649,7 +650,6 @@ def selenium_book(id, pw):
     tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
     tag_pw = driver.find_element_by_id("password")
     tag_id.clear()
-    time.sleep(1)
     # id , pw 보내기
     tag_id.send_keys(id)
     tag_pw.send_keys(pw)
