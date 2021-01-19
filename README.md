@@ -11,5 +11,6 @@
 
 - [AWS mysql 설치](https://ndb796.tistory.com/314)
 - [AWS-Django 연동](https://nerogarret.tistory.com/47)
+- [AWS-Django 연동2](https://nachwon.github.io/django-deploy-3-nginx/)
 - [ubuntu vim 사용](https://jhnyang.tistory.com/54)
 - [ubuntu 크롬 드라이버](https://dvpzeekke.tistory.com/1)

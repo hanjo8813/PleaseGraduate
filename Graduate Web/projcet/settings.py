@@ -15,6 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -27,10 +28,9 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = [
+    'localhost',
     # AWS 서버 호스트 설정
     '.ap-northeast-2.compute.amazonaws.com'
-    # 모든 도메인 허용
-    #'*'
 ]
 
 # Application definition
@@ -130,12 +130,12 @@ USE_TZ = True
 
 # static file 경로 설정
 STATIC_URL = '/static/'
-
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'app', 'static')
+    STATIC_DIR,
 ]
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # media root 추가
