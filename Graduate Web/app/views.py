@@ -601,7 +601,8 @@ def get_Driver(url):
     if platform.system() == 'Windows':
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
     else:
-        driver = webdriver.Chrome('./chromedriver', options=options)
+        # ec2 우분투 서버에서의 경로.
+        driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
     return driver
 
