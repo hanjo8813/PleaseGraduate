@@ -588,28 +588,28 @@ def r_en_result(request):
 # --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
 
 def get_Driver(url):
-    #display = Display(visible=0, size=(1024, 768))
-    #display.start()
-    options = webdriver.ChromeOptions()
-    # 크롬창을 열지않고 백그라운드로 실행
-    # options.add_argument("headless")
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    # 다운로드될 경로 지정
+    # 윈도우일 때 -> 개발용
     if platform.system() == 'Windows':
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = os.getcwd() + '\\app\\uploaded_media'
-    else:
-        root = os.getcwd() + '/app/uploaded_media'
-    options.add_experimental_option('prefs', {'download.default_directory' : root} )
-    # window - linux 용 드라이버 고르기
-    if platform.system() == 'Windows':
+        options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
+
+    # ubuntu일 때 -> 배포용
     else:
-        # ec2 우분투 서버에서의 경로.
+        # 가상 디스플레이를 활용해 실행속도 단축
+        display = Display(visible=0, size=(1024, 768))
+        display.start()
+        options = webdriver.ChromeOptions()
+        # 크롬창을 열지않고 백그라운드로 실행
+        options.add_argument("headless")
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        root = os.getcwd() + '/app/uploaded_media'
+        options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
+        
     driver.get(url)
-
-
-
     return driver
 
 def selenium_uis(id, pw):
