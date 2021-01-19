@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     # AWS 서버 호스트 설정
     '.ap-northeast-2.compute.amazonaws.com'
+    # 모든 도메인 허용
+    #'*'
 ]
 
 # Application definition
