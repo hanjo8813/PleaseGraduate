@@ -597,11 +597,11 @@ def get_Driver(url):
     else:
         root = os.getcwd() + '/app/uploaded_media'
     options.add_experimental_option('prefs', {'download.default_directory' : root} )
-    # window - mac 용 드라이버 고르기
+    # window - linux 용 드라이버 고르기
     if platform.system() == 'Windows':
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
     else:
-        driver = webdriver.Chrome('./chromedriver_mac', options=options)
+        driver = webdriver.Chrome('./chromedriver_linux', options=options)
     driver.get(url)
     return driver
 

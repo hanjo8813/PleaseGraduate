@@ -25,8 +25,11 @@ SECRET_KEY = '$9!ib@j_wk2%a@5%^a!vjbslh10fh_p@z2)wk5p+ff5(+a2lf^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = [
+    # AWS 서버 호스트 설정
+    '.ap-northeast-2.compute.amazonaws.com'
+]
 
 # Application definition
 
