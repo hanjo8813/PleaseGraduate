@@ -588,6 +588,8 @@ def r_en_result(request):
 # --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
 
 def get_Driver(url):
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
     options = webdriver.ChromeOptions()
     # 크롬창을 열지않고 백그라운드로 실행
     # options.add_argument("headless")
@@ -605,6 +607,9 @@ def get_Driver(url):
         # ec2 우분투 서버에서의 경로.
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
+
+
+
     return driver
 
 def selenium_uis(id, pw):
