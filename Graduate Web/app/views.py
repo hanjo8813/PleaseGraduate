@@ -165,6 +165,7 @@ def r_result(request):
     file_name = request.session.get('file_name')
     info = request.session.get('info')
     # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
+    info['eng'] = 0
 
     # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
@@ -596,18 +597,15 @@ def get_Driver(url):
     else:
         root = os.getcwd() + '/app/uploaded_media'
     options.add_experimental_option('prefs', {'download.default_directory' : root} )
-
-
+    # window - mac 용 드라이버 고르기
     if platform.system() == 'Windows':
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
-
     else:
         driver = webdriver.Chrome('./chromedriver_mac', options=options)
-
     driver.get(url)
     return driver
 
-def selenium_uis(id, pw): # 엑셀 및 영어성
+def selenium_uis(id, pw):
     url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
     driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
     #id , pw 입력할 곳 찾기
@@ -621,7 +619,6 @@ def selenium_uis(id, pw): # 엑셀 및 영어성
     login_btn = driver.find_element_by_id('logbtn')
     login_btn.click()
     # 프레임전환
-    time.sleep(1)
     driver.switch_to.frame(2)
     # 수업/성적 메뉴선택
     driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
@@ -641,6 +638,8 @@ def selenium_uis(id, pw): # 엑셀 및 영어성
     x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
     x.click()
     time.sleep(2)
+
+    '''
     #---------------------------------------------------------------- 영어성적 가져오기
     driver.switch_to_default_content()
     driver.switch_to.frame(2)
@@ -674,11 +673,12 @@ def selenium_uis(id, pw): # 엑셀 및 영어성
         eng = 0
     elif k == '합격':
         eng = 1
-    driver.quit()
-    print(eng)
-    return eng
+    '''
 
-def selenium_book(id, pw): # 대휴칼
+    driver.quit()
+    return 
+
+def selenium_book(id, pw):
     url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
     driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
     checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
@@ -739,7 +739,7 @@ def f_login(request):
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
-    eng = selenium_uis(s_id,s_pw)
+    selenium_uis(s_id,s_pw)
     # 다운로드 후 이름 변경
     file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
     Initial_path = './app/uploaded_media'
@@ -748,10 +748,8 @@ def f_login(request):
     # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
     info = selenium_book(s_id, s_pw)
     # 세션에 변경 파일이름과 유저 정보를 저장
-    info['eng'] = eng
     request.session['file_name']=file_name
     request.session['info']=info
-
     return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
@@ -791,12 +789,14 @@ def result_test(request):
 
     info = {
         'book' : [4, 4, 4, 1, 13],
-        'major' : '소프트웨어',
-        'id' : '19011140',
-        'year' : '18',
-        'name' : '안재현',
+        'major' : '디지털콘텐츠',
+        'id' : '111111111',
+        'year' : '15',
+        'name' : '이름',
         'eng' : 0,
     }
+    # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
+    info['eng'] = 0
 
     # 셀레니움으로 넘어온 변수들
     p_year = info["year"]
@@ -901,7 +901,6 @@ def result_test(request):
     recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
     recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
-
     standard_list = {
         'ce' : zip(list_to_query(dic_ce.keys()), check_ce),
         'cs' : zip(list_to_query(dic_cs.keys()), check_cs),
@@ -984,9 +983,9 @@ def result_test(request):
         ec_train = ec_train.append(new_data,ignore_index=True)
         
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train,file_name),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train,file_name),    # 전선
-        'cs' : recom_machine_learning(ec_train,file_name),   # 교선
+        'me' : recom_machine_learning(mr_train, file_name),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, file_name),    # 전선
+        'cs' : recom_machine_learning(ec_train, file_name),   # 교선
     }
 
     pass_me = 0
@@ -1027,6 +1026,7 @@ def result_test(request):
         'cs_part' : cs_part,                # 중선 영역
         'pass_obj' : pass_obj               # 패스 여부
     }
+
 
     return render(request, "result.html", context)
 

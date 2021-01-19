@@ -755,11 +755,9 @@
     function to_percent(my, standard) {
         a = (my / standard) * 100
         if (a > 100) {
-            return a - a % 100;
+            a = 100
         }
-        else {
-            return a;
-        }
+        return a;
     }
 
     var Studentnumber = '{{user_info.id}}';
@@ -792,7 +790,7 @@
     // 이수 학점 퍼센트화
     var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
     var pernum1 = to_percent(Mygrade1, Grade1);         // 전필
-    var pernum2 = to_percent(Mygrade2, Grade2);         // 전선
+    var pernum2 = to_percent(Mygrade2 + remain, Grade2);         // 전선
     var pernum3 = to_percent(Mygrade3, Grade3);         // 교필
     var pernum4 = to_percent(Mygrade4, Grade4);         // 교선
     var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
