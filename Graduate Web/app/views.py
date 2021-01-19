@@ -601,7 +601,7 @@ def get_Driver(url):
     if platform.system() == 'Windows':
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
     else:
-        driver = webdriver.Chrome('./chromedriver_linux', options=options)
+        driver = webdriver.Chrome('./chromedriver', options=options)
     driver.get(url)
     return driver
 
