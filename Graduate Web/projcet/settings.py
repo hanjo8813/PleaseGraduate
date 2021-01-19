@@ -130,12 +130,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 # static file 경로 설정
-STATIC_URL = '/static/'
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
 STATICFILES_DIRS = [
-    STATIC_DIR,
+    os.path.join(BASE_DIR, 'app', 'static')
 ]
-STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+
+STATIC_URL = '/col_static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
 
 
 
