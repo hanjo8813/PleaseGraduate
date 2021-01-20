@@ -2,4 +2,3 @@ __pycache__
 .DS_Store
 .idea
 venv
-.static_root/
