@@ -602,7 +602,7 @@ def get_Driver(url):
     else:
         options = webdriver.ChromeOptions()
         # 크롬창을 열지않고 백그라운드로 실행
-        options.add_argument("headless")
+        #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = os.getcwd() + '/app/uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
@@ -744,10 +744,12 @@ def f_login(request):
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
 
+    '''
     # 가상 디스플레이를 활용해 실행속도 단축
     if platform.system() != 'Windows':
         display = Display(visible=0, size=(1024, 768))
         display.start()
+    '''
 
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
     selenium_uis(s_id,s_pw)
@@ -761,8 +763,11 @@ def f_login(request):
     # 세션에 변경 파일이름과 유저 정보를 저장
     request.session['file_name']=file_name
     request.session['info']=info
+
+    '''
     if platform.system() != 'Windows':
         display.stop()
+    '''
     return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
