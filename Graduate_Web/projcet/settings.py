@@ -27,23 +27,19 @@ SECRET_KEY = '$9!ib@j_wk2%a@5%^a!vjbslh10fh_p@z2)wk5p+ff5(+a2lf^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# 전체 허용
-if platform.system() == 'Windows':
-    A_HOST = '*'
-    D_HOST = 'localhost'
-# AWS 서버 호스트 설정
-else:
-    A_HOST = '.ap-northeast-2.compute.amazonaws.com'
-    D_HOST = '54.180.24.148'
 
+# 호스트 설정
 ALLOWED_HOSTS = [
-   A_HOST,
+    # 개발용 호스트(모두 허용)
+    '*',
+    # 배포용 호스트
+    #'.ap-northeast-2.compute.amazonaws.com',
 ]
 
 
 # 세션 설정
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 종료시 세션 파괴
-SESSION_COOKIE_AGE = 60*10            # 10분 지나면 세션 파괴
+SESSION_COOKIE_AGE = 10                 # 10분 지나면 세션 파괴
 
 
 # Application definition
@@ -98,7 +94,7 @@ DATABASES = {
         'NAME': 'graduate_help',
         'USER': 'root',
         'PASSWORD': '8813',
-        'HOST': D_HOST,
+        'HOST': '54.180.24.148',
         'PORT': '3306',
     }
 }

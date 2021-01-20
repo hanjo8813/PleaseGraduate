@@ -35,7 +35,6 @@ def r_index(request):
     return render(request, "index.html")
 
 def r_head(request):
-    request.session.clear()
     return render(request, "head.html")
 
 def f_logout(request):
@@ -597,7 +596,6 @@ def get_Driver(url):
         root = os.getcwd() + '\\app\\uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
-
     # ubuntu일 때 -> 배포용
     else:
         options = webdriver.ChromeOptions()
@@ -744,12 +742,10 @@ def f_login(request):
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
 
-    '''
     # 가상 디스플레이를 활용해 실행속도 단축
     if platform.system() != 'Windows':
         display = Display(visible=0, size=(1024, 768))
         display.start()
-    '''
 
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
     selenium_uis(s_id,s_pw)
@@ -764,10 +760,9 @@ def f_login(request):
     request.session['file_name']=file_name
     request.session['info']=info
 
-    '''
     if platform.system() != 'Windows':
         display.stop()
-    '''
+
     return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
