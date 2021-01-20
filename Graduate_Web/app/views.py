@@ -587,6 +587,8 @@ def r_en_result(request):
 
 # --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
 
+
+
 def get_Driver(url):
     # 윈도우일 때 -> 개발용
     if platform.system() == 'Windows':
@@ -598,9 +600,6 @@ def get_Driver(url):
 
     # ubuntu일 때 -> 배포용
     else:
-        # 가상 디스플레이를 활용해 실행속도 단축
-        display = Display(visible=0, size=(1024, 768))
-        display.start()
         options = webdriver.ChromeOptions()
         # 크롬창을 열지않고 백그라운드로 실행
         options.add_argument("headless")
@@ -608,7 +607,6 @@ def get_Driver(url):
         root = os.getcwd() + '/app/uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
-        
     driver.get(url)
     return driver
 
@@ -745,6 +743,9 @@ def f_login(request):
     # 세션에서 ID/PW 뽑아냄
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
+    # 가상 디스플레이를 활용해 실행속도 단축
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
     # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
     selenium_uis(s_id,s_pw)
     # 다운로드 후 이름 변경
@@ -757,6 +758,7 @@ def f_login(request):
     # 세션에 변경 파일이름과 유저 정보를 저장
     request.session['file_name']=file_name
     request.session['info']=info
+    display.stop()
     return r_result(request)
 
 #---------------------------------------------------------------------------------------------------------------
