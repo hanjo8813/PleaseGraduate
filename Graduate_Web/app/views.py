@@ -601,7 +601,7 @@ def get_Driver(url):
         # 크롬창을 열지않고 백그라운드로 실행
         #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        root = os.getcwd() + '/app/uploaded_media'
+        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
