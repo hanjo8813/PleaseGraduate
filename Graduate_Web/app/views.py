@@ -627,16 +627,17 @@ def selenium_uis(id, pw):
     driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
     # 성적 및 강의평가 선택
     driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
-    time.sleep(1)
+    time.sleep(0.5)
     # 기이수성적조회로 클릭 이동
     driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
     time.sleep(1)
     # 최상위(default) 프레임으로 이동
     driver.switch_to.default_content()
+    time.sleep(0.5)
     # 프레임 경우의 수 다 찾고 이동
     driver.switch_to.frame(3)
     driver.switch_to.frame(0)
-    time.sleep(1)
+    time.sleep(0.5)
     # 다운로드 버튼 x_path 클릭
     x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
     x.click()
@@ -689,7 +690,7 @@ def selenium_book(id, pw):
         driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
         alert = driver.switch_to_alert()
         alert.dismiss()
-    time.sleep(1)
+    time.sleep(0.5)
     # id , pw 입력할 곳 찾기
     tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
     tag_pw = driver.find_element_by_id("password")
@@ -697,7 +698,7 @@ def selenium_book(id, pw):
     # id , pw 보내기
     tag_id.send_keys(id)
     tag_pw.send_keys(pw)
-    time.sleep(1)
+    time.sleep(0.5)
     # 로그인버튼 클릭
     login_btn = driver.find_element_by_id('loginBtn')
     login_btn.click()
