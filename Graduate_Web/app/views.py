@@ -743,25 +743,37 @@ def f_login(request):
     s_id = request.session.get('id')
     s_pw = request.session.get('pw')
 
-    # 가상 디스플레이를 활용해 실행속도 단축
-    if platform.system() != 'Windows':
+    # 로컬
+    if platform.system() == 'Windows':
+        # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
+        selenium_uis(s_id,s_pw)
+        # 다운로드 후 이름 변경
+        file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+        Initial_path = './app/uploaded_media'
+        filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+        shutil.move(filename,os.path.join(Initial_path,file_name))
+        # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
+        info = selenium_book(s_id, s_pw)
+        # 세션에 변경 파일이름과 유저 정보를 저장
+        request.session['file_name']=file_name
+        request.session['info']=info
+    # 서버
+    else:
+        # 가상 디스플레이를 활용해 실행속도 단축
         display = Display(visible=0, size=(1024, 768))
         display.start()
-
-    # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
-    selenium_uis(s_id,s_pw)
-    # 다운로드 후 이름 변경
-    file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-    Initial_path = './app/uploaded_media'
-    filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
-    shutil.move(filename,os.path.join(Initial_path,file_name))
-    # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
-    info = selenium_book(s_id, s_pw)
-    # 세션에 변경 파일이름과 유저 정보를 저장
-    request.session['file_name']=file_name
-    request.session['info']=info
-
-    if platform.system() != 'Windows':
+        # 셀레니움으로 서버(uploaded_media)에 엑셀 다운
+        selenium_uis(s_id,s_pw)
+        # 다운로드 후 이름 변경
+        file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+        Initial_path = '~/app/uploaded_media'
+        filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+        shutil.move(filename,os.path.join(Initial_path,file_name))
+        # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
+        info = selenium_book(s_id, s_pw)
+        # 세션에 변경 파일이름과 유저 정보를 저장
+        request.session['file_name']=file_name
+        request.session['info']=info
         display.stop()
 
     return r_result(request)
