@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import platform
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,12 +27,14 @@ SECRET_KEY = '$9!ib@j_wk2%a@5%^a!vjbslh10fh_p@z2)wk5p+ff5(+a2lf^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
+# 전체 허용
+if platform.system() == 'Windows':
+    hosts = '*'
+# AWS 서버 호스트 설정
+else:
+    hosts = '.ap-northeast-2.compute.amazonaws.com'
 ALLOWED_HOSTS = [
-    # 전체 허용
-    '*',
-    # AWS 서버 호스트 설정
-    '.ap-northeast-2.compute.amazonaws.com',
+   hosts,
 ]
 
 # Application definition
