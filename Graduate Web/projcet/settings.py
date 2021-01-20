@@ -131,16 +131,17 @@ USE_TZ = True
 
 # static file 경로 설정
 
-# 내가 쓰고있는 스태틱 경로
+# 내가 쓰고있는 스태틱 경로 (collectstatic 할때 참조)
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app', 'static')
 ]
 
+# 장고가 스태틱 모아줄때 폴더명 지정
+STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
+
 # 요청 받는 이름
 STATIC_URL = '/static/'
 
-# 장고가 스태틱 모아줄때 폴더명 지정
-STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
 
 
 
