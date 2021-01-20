@@ -163,6 +163,7 @@ def recom_machine_learning(what, file_name):
 def r_result(request):
     # 세션에 담긴 변수 추출
     file_name = request.session.get('file_name')
+    file_root = request.session.get('file_root')
     info = request.session.get('info')
     # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
     info['eng'] = 0
@@ -205,8 +206,7 @@ def r_result(request):
 
     #------------------------------------------------------------------------------
     # 입력받은 엑셀 파일 dataframe으로 변환
-    root = './app/uploaded_media/' + file_name
-    data = pd.read_excel(root, index_col=None)
+    data = pd.read_excel(file_root + file_name, index_col=None)
 
     # 논패, F과목 삭제
     n = data.shape[0]
@@ -304,15 +304,14 @@ def r_result(request):
 
     #------------------------------------------------------------------------------------
     # 전필/전선/중선 >> 추천과목 리스트 생성 (최신과목으로)
-    path_dir = './app/uploaded_media/' #엑셀 저장 디렉토리 지정
-    file_list = os.listdir(path_dir) # 디렉토리내 파일 읽어서 리스트형식으로 저장
+    file_list = os.listdir(file_root) # 디렉토리내 파일 읽어서 리스트형식으로 저장
     data = []
     for i in range(len(file_list)): # .DS_Store 쓰레기 값 제거 (디렉토리에 있는지 확인해봐야함)
         if file_list[i][0] =='.':
             del file_list[i]
             break
     for i in range(len(file_list)): # 엑셀 to 데이터프레임 변경 후 data 리스트에 저장
-        data.append(pd.read_excel(path_dir+file_list[i], index_col=None))
+        data.append(pd.read_excel(file_root+file_list[i], index_col=None))
     #데이터 전처리
     MR = [] # 전공필수
     MC = [] # 전공선택
@@ -417,6 +416,7 @@ def r_en_result(request):
 
     # 세션에 담긴 변수 추출
     file_name = request.session.get('file_name')
+    file_root = request.session.get('file_root')
     info = request.session.get('info')
 
     p_year = info["year"]
@@ -430,8 +430,7 @@ def r_en_result(request):
     s_row = Standard.objects.get(user_dep = p_major, user_year=p_year)
 
     # df 생성
-    root = './app/uploaded_media/' + file_name
-    data = pd.read_excel(root, index_col=None)
+    data = pd.read_excel(file_root + file_name, index_col=None)
 
     # 사용자가 들은 과목리스트 전부를 딕셔너리로.
     my_engine_admit = make_dic(data['학수번호'].tolist())
@@ -749,13 +748,14 @@ def f_login(request):
         selenium_uis(s_id,s_pw)
         # 다운로드 후 이름 변경
         file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-        Initial_path = './app/uploaded_media'
-        filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+        Initial_path = './app/uploaded_media/'
+        filename = max([Initial_path + f for f in os.listdir(Initial_path)],key=os.path.getctime)
         shutil.move(filename,os.path.join(Initial_path,file_name))
         # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
         info = selenium_book(s_id, s_pw)
         # 세션에 변경 파일이름과 유저 정보를 저장
         request.session['file_name']=file_name
+        request.session['file_root']=Initial_path
         request.session['info']=info
     # 서버
     else:
@@ -766,13 +766,14 @@ def f_login(request):
         selenium_uis(s_id,s_pw)
         # 다운로드 후 이름 변경
         file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-        Initial_path = '~/app/uploaded_media'
-        filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+        Initial_path = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
+        filename = max([Initial_path + f for f in os.listdir(Initial_path)],key=os.path.getctime)
         shutil.move(filename,os.path.join(Initial_path,file_name))
         # 대양휴머니티 크롤링 후 학과/학번/인증권수 넘기기
         info = selenium_book(s_id, s_pw)
         # 세션에 변경 파일이름과 유저 정보를 저장
         request.session['file_name']=file_name
+        request.session['file_root']=Initial_path
         request.session['info']=info
         display.stop()
 
