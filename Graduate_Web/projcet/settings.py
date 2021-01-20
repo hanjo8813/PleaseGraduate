@@ -29,12 +29,15 @@ DEBUG = True
 
 # 전체 허용
 if platform.system() == 'Windows':
-    hosts = '*'
+    A_HOST = '*'
+    D_HOST = 'localhost'
 # AWS 서버 호스트 설정
 else:
-    hosts = '.ap-northeast-2.compute.amazonaws.com'
+    A_HOST = '.ap-northeast-2.compute.amazonaws.com'
+    D_HOST = '54.180.24.148'
+
 ALLOWED_HOSTS = [
-   hosts,
+   A_HOST,
 ]
 
 # Application definition
@@ -89,7 +92,7 @@ DATABASES = {
         'NAME': 'graduate_help',
         'USER': 'root',
         'PASSWORD': '8813',
-        'HOST': 'localhost',
+        'HOST': D_HOST,
         'PORT': '3306',
     }
 }
