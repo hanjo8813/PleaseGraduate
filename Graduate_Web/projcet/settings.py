@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'graduate_help',
         'USER': 'root',
         'PASSWORD': '8813',
-        'HOST': '54.180.24.148',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }

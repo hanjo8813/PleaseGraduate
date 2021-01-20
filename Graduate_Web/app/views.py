@@ -792,7 +792,7 @@ def f_login(request):
 
 # result 페이지 테스트용.
 def result_test(request):
-    file_name = 'test12.xls'
+    file_name = 'test5.xls'
 
     info = {
         'book' : [4, 4, 4, 1, 13],
