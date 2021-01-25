@@ -8,20 +8,20 @@
 
 
 ## 업데이트 기록
-> ### 01/16
+> 01/16
 - AWS EC2 서버 생성
 - 기본 패키지 설정
 - python/pip 설치
 - 가상환경(virtual-env)내에 py라이브러리 설치
 - ubuntu에 git clone, 연동
 
-> ### 01/17
+> 01/17
 - MySQL 설치 및 http-port 생성 후 연동.
 - 크롬/크롬드라이버 설치
 - Django settings 변경
 - 개발자 모드(runserver)로 client 테스트.. 실패..
 
-> ### 01/18
+> 01/18
 - wsgi 패키지 설치
 - nginx 설치 후 static 경로 설정
 - 로컬 기준 경로 코드를 ubuntu 기준 추가
