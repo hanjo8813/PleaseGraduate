@@ -24,7 +24,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$9!ib@j_wk2%a@5%^a!vjbslh10fh_p@z2)wk5p+ff5(+a2lf^'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# 개발시엔 True로 디버그 확인, 배포시엔 False
 DEBUG = True
 
 
@@ -137,6 +137,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+
 # static file 경로 설정
 
 # 내가 쓰고있는 스태틱 경로 (collectstatic 할때 참조)
@@ -149,7 +150,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
 
 # 요청 받는 이름
 STATIC_URL = '/static/'
-
 
 
 
