@@ -245,8 +245,7 @@ def r_result(request):
     # 기교
     df_b = data[data['이수구분'].isin(['기교'])]
     df_b.reset_index(inplace=True,drop=True)
-    print(df_b)
-    
+
     # 전필 초과시 
     remain = 0
     if standard_num['me'] < df_me['학점'].sum() :
@@ -307,18 +306,18 @@ def r_result(request):
     #------------------------------------------------------------------------------------
 
     # 머신러닝 할 데이터프레임 생성
-    ml_data = pd.DataFrame({'학번':[], '학수번호':[]})
+    ml_data = pd.DataFrame({'학번':[], '학수번호':[], '이수구분':[], '선택영역':[]})
     ug = UserGrade.objects.filter(student_id = user_id)
     for u in ug:
-        ml_data.loc[len(ml_data)] = [u.student_id, u.subject_num]
+        ml_data.loc[len(ml_data)] = [u.student_id, u.subject_num, u.classification, u.selection]
 
     #데이터 전처리
     MR = [] # 전공필수
     MC = [] # 전공선택
     EC = [] # 교양선택
-    MR.append(ml_data['이수구분'].isin(['전필'])]) #전필만 모아서 저장
-    MC.append(ml_data['이수구분'].isin(['전선'])]) #전선만 모아서 저장
-    EC.append(ml_data['이수구분'].isin(['교선1'])]) #교선만 모아서 저장
+    MR.append(data[i][ data[i]['이수구분'].isin(['전필']) ]) #전필만 모아서 저장
+    MC.append(data[i][data[i]['이수구분'].isin(['전선'])]) #전선만 모아서 저장
+    EC.append(data[i][data[i]['이수구분'].isin(['교선1'])]) #교선만 모아서 저장
     MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
     MC[i]['평점'] = 1
     EC[i]['평점'] = 1
