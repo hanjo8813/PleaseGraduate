@@ -6,11 +6,11 @@ class UserGrade(models.Model):
     student_id = models.CharField(max_length=10)
     year = models.CharField(max_length=10)
     semester = models.CharField(max_length=45)
-    subject_num = models.CharField(max_length=10)
+    subject_num = models.IntegerField()
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.CharField(max_length=10)
+    grade = models.IntegerField()
     grade_credit = models.CharField(max_length=10)
     index = models.AutoField(primary_key=True)
 

@@ -113,51 +113,6 @@ def make_recommend_list(my_dic, dic):
                         recommend.append(nl2[0].subject_num.subject_num)
     return recommend, list(check.values())
 
-def recom_machine_learning(what, file_name):
-    # 해당 이수구분에 맞게 데이터 merge
-    del what['선택영역']
-    rec = what
-    #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
-    user = file_name
-    tab = pd.crosstab(rec['이름'],rec['학수번호']) #사용자가 어떤 과목을 듣지 않았는지 확인하기 위하여 데이터프레임 shape 변경
-    tab_t = tab.transpose().reset_index()
-    item_ids =[] #유저가 듣지 않은 과목
-    for i in range(tab_t.shape[0]):
-        if tab_t[user][i] == 0:
-            item_ids.append(tab_t['학수번호'][i])
-    #학습준비
-    reader = Reader(rating_scale=(0,2))
-    data = Dataset.load_from_df(df=rec, reader=reader)
-    train = data.build_full_trainset()
-    test = train.build_testset()
-    #모델학습
-    model = SVD(n_factors=100, n_epochs=20,random_state=123)
-    model.fit(train) # 모델 학습 하는 코드
-    actual_rating = 0
-    #학습결과 데이터프레임화
-    item = [] #과목명
-    score = [] #유사도점수
-    for item_id in item_ids :
-        a = model.predict(user, item_id, actual_rating)
-        item.append(a[1])
-        score.append(a[3])
-    df = pd.DataFrame({'item':item,'score':score})
-    result = df.sort_values(by=['score'],axis=0,ascending=False).reset_index(drop=True) #결과 데이터프레임
-
-    item = result['item'].tolist()
-    score = result['score'].tolist()
-    # score 백분율화
-    for i in range(len(score)):
-        score[i] = round(score[i] / 2 * 100, 3)
-    # 최신과목만 추출
-    for i, z in enumerate(zip(item,score)):
-        nl = NewLecture.objects.filter(subject_num=z[0])
-        if nl.exists() == 0:
-            item.pop(i)
-            score.pop(i)
-    zipped = zip(list_to_query(item), score)
-    
-    return zipped
 
 # --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
@@ -172,7 +127,8 @@ def r_result(request):
 
     user_info = {
         'id' : u_row.student_id,
-        'name' : u_row.name,  
+        'name' : u_row.name,
+        'eng' : u_row.eng,
         'W' : W,
         'E' : E,
         'EW' : EW,
@@ -204,30 +160,10 @@ def r_result(request):
 
     #------------------------------------------------------------------------------
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    data = pd.DataFrame({'학수번호':[], '교과목명':[], '이수구분':[], '선택영역':[], '학점':[], '등급':[]})
+    data = pd.DataFrame(columns=['학수번호', '이수구분', '선택영역', '학점'])
     ug = UserGrade.objects.filter(student_id = user_id)
     for u in ug:
-        data.loc[len(data)] = [u.subject_num, u.subject_name, u.classification, u.selection, u.grade, u.grade_credit]
-
-    # 논패, F과목 삭제
-    n = data.shape[0]
-    flag = 0
-    while(True):
-        for i in range(n):
-            if i == n-1 :
-                flag = 1
-            if data['등급'][i]=='NP':
-                data = data.drop(data.index[i])
-                n -= 1
-                data.reset_index(inplace=True, drop=True)
-                break
-            elif data['등급'][i]=='F':
-                data = data.drop(data.index[i])
-                n -= 1
-                data.reset_index(inplace=True, drop=True)
-                break
-        if flag == 1:
-            break
+        data.loc[len(data)] = [u.subject_num, u.classification, u.selection, u.grade]
 
     # 이수 구분마다 df 생성
     # 전필
@@ -265,7 +201,6 @@ def r_result(request):
     my_dic_ce = make_dic(df_ce['학수번호'].tolist())
     my_dic_cs = make_dic(df_cs['학수번호'].tolist())
     my_dic_b = make_dic(df_b['학수번호'].tolist())
-
     #-------------------------------------------------------------------------------------
     # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
     recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
@@ -298,6 +233,7 @@ def r_result(request):
     for i, c in enumerate(cs_part):
         if c not in my_cs_part:
             part_check[i] = '미이수'
+
     cs_part = {
         'check' : part_check,
         'all' : cs_part,
@@ -306,27 +242,19 @@ def r_result(request):
     #------------------------------------------------------------------------------------
 
     # 머신러닝 할 데이터프레임 생성
-    ml_data = pd.DataFrame({'학번':[], '학수번호':[], '이수구분':[], '선택영역':[]})
-    ug = UserGrade.objects.filter(student_id = user_id)
-    for u in ug:
-        ml_data.loc[len(ml_data)] = [u.student_id, u.subject_num, u.classification, u.selection]
+    mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    ug_MR = UserGrade.objects.filter(classification = '전필')
+    ug_MC = UserGrade.objects.filter(classification = '전선')
+    ug_EC = UserGrade.objects.filter(classification = '교선1')
+    for u in ug_MR:
+        mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
+    for u in ug_MC:
+        mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
+    for u in ug_EC:
+        ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
 
-    #데이터 전처리
-    MR = [] # 전공필수
-    MC = [] # 전공선택
-    EC = [] # 교양선택
-    MR.append(data[i][ data[i]['이수구분'].isin(['전필']) ]) #전필만 모아서 저장
-    MC.append(data[i][data[i]['이수구분'].isin(['전선'])]) #전선만 모아서 저장
-    EC.append(data[i][data[i]['이수구분'].isin(['교선1'])]) #교선만 모아서 저장
-    MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
-    MC[i]['평점'] = 1
-    EC[i]['평점'] = 1
-
-      
-
-    mr_train = pd.concat(MR,ignore_index=True) 
-    mc_train = pd.concat(MC,ignore_index=True) 
-    ec_train = pd.concat(EC,ignore_index=True) 
     store = []
     cs_ml = []
     if recom_cs_part:
@@ -335,13 +263,13 @@ def r_result(request):
             store.append(ec_train[is_in])
         ec_train = pd.concat(store).sort_values(by=['이름'], axis=0)
         ec_train = ec_train.reset_index(drop = True)
-        new_data = {'이름': file_name, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
+        new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
         
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train, file_name),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train, file_name),    # 전선
-        'cs' : recom_machine_learning(ec_train, file_name),   # 교선
+        'me' : recom_machine_learning(mr_train, user_id),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, user_id),    # 전선
+        'cs' : recom_machine_learning(ec_train, user_id),   # 교선
     }
 
     pass_me = 0
@@ -369,7 +297,6 @@ def r_result(request):
         'l_cs' : pass_cs,       # 중선 필수과목
         'p_cs' : bo,            # 중선 필수영역
         'l_b' : pass_b,         # 기교 필수과목
-        'eng' : info['eng'],    # 영어인증
     }
 
     context = {
@@ -382,7 +309,7 @@ def r_result(request):
         'cs_part' : cs_part,                # 중선 영역
         'pass_obj' : pass_obj               # 패스 여부
     }
-
+    
     return render(request, "result.html", context)
 
 
@@ -725,9 +652,27 @@ def f_login(request):
         time.sleep(1)
         df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
         os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-
         # DF에서 불필요 칼럼 삭제
         df.drop(['교직영역', '평가방식', '평점', '개설학과코드'], axis=1, inplace=True)
+        # 논패, F과목 삭제
+        n = df.shape[0]
+        flag = 0    
+        while(True):
+            for i in range(n):
+                if i == n-1 :
+                    flag = 1
+                if df['등급'][i]=='NP':
+                    df = df.drop(df.index[i])
+                    n -= 1
+                    df.reset_index(inplace=True, drop=True)
+                    break
+                elif df['등급'][i]=='F':
+                    df = df.drop(df.index[i])
+                    n -= 1
+                    df.reset_index(inplace=True, drop=True)
+                    break
+            if flag == 1:
+                break
         # DF를 테이블에 추가
         for i, row in df.iterrows():
             new_ug = UserGrade()
@@ -924,36 +869,75 @@ def f_login(request):
 # ----------------------------------------------- (웹 연동 테스트) --------------------------------------------------------------------
 
 
+def recom_machine_learning(what, file_name):
+    # 해당 이수구분에 맞게 데이터 merge
+    del what['선택영역']
+    rec = what
+    #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
+    user = file_name
+    tab = pd.crosstab(rec['학번'],rec['학수번호']) #사용자가 어떤 과목을 듣지 않았는지 확인하기 위하여 데이터프레임 shape 변경
+    tab_t = tab.transpose().reset_index()
+    item_ids =[] #유저가 듣지 않은 과목
+    for i in range(tab_t.shape[0]):
+        if tab_t[user][i] == 0:
+            item_ids.append(tab_t['학수번호'][i])
+    #학습준비
+    reader = Reader(rating_scale=(0,2))
+    data = Dataset.load_from_df(df=rec, reader=reader)
+    train = data.build_full_trainset()
+    test = train.build_testset()
+    #모델학습
+    model = SVD(n_factors=100, n_epochs=20,random_state=123)
+    model.fit(train) # 모델 학습 하는 코드
+    actual_rating = 0
+    #학습결과 데이터프레임화
+    item = [] #과목명
+    score = [] #유사도점수
+    for item_id in item_ids :
+        a = model.predict(user, item_id, actual_rating)
+        item.append(a[1])
+        score.append(a[3])
+    df = pd.DataFrame({'item':item,'score':score})
+    result = df.sort_values(by=['score'],axis=0,ascending=False).reset_index(drop=True) #결과 데이터프레임
+
+    item = result['item'].tolist()
+    score = result['score'].tolist()
+    # score 백분율화
+    for i in range(len(score)):
+        score[i] = round(score[i] / 2 * 100, 3)
+    # 최신과목만 추출
+    for i, z in enumerate(zip(item,score)):
+        nl = NewLecture.objects.filter(subject_num=z[0])
+        if nl.exists() == 0:
+            item.pop(i)
+            score.pop(i)
+    zipped = zip(list_to_query(item), score)
+    
+    return zipped
+
+
 # result 페이지 테스트용.
 def result_test(request):
-    file_name = 'test5.xls'
+    # 세션에 담긴 변수 추출
+    user_id = '16011140'
+    # userinfo 테이블에서 행 추출
+    u_row = UserInfo.objects.get(student_id = user_id)
 
-    info = {
-        'book' : [4, 4, 4, 1, 13],
-        'major' : '디지털콘텐츠',
-        'id' : '111111111',
-        'year' : '15',
-        'name' : '이름',
-        'eng' : 0,
-    }
-    # 원래 info에서 영어도 넘어와야함. -> 일단 변수로 저장
-    info['eng'] = 0
-
-    # 셀레니움으로 넘어온 변수들
-    p_year = info["year"]
-    p_major = info["major"]
+    # book 문자열 파싱
+    W, E, EW, S= u_row.book.strip('[]').split(', ')[:4]
 
     user_info = {
-        'id' : info["id"],
-        'name' : info["name"],
-        'W' : info["book"][0],
-        'E' : info["book"][1],
-        'EW' : info["book"][2],
-        'S' : info["book"][3],
+        'id' : u_row.student_id,
+        'name' : u_row.name,
+        'eng' : u_row.eng,
+        'W' : W,
+        'E' : E,
+        'EW' : EW,
+        'S' : S,
     }
 
     # 파이썬 변수를 가지고 ind로 매핑
-    s_row = Standard.objects.get(user_dep = p_major, user_year=p_year)
+    s_row = Standard.objects.get(user_dep = u_row.major, user_year = u_row.year)
 
     #---------------------------------------------------------
     # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
@@ -973,32 +957,14 @@ def result_test(request):
     # 3. 중선(교선1) 필수과목
     dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
-    dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')])
+    dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')]) 
 
     #------------------------------------------------------------------------------
-    # 입력받은 엑셀 파일 dataframe으로 변환
-    root = './app/uploaded_media/' + file_name
-    data = pd.read_excel(root, index_col=None)
-
-    # 논패, F과목 삭제
-    n = data.shape[0]
-    flag = 0
-    while(True):
-        for i in range(n):
-            if i == n-1 :
-                flag = 1
-            if data['등급'][i]=='NP':
-                data = data.drop(data.index[i])
-                n -= 1
-                data.reset_index(inplace=True, drop=True)
-                break
-            elif data['등급'][i]=='F':
-                data = data.drop(data.index[i])
-                n -= 1
-                data.reset_index(inplace=True, drop=True)
-                break
-        if flag == 1:
-            break
+    # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
+    data = pd.DataFrame(columns=['학수번호', '이수구분', '선택영역', '학점'])
+    ug = UserGrade.objects.filter(student_id = user_id)
+    for u in ug:
+        data.loc[len(data)] = [u.subject_num, u.classification, u.selection, u.grade]
 
     # 이수 구분마다 df 생성
     # 전필
@@ -1036,7 +1002,6 @@ def result_test(request):
     my_dic_ce = make_dic(df_ce['학수번호'].tolist())
     my_dic_cs = make_dic(df_cs['학수번호'].tolist())
     my_dic_b = make_dic(df_b['학수번호'].tolist())
-
     #-------------------------------------------------------------------------------------
     # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
     recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
@@ -1069,49 +1034,28 @@ def result_test(request):
     for i, c in enumerate(cs_part):
         if c not in my_cs_part:
             part_check[i] = '미이수'
+
     cs_part = {
         'check' : part_check,
         'all' : cs_part,
     }
 
     #------------------------------------------------------------------------------------
-    # 전필/전선/중선 >> 추천과목 리스트 생성 (최신과목으로)
-    path_dir = './app/uploaded_media/' #엑셀 저장 디렉토리 지정
-    file_list = os.listdir(path_dir) # 디렉토리내 파일 읽어서 리스트형식으로 저장
-    data = []
-    for i in range(len(file_list)): # .DS_Store 쓰레기 값 제거 (디렉토리에 있는지 확인해봐야함)
-        if file_list[i][0] =='.':
-            del file_list[i]
-            break
-    for i in range(len(file_list)): # 엑셀 to 데이터프레임 변경 후 data 리스트에 저장
-        data.append(pd.read_excel(path_dir+file_list[i], index_col=None))
-    #데이터 전처리
-    MR = [] # 전공필수
-    MC = [] # 전공선택
-    EC = [] # 교양선택
-    for i in range(len(file_list)): 
-        del data[i]['학기'] #필요없는 컬럼 삭제
-        del data[i]['교과목명']
-        del data[i]['교직영역']
-        del data[i]['학점']
-        del data[i]['평가방식']
-        del data[i]['등급']
-        del data[i]['개설학과코드']
-        data[i] = data[i].rename({'년도':'이름'},axis='columns') #년도 컬럼 이름 컬럼으로 컬럼명 변경
-        data[i]['이름'] = file_list[i] #이름 컬럼에 이름 덮어씀
-        MR.append(data[i][data[i]['이수구분'].isin(['전필'])]) #전필만 모아서 저장
-        MC.append(data[i][data[i]['이수구분'].isin(['전선'])]) #전선만 모아서 저장
-        EC.append(data[i][data[i]['이수구분'].isin(['교선1'])]) #교선만 모아서 저장
-        del MR[i]['이수구분'] #필요없는 컬럼 삭제
-        del MC[i]['이수구분']
-        del EC[i]['이수구분']
-        MR[i]['평점'] = 1 #이수했는지 확인하는 숫자 1로 덮어씀
-        MC[i]['평점'] = 1
-        EC[i]['평점'] = 1
 
-    mr_train = pd.concat(MR,ignore_index=True) 
-    mc_train = pd.concat(MC,ignore_index=True) 
-    ec_train = pd.concat(EC,ignore_index=True) 
+    # 머신러닝 할 데이터프레임 생성
+    mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
+    ug_MR = UserGrade.objects.filter(classification = '전필')
+    ug_MC = UserGrade.objects.filter(classification = '전선')
+    ug_EC = UserGrade.objects.filter(classification = '교선1')
+    for u in ug_MR:
+        mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
+    for u in ug_MC:
+        mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
+    for u in ug_EC:
+        ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
+
     store = []
     cs_ml = []
     if recom_cs_part:
@@ -1120,13 +1064,13 @@ def result_test(request):
             store.append(ec_train[is_in])
         ec_train = pd.concat(store).sort_values(by=['이름'], axis=0)
         ec_train = ec_train.reset_index(drop = True)
-        new_data = {'이름': file_name, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
+        new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
-        
+
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train, file_name),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train, file_name),    # 전선
-        'cs' : recom_machine_learning(ec_train, file_name),   # 교선
+        'me' : recom_machine_learning(mr_train, user_id),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, user_id),    # 전선
+        'cs' : recom_machine_learning(ec_train, user_id),   # 교선
     }
 
     pass_me = 0
@@ -1154,7 +1098,6 @@ def result_test(request):
         'l_cs' : pass_cs,       # 중선 필수과목
         'p_cs' : bo,            # 중선 필수영역
         'l_b' : pass_b,         # 기교 필수과목
-        'eng' : info['eng'],    # 영어인증
     }
 
     context = {
@@ -1167,8 +1110,7 @@ def result_test(request):
         'cs_part' : cs_part,                # 중선 영역
         'pass_obj' : pass_obj               # 패스 여부
     }
-
-
+    
     return render(request, "result.html", context)
 
 
