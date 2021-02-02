@@ -272,6 +272,7 @@
                 <div id="chart7">
                     <strong></strong>
                 </div>
+                {% if pass_obj.book != 2 %}
                 <div class="sbox Y">
                     <div class="gbox">
                         <span class="grade p">이수 기준</span>
@@ -293,6 +294,17 @@
                         <span class="book" id="scbook"></span>/ 1권
                     </div>
                 </div>
+                {% else %}
+                <div class="sbox Y">
+                    고전특강 이수
+                    <div style="display:none">
+                        <span class="book" id="swbook"></span>
+                        <span class="book" id="wbook"></span>
+                        <span class="book" id="sbook"></span>
+                        <span class="book" id="scbook"></span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -312,8 +324,13 @@
                 <div class="sbox" style="width:100%; margin-left:50px;">
                     <div class="gear"><i class="fas fa-cog"></i></div>
                     <p style="margin:9px;">공학인증 검사를 원하시면 버튼을 클릭하세요</p>
+                    {% if en_exist %}
                     <button onclick="location.href='/en_result/'" class="rbutton"
                         style="height:35%; width:50%; font-size:1.3rem">검사하기</button>
+                    {% else %}
+                    <button onclick="alert('아직 {{user_info.major}}-{{user_info.year}}학번의 공학인증 기준이 추가되지 않았습니다.')"
+                        class="rbutton" style="height:35%; width:50%; font-size:1.3rem">검사하기</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -437,9 +454,9 @@
                     {% for q, c in standard_list.ce %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -538,9 +555,9 @@
                     {% for q, c in standard_list.cs %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -587,6 +604,7 @@
             {% endif %}
 
             <!-- 추천과목 -->
+            {% if not pass_obj.t_cs %}
             <div class="p_div">
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> AI 추천과목
                 </div>
@@ -613,6 +631,7 @@
                     {% endfor %}
                 </table>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -640,9 +659,9 @@
                     {% for q, c in standard_list.b %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -696,7 +715,7 @@
         <div class="modal_div">
             <div class="p_div">
 
-                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i>영어 통과 기준  
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i>영어 통과 기준
                 </div>
                 <div class="mydiv">통과 기준 중 하나만 만족하면 통과입니다.</div>
                 <hr>
@@ -742,15 +761,15 @@
 <script src="{% static 'js/circle-progress.js' %}"></script>
 
 <script>
-    // 초과권수 작업
-    function del_remain(book, standard) {
-        if (book >= standard) {
-            return standard
+    // 뒤로가기 버튼 클릭시
+    history.pushState(null,null,location.href);
+    window.onpopstate = function(event) {
+        var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
+        if(back_head){
+            location.href = '/f_logout/';
         }
-        else {
-            return book
-        }
-    }
+    };
+
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
@@ -781,11 +800,18 @@
     var remain = '{{my_num.remain}}'    // 전필 초과 학점
 
     // 인증권수
-    var Swbook = '{{user_info.W}}' + "권";
-    var Wbook = '{{user_info.E}}' + "권";
-    var Sbook = '{{user_info.EW}}' + "권";
-    var Scbook = '{{user_info.S}}' + "권";
-    Mybook = del_remain('{{user_info.W}}', 4) + del_remain('{{user_info.E}}', 2) + del_remain('{{user_info.EW}}', 3) + del_remain('{{user_info.S}}', 1)
+    var Swbook = 0;
+    var Wbook = 0;
+    var Sbook = 0;
+    var Scbook = 0;
+    var Mybook = 10;
+    if ('{{pass_obj.book}}' != 2) {
+        Swbook = '{{user_info.W}}' + "권";
+        Wbook = '{{user_info.E}}' + "권";
+        Sbook = '{{user_info.EW}}' + "권";
+        Scbook = '{{user_info.S}}' + "권";
+        Mybook = '{{user_info.total}}';
+    }
 
     // 이수 학점 퍼센트화
     var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
@@ -857,14 +883,25 @@
     }
 
     if (pernum0 >= 100) {
-        var Cangraduate = "축하합니다! 졸업 가능합니다!!";
-        document.querySelector('.T').style.fontSize = '24px';
+        if ('{{pass_obj.total}}' == 1) {
+            var Cangraduate = "축하합니다! 졸업 가능합니다!!";
+            document.querySelector('.T').style.fontSize = '24px';
+        }
+        // 학점은 만족하나 조건이 안될 경우
+        else {
+            pernum0 = 99;
+            document.querySelector('.cap').style.display = 'none';
+            document.querySelector('.T').style.fontSize = '23px';
+            var Cangraduate = "모든 기준을 만족하지 못했습니다.";
+        }
+
     } else {
         document.querySelector('.cap').style.display = 'none';
         document.querySelector('.T').style.fontSize = '23px';
         var Cangraduate = "졸업까지 " + (
             Totalgrade - Mytotalgrade
         ) + "학점이 필요합니다!!";
+
     }
     const toggleb = document.querySelector('.navbar_toggle');
     const menu = document.querySelector('.navbar_menu');

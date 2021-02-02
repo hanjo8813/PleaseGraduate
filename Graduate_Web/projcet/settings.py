@@ -39,7 +39,7 @@ ALLOWED_HOSTS = [
 
 # 세션 설정
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 종료시 세션 파괴
-SESSION_COOKIE_AGE = 10                 # 10분 지나면 세션 파괴
+SESSION_COOKIE_AGE = 60*10                 # 10분 지나면 세션 파괴
 
 
 # Application definition

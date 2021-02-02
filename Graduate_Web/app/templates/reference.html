@@ -31,13 +31,14 @@
     <nav class="navbar">
         <div class="navbar_logo">
             {% load static %}
+            {% if not request.session.id  %}
             <a href="/head/"><img src="{% static 'img/logo.png' %}"></a>
+            {% else %}
+            <a href="javascript:back_confirm()"><img src="{% static 'img/logo.png' %}"></a>
+            {% endif %}
         </div>
 
         <ul class="navbar_menu">
-            <li>
-                <a href="/head/">Home</a>
-            </li>
             <li>
                 <!-- 로그인 세션 활용 -->
                 {% if not request.session.id  %}
@@ -47,7 +48,6 @@
                 {% endif %}
             </li>
         </ul>
-
         <a href="#" class="navbar_toggle">
             <i class="fas fa-bars"></i>
         </a>
@@ -120,12 +120,15 @@
             </p>
         </div>
     </div>
-
 </body>
+
+
+
 
 {% block js_section %}
 {% endblock %}
 
+<!-- 예외처리 -->
 {% if messages %}
     {% for m in messages %}
     <script>
@@ -135,6 +138,12 @@
 {% endif %}
 
 <script>
+    function back_confirm(){
+        var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
+        if(back_head){
+            location.href = '/f_logout/';
+        }
+    };
     var loginmodal = document.getElementById('loginModal');
     var loginbtn = document.getElementById("loginBtn");
     var span = document.getElementsByClassName("loginclose")[0];

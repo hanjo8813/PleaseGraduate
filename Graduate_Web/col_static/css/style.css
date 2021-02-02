@@ -17,7 +17,7 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #FAFAFA;
+    border-bottom : 0.001px solid rgb(216, 216, 216);
     background-color: white;
     padding: 8px;
 }
