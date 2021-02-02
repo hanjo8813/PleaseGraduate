@@ -35,6 +35,7 @@ def r_index(request):
     return render(request, "index.html")
 
 def r_head(request):
+    request.session.clear()
     return render(request, "head.html")
 
 def f_logout(request):
@@ -46,7 +47,6 @@ def r_loading(request):
     request.session['id']=request.POST.get('id')
     request.session['pw']=request.POST.get('pw')
     return render(request, "loading.html")
-
 
 
 
@@ -619,7 +619,6 @@ def f_login(request):
         except:
             driver.quit()
             messages.error(request, 'ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-            request.session.clear()
             return redirect('/head/')
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
         #------------------------------------------------------------------------------------------------- selenium part
@@ -658,7 +657,6 @@ def f_login(request):
         # 존재하지 않으면
         if not st.exists():
             messages.error(request, '아직 PleaseGraduate에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다.')
-            request.session.clear()
             return redirect('/head/')
 
         # 2. uis 크롤링 ----------------------------------------------------------------------------
@@ -801,7 +799,6 @@ def f_login(request):
             driver.quit()
             display.stop()
             messages.error(request, 'ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-            request.session.clear()
             return redirect('/head/')
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
         #------------------------------------------------------------------------------------------------- selenium part
@@ -841,7 +838,6 @@ def f_login(request):
         if not st.exists():
             display.stop()
             messages.error(request, '아직 PleaseGraduate에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다.')
-            request.session.clear()
             return redirect('/head/')
 
         # 2. uis 크롤링 ----------------------------------------------------------------------------

@@ -296,7 +296,7 @@
                 </div>
                 {% else %}
                 <div class="sbox Y">
-                    고전특강 이수
+                    <strong>고전특강 이수 완료</strong>
                     <div style="display:none">
                         <span class="book" id="swbook"></span>
                         <span class="book" id="wbook"></span>
@@ -766,9 +766,18 @@
     window.onpopstate = function(event) {
         var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
         if(back_head){
-            location.href = '/f_logout/';
+            location.href = '/head/';
         }
     };
+    
+    /*
+    // 새로고침 시
+    function test() {
+		    window.onbeforeunload = function (e) {
+                    return 0;
+		    };
+        }
+    */
 
     // 퍼센트화 함수
     function to_percent(my, standard) {
