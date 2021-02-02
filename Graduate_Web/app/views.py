@@ -694,6 +694,18 @@ def f_login(request):
         x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
         x.click()
         time.sleep(1.5)
+        # 영어인증 test
+        driver.switch_to_default_content()
+        driver.switch_to.frame(2)
+        driver.execute_script("javaScript:frameResize(this);")
+        time.sleep(0.5)
+        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
+        time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
+        driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
+        time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
+        popup = driver.window_handles[1]  # 팝업 창
+        driver.switch_to_window(popup)
+        driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
         eng = 0
         driver.quit()
 
@@ -873,9 +885,8 @@ def f_login(request):
         driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
         time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
         driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
-        time.sleep(0.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
-        mywindow = driver.window_handles[0]  # uis 창
-        popup =  driver.window_handles[1]  # 팝업 창
+        time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
+        popup = driver.window_handles[1]  # 팝업 창
         driver.switch_to_window(popup)
         time.sleep(0.5)
         driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
