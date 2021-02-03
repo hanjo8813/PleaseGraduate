@@ -892,11 +892,10 @@ def f_login(request):
         soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
         driver.switch_to_frame(0)
         soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
-        k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')  # 영어 합격 불합격 저장하는변수 , true false 로 변경 예정
+        k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')
+        eng = 1
         if k == '불합격':
             eng = 0
-        else:
-            eng = 1
         driver.quit()
         display.stop()
 
