@@ -3,7 +3,7 @@
 ## SejongGraduateHellper 프로젝트를 AWS 서버에 배포하기.
 > 될 때까지 한다.......
 
-- 사이트 링크 : http://ec2-3-34-126-50.ap-northeast-2.compute.amazonaws.com/head/
+- 사이트 링크 : http://ec2-3-34-126-50.ap-northeast-2.compute.amazonaws.com
 - [원래 repo](https://github.com/hon99oo/SejongGraduateHellper)
 - [사용하던 Commit 규칙, 설정 등](/commit_rule.md)
 
