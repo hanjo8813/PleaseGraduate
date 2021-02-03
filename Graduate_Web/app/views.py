@@ -895,7 +895,7 @@ def f_login(request):
         k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')  # 영어 합격 불합격 저장하는변수 , true false 로 변경 예정
         if k == '불합격':
             eng = 0
-        elif k == '합격':
+        else:
             eng = 1
         driver.quit()
         display.stop()
