@@ -81,7 +81,7 @@ class Standard(models.Model):
 
 
 class SubjectGroup(models.Model):
-    subject_num = models.OneToOneField(AllLecture, models.DO_NOTHING, db_column='subject_num', primary_key=True)
+    subject_num = models.IntegerField(primary_key=True)
     group_num = models.IntegerField()
 
     class Meta:

@@ -22,13 +22,8 @@ from app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # 첫페이지 url 설정
-    path('', views.r_index),
-
-    # 정현이 head
-    path('head/', views.r_head),
-
     # 페이지 렌더링
+    path('', views.r_head),
     path('loading/', views.r_loading),
     path('en_result/', views.r_en_result),
 
@@ -36,12 +31,12 @@ urlpatterns = [
     path('f_login/', views.f_login),
     path('f_logout/', views.f_logout),
     
-
     # 테스트용
+    path('admin_test/', views.r_admin_test),
+    path('f_update/', views.f_update),
     path('f_test/', views.f_test),
     path('dbcheck/', views.r_dbcheck),
     path('result_test/', views.result_test),
-
 ]
 
 # 미디어 루트 설정

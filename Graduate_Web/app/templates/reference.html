@@ -138,14 +138,14 @@
     function back_confirm(){
         // 세션없을때
         if('{{request.session.id}}' == ''){
-            location.href = '/head/';
+            location.href = '/';
         }
         // 세션 있을때
         else{
             var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
             if(back_head){
                 window.onbeforeunload = null;
-                window.location.href = '/head/';
+                window.location.href = '/';
             }
         }
     };

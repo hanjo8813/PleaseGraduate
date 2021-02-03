@@ -761,7 +761,7 @@
         var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
         if(back_head){
             window.onbeforeunload = null;
-            window.location.href='/head/';
+            window.location.href='/';
         }
     };
     // 새로고침 시
@@ -772,9 +772,9 @@
 
     // 공학인증으로 넘어가기
     function go_en_result(){
-        if('{{en_exist}}'){
+        if('{{en_exist}}' == 1){
             window.onbeforeunload = null;
-            window.location.href = '/en_result/';
+            location.href = '/en_result/';
         }
         else{
             alert('아직 {{user_info.major}}-{{user_info.year}}학번의 공학인증 기준이 추가되지 않았습니다.');

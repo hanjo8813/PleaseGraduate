@@ -24,15 +24,6 @@ from django.contrib import messages
 # 모델 참조
 from .models import *
 
-# DB 감지 테스트
-def r_dbcheck(request):
-    # model의 test_table 테이블을 변수에 저장
-    tt = TestTable.objects.all()
-    # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
-    return render(request, "dbcheck.html", {"t_h":tt})
-
-def r_index(request):
-    return render(request, "index.html")
 
 def r_head(request):
     request.session.clear()
@@ -40,7 +31,7 @@ def r_head(request):
 
 def f_logout(request):
     request.session.clear()
-    return redirect('/head/')
+    return redirect('/')
 
 def r_loading(request):
     # 사용자 id(학번)과 pw을 세션에 저장 (request의 세션부분에 저장되는것)
@@ -112,7 +103,17 @@ def make_recommend_list(my_dic, dic):
                         recommend.append(nl2[0].subject_num.subject_num)
     return recommend, list(check.values())
 
-def recom_machine_learning(what, user_id):
+def add_same_lecture(list_):
+    for s_num in list_:
+        sg = SubjectGroup.objects.filter(subject_num = s_num)
+        for s in sg:
+            rows = SubjectGroup.objects.filter(group_num = s.group_num)
+            for r in rows:
+                if r.subject_num not in list_:
+                    list_.append(r.subject_num)
+    return list_
+
+def recom_machine_learning(what, user_id, user_list):
     # 해당 이수구분에 맞게 데이터 merge
     del what['선택영역']
     rec = what
@@ -142,19 +143,25 @@ def recom_machine_learning(what, user_id):
     df = pd.DataFrame({'item':item,'score':score})
     result = df.sort_values(by=['score'],axis=0,ascending=False).reset_index(drop=True) #결과 데이터프레임
 
-    item = result['item'].tolist()
-    score = result['score'].tolist()
-    # score 백분율화
-    for i in range(len(score)):
-        score[i] = round(score[i] / 2 * 100, 3)
-    # 최신과목만 추출
-    for i, z in enumerate(zip(item,score)):
-        nl = NewLecture.objects.filter(subject_num=z[0])
-        if nl.exists() == 0:
-            item.pop(i)
-            score.pop(i)
-    zipped = zip(list_to_query(item[:7]), score[:7])    # 최대 7개까지 추천해줌.
+    # 추천지수를 백분율로 바꾸기
+    score = {}
+    for r in result['score'].tolist():
+        score[r] = round(r/2*100, 3)
+    result = result.replace({'score':score})
 
+    # 1. 추천 과목이 최신 과목이 아니라면 삭제
+    # 2. 전공case:추천 과목이 전필+전선에서 내가 이미 들은것이면 삭제.
+    for i, row in result.iterrows():
+        nl = NewLecture.objects.filter(subject_num=row['item'])
+        if not nl.exists():
+            result = result.drop([i])
+            continue
+        if row['item'] in user_list:
+            result = result.drop([i])
+    # 추천 과목 리스트를 쿼리로 바꾸고 추천 지수와 묶어서 7개까지 추천
+    
+    zipped = zip(list_to_query(result['item'].tolist()[:7]), result['score'].tolist()[:7])
+    
     return zipped
 
 # --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
@@ -334,10 +341,12 @@ def r_result(request):
         new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
         
+    # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
+    user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train, user_id),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train, user_id),    # 전선
-        'cs' : recom_machine_learning(ec_train, user_id),   # 교선
+        'me' : recom_machine_learning(mr_train, user_id, user_major_lec),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, user_id, user_major_lec),    # 전선
+        'cs' : recom_machine_learning(ec_train, user_id, []),                # 교선
     }
 
     # 과목 통과 여부 
@@ -797,7 +806,7 @@ def f_login(request):
             driver.quit()
             display.stop()
             messages.error(request, 'ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-            return redirect('/head/')
+            return redirect('/')
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
         #------------------------------------------------------------------------------------------------- selenium part
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
@@ -836,7 +845,7 @@ def f_login(request):
         if not st.exists():
             display.stop()
             messages.error(request, '아직 PleaseGraduate에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다.')
-            return redirect('/head/')
+            return redirect('/')
 
         # 2. uis 크롤링 ----------------------------------------------------------------------------
         url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
@@ -996,7 +1005,7 @@ def f_login(request):
 # result 페이지 테스트용.
 def result_test(request):
     # 세션에 담긴 변수 추출
-    user_id = '15011193'
+    user_id = '15011136'
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
@@ -1168,11 +1177,13 @@ def result_test(request):
         ec_train = ec_train.reset_index(drop = True)
         new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
-        
+
+    # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
+    user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train, user_id),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train, user_id),    # 전선
-        'cs' : recom_machine_learning(ec_train, user_id),   # 교선
+        'me' : recom_machine_learning(mr_train, user_id, user_major_lec),    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_machine_learning(mc_train, user_id, user_major_lec),    # 전선
+        'cs' : recom_machine_learning(ec_train, user_id, []),                # 교선
     }
 
     # 과목 통과 여부 
@@ -1224,14 +1235,25 @@ def result_test(request):
 
 
 
+#  -------------------------------------------- (테스트 페이지 렌더링) ---------------------------------------------------------
 
+def r_admin_test(request):
+    return render(request, "admin_test.html")
 
+#  -------------------------------------------- (DB 감지 테스트) ---------------------------------------------------------
 
+def r_dbcheck(request):
+    # model의 test_table 테이블을 변수에 저장
+    tt = TestTable.objects.all()
+    # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
+    return render(request, "dbcheck.html", {"t_h":tt})
 
+#  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
+
+def f_update(request):
+    return HttpResponse('업데이트 완료, MySQL all_lecture / new_lecture 테이블 확인')
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
-
-
 
 def f_test(request):
    
