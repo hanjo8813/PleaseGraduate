@@ -11,7 +11,6 @@ class UserGrade(models.Model):
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
     grade = models.IntegerField()
-    grade_credit = models.CharField(max_length=10)
     index = models.AutoField(primary_key=True)
 
     class Meta:

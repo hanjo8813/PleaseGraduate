@@ -296,7 +296,7 @@
                 </div>
                 {% else %}
                 <div class="sbox Y">
-                    <strong>고전특강 이수 완료</strong>
+                    <span style='font-weight: bold;'>고전특강 이수 완료</span>
                     <div style="display:none">
                         <span class="book" id="swbook"></span>
                         <span class="book" id="wbook"></span>
@@ -324,13 +324,8 @@
                 <div class="sbox" style="width:100%; margin-left:50px;">
                     <div class="gear"><i class="fas fa-cog"></i></div>
                     <p style="margin:9px;">공학인증 검사를 원하시면 버튼을 클릭하세요</p>
-                    {% if en_exist %}
-                    <button onclick="location.href='/en_result/'" class="rbutton"
+                    <button onclick="go_en_result()" class="rbutton"
                         style="height:35%; width:50%; font-size:1.3rem">검사하기</button>
-                    {% else %}
-                    <button onclick="alert('아직 {{user_info.major}}-{{user_info.year}}학번의 공학인증 기준이 추가되지 않았습니다.')"
-                        class="rbutton" style="height:35%; width:50%; font-size:1.3rem">검사하기</button>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -762,23 +757,30 @@
 
 <script>
     // 뒤로가기 버튼 클릭시
-    history.pushState(null,null,location.href);
     window.onpopstate = function(event) {
         var back_head = confirm('확인을 누르면 로그아웃 됩니다.');
         if(back_head){
-            location.href = '/head/';
+            window.onbeforeunload = null;
+            window.location.href='/head/';
         }
     };
-    
-    /*
     // 새로고침 시
-    function test() {
-		    window.onbeforeunload = function (e) {
-                    return 0;
-		    };
-        }
-    */
+    history.pushState(null,null,location.href);
+    window.onbeforeunload = function(event) {
+        return '';
+    };
 
+    // 공학인증으로 넘어가기
+    function go_en_result(){
+        if('{{en_exist}}'){
+            window.onbeforeunload = null;
+            window.location.href = '/en_result/';
+        }
+        else{
+            alert('아직 {{user_info.major}}-{{user_info.year}}학번의 공학인증 기준이 추가되지 않았습니다.');
+        }
+    }
+    
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
@@ -901,7 +903,7 @@
             pernum0 = 99;
             document.querySelector('.cap').style.display = 'none';
             document.querySelector('.T').style.fontSize = '23px';
-            var Cangraduate = "모든 기준을 만족하지 못했습니다.";
+            var Cangraduate = "영역 기준을 만족하지 못했습니다.";
         }
 
     } else {

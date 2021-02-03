@@ -737,8 +737,6 @@ def f_login(request):
         time.sleep(1)
         df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
         os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-        # DF에서 불필요 칼럼 삭제
-        df.drop(['교직영역', '평가방식', '평점', '개설학과코드'], axis=1, inplace=True)
         # 논패, F과목 삭제
         n = df.shape[0]
         flag = 0    
@@ -753,6 +751,8 @@ def f_login(request):
                     break
             if flag == 1:
                 break
+        # DF에서 불필요 칼럼 삭제
+        df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
         # DF를 테이블에 추가
         for i, row in df.iterrows():
             new_ug = UserGrade()
@@ -764,15 +764,13 @@ def f_login(request):
             new_ug.classification = row['이수구분']
             new_ug.selection = row['선택영역']
             new_ug.grade = row['학점']
-            new_ug.grade_credit = row['등급']
             new_ug.save()
 
     else:
         # 가상 디스플레이를 활용해 실행속도 단축
         display = Display(visible=0, size=(1024, 768))
         display.start()
-
-                # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
+        # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
         url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
         driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
         checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
@@ -932,8 +930,6 @@ def f_login(request):
         time.sleep(1)
         df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
         os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-        # DF에서 불필요 칼럼 삭제
-        df.drop(['교직영역', '평가방식', '평점', '개설학과코드'], axis=1, inplace=True)
         # 논패, F과목 삭제
         n = df.shape[0]
         flag = 0    
@@ -948,6 +944,8 @@ def f_login(request):
                     break
             if flag == 1:
                 break
+        # DF에서 불필요 칼럼 삭제
+        df.drop(['교직영역', '평가방식', '등급', '평점', '개설학과코드'], axis=1, inplace=True)
         # DF를 테이블에 추가
         for i, row in df.iterrows():
             new_ug = UserGrade()
@@ -959,7 +957,6 @@ def f_login(request):
             new_ug.classification = row['이수구분']
             new_ug.selection = row['선택영역']
             new_ug.grade = row['학점']
-            new_ug.grade_credit = row['등급']
             new_ug.save()
 
     return r_result(request)
@@ -1000,7 +997,7 @@ def f_login(request):
 # result 페이지 테스트용.
 def result_test(request):
     # 세션에 담긴 변수 추출
-    user_id = '15011187'
+    user_id = '15011193'
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
