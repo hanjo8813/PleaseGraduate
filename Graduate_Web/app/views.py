@@ -1017,7 +1017,7 @@ def f_login(request):
 # result 페이지 테스트용.
 def result_test(request):
     # 세션에 담긴 변수 추출
-    user_id = '15011136'
+    user_id = '15011187'
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)

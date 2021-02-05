@@ -53,11 +53,16 @@
         <!-- 전공 -->
         <div class="resultbox container1">
             <div class="name name1">전공
-                <span class="tooltip t1">
+                <span class="tooltip">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text1">전공 필수 과목을 35학점 이상 이수하면 통과할 수 있습니다
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 공학인증 전공 영역에서는 세 가지 조건을 만족해야합니다.<br>
+                    1. 지정설계과목을 모두 이수해야합니다.<br>
+                    2. 선택 설계과목을 세개 이상 들어야합니다.<br>
+                    (SW설계기초를 이수한 학기 이후부터 인정됨)<br>
+                    3. 그 외 전공영역 과목을 들어 기준 학점을 이수해야합니다.<br>
+                    (학점이 인정되는 전공영역 과목을 들어야 함)
                 </div>
             </div>
             <div class="box">
@@ -88,8 +93,8 @@
                 <span class="tooltip t2">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text2">전공 선택 과목을 41학점 이상 이수하면 통과할 수 있습니다
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 전문 교양 필수과목을 모두 들으면 통과합니다.
                 </div>
             </div>
             <div class="box">
@@ -121,8 +126,8 @@
                 <span class="tooltip t3">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text3">중핵 필수 과목을 모두 이수하면 통과할 수 있습니다.
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - BSM 필수과목을 모두 들으면 통과합니다.
                 </div>
             </div>
             <div class="box">
@@ -595,7 +600,7 @@
                     thickness: 15,
                     fill: {
 
-                        gradient: ["#99A89E", "#BBC7BA"]
+                        gradient: ["#9ae6b3", "#6aa87f"]
                     }
                 })
                 .on('circle-animation-progress', function (event, progress, stepValue) {
@@ -617,7 +622,7 @@
                     thickness: 15,
                     fill: {
 
-                        gradient: ["#ECA4A6", "#b87577"]
+                        gradient: ["#f5aeb0", "#b06163"]
                     }
                 })
                 .on('circle-animation-progress', function (event, progress, stepValue) {

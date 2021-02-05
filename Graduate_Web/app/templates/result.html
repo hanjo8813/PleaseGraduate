@@ -728,7 +728,7 @@
                     </tr>
                 </table>
                 <div class="partdiv">
-                    {% if user_info.eng %}
+                    {% if pass_obj.eng %}
                     <span style="color:#17a55e">위 조건을 만족하셨습니다</span>
                     {% else %}
                     <span style="color:#d32f2f">위 조건을 만족하지 못했습니다</span>
@@ -1030,16 +1030,6 @@
             .toggle('active');
     });
 
-    function zzan() {
-        var table = document.getElementById("ht");
-        if (table.style.display == 'none') {
-            table.style.display = 'block';
-        }
-        else {
-            table.style.display = 'none'
-        }
-    }
-
     var CircleProgress = function (x, y, z) {
         if (x == 100) {
             $(y)
@@ -1054,7 +1044,7 @@
                     thickness: 15,
                     fill: {
 
-                        gradient: ["#99A89E", "#BBC7BA"]
+                        gradient: ["#9ae6b3", "#6aa87f"]
                     }
                 })
                 .on('circle-animation-progress', function (event, progress, stepValue) {
@@ -1076,7 +1066,7 @@
                     thickness: 15,
                     fill: {
 
-                        gradient: ["#ECA4A6", "#b87577"]
+                        gradient: ["#f5aeb0", "#b06163"]
                     }
                 })
                 .on('circle-animation-progress', function (event, progress, stepValue) {
