@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
+    <!--
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- 모바일에서도 PC처럼 보이게하기
-    <meta name="viewport" content="width=1280">
     -->
+    <meta name="viewport" content="width=1280">
+    
     <!-- static 폴더 참조 -->
     <!-- 원그래프 js는 각 페이지에서 소환해야됨 (일회성 호출이라서.) -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?after">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- favicon -->
-    <link rel="icon" href="{% static 'img/favicon.ico' %}?after?">
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
 
     <!-- 웹 참조-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>

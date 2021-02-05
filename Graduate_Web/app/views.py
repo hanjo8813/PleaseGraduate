@@ -43,8 +43,6 @@ def r_loading(request):
     return render(request, "loading.html")
 
 
-
-
 def list_to_query(list_):
     al = AllLecture.objects.none()
     for s_num in list_:
