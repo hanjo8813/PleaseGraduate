@@ -1,0 +1,140 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<style>
+    .body{
+        font-weight:bold;
+    }
+</style>
+
+<!-- 처음 타이틀 -->
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div style="font-size:2rem; font-weight:bold;"><span>Please Graduate</span>에 오신걸 환영합니다</div>
+        <div style="margin-top:0.5rem; font-size:1rem; color:rgb(199, 199, 199)">(21/02/05 - version 1.0)</div>
+    </div>
+</div>
+
+<div class="white_sec">
+    <div class="container">
+        <!-- 검사 대상 박스 -->
+        <div class="info_title">검사 대상</div>
+        <div class="info_box">
+            <p>1. 현재 검사 가능한 학과-학번은 아래와 같습니다. (아래 표에 해당하지 않으면 검사가 불가합니다.)</p>
+            <table class="possible_com">
+                <tr class="possible_com_th" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:16.6%">학과-학번</th>
+                    <th style="border-right :1px solid #cccccc; width:16.6%">데이터사이언스 15~20</th>
+                    <th style="border-right :1px solid #cccccc; width:16.6%">소프트웨어 15~20</th>
+                    <th style="border-right :1px solid #cccccc; width:16.6%">정보보호 15~20</th>
+                    <th style="border-right :1px solid #cccccc; width:16.6%">지능기전 15~20</th>
+                    <th style="width:16.6%">컴퓨터공학 15~20</th>
+                </tr>
+                <tr class="possible_com_tr">
+                    <td class="possible_com_td" style="background-color: #f8f8f8;">졸업검사</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td">O</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td" style="border-right :0px">X</td>
+                </tr>
+                <tr class="possible_com_tr">
+                    <td class="possible_com_td" style="background-color: #f8f8f8;">공학인증검사</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td">15제외 가능</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td">X</td>
+                    <td class="possible_com_td" style="border-right :0px">X</td>
+                </tr>
+            </table>
+            <p>2. 현재 편입생, 연계전공, 복수전공의 사례는 정확한 검사가 불가합니다.</p>
+            <p>3. 세종대학교 교과과정 링크 : &nbsp;&nbsp;
+                <a class="link_site" target="_blank" href="http://www.sejong.ac.kr/unilife/subject_01.html">수강편람</a>
+                &nbsp;&nbsp;
+                <a class="link_site" target="_blank"
+                    href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a>
+            </p>
+            <p>* 추후 타과 검사 기준 업데이트 예정</p>
+        </div>
+
+        <!-- 안내사항 박스 -->
+        <div class="info_title">안내 사항</div>
+        <div class="info_box">
+            <P>1. 로그인 시&nbsp;
+                <a class="link_site" target="_blank"
+                    href="https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN">UIS</a>
+                사이트와
+                <a class="link_site" target="_blank" href="http://classic.sejong.ac.kr/">대양휴머니티칼리지</a>
+                사이트에서 졸업요건 검사에 필요한 데이터를 자동으로 가져옵니다.
+            </P>
+            <p style="margin-left:1rem;">- 고전독서인증 : 대양휴머니티칼리지 -> 고전독서인증센터 -> 영역별 인증현황</p>
+            <p style="margin-left:1rem;">- 기이수과목 : uis -> 성적 및 강의평가 -> 기이수성적조회 -> 성적엑셀다운로드</p>
+            <p style="margin-left:1rem;">- 영어인증 : uis -> 졸업적부심사 및 자가진단 -> 과목이수점검 -> 영어졸업인증</p>
+            <p>2. 사용자의 uis/대양휴머니티 사이트의 아이디와 비밀번호는 <span class="caution_info">저장되지 않습니다.</span></p>
+            <p>3. 사용자의 기이수성적 엑셀파일은 <span class="caution_info">즉시 삭제됩니다.</span></p>
+            <p>4. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스에 저장됩니다. <span class="caution_info">(학점은 저장되지 않습니다.)</span>
+            </p>
+            <p>5. 관리자는 저장된 데이터베이스를 절대 다른 용도로 사용하지 않습니다.</p>
+            <p>6. 검사 결과가 정확하지 않을 수 있습니다. 오류발생 시 피드백 부탁드립니다.</p>
+        </div>
+
+        <!-- 동의 체크박스 -->
+        <div class="info_agree">
+            <input type="checkbox" onclick="agree_func()" id="agree"><label for=""> 위 안내사항을 숙지하였고 개인정보 수집에 동의합니다.</label> 
+        </div>
+        <br>
+    </div>
+</div>
+
+<!-- 로그인 박스 -->
+<div class="gray_sec">
+    <div class="container">
+        <div class="login_title" style="font-size:2rem;">로그인</div>
+        <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+            UIS 아이디로 로그인하세요. (UIS와 대양휴머니티칼리지 사이트의 ID/PW가 일치해야합니다.)
+        </div>
+        <div class="login_box">
+            <!-- 로그인 폼 -->
+            <form action="/loading/" method="post">
+                {% csrf_token %}
+                <div class="textbox">
+                    <label>아이디</label>
+                    <input type="text" name="id" placeholder="ID">
+                    <label>비밀번호</label>
+                    <input type="password" name="pw" placeholder="PASSWORD">
+                </div>
+                <div id="login_btn">
+                    <div class='login_btn_default'>위 약관에 동의해야합니다.</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>        
+
+{% endblock %}
+
+
+
+{% block js_section %}
+
+<script>
+    // 체크박스 누르면 작동
+    function agree_func(){
+        var chk = document.getElementById('agree');
+        // 체크시
+        if(chk.checked){
+            var tag = "<input type='submit' class='login_btn' value='로그인'>";
+        }
+        // 체크 풀시
+        else{
+            var tag = "<div class='login_btn_default'>위 약관에 동의해야합니다.</div>";
+        }
+        document.getElementById("login_btn").innerHTML = tag;
+    }
+</script>
+
+{% endblock %}

@@ -29,6 +29,9 @@ def r_head(request):
     request.session.clear()
     return render(request, "head.html")
 
+def r_login(request):
+    return render(request, "login.html")
+
 def f_logout(request):
     request.session.clear()
     return redirect('/')
@@ -627,8 +630,9 @@ def f_login(request):
                 driver.switch_to.frame(0)
             except:
                 driver.quit()
+                request.session.clear()
                 messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/')
+                return redirect('/login/')
             driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
             #------------------------------------------------------------------------------------------------- selenium part
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
@@ -665,8 +669,9 @@ def f_login(request):
             st = Standard.objects.filter(user_year = year, user_dep = major)
             # 존재하지 않으면
             if not st.exists():
+                request.session.clear()
                 messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-                return redirect('/')
+                return redirect('/login/')
 
             # 2. uis 크롤링 ----------------------------------------------------------------------------
             url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
@@ -805,8 +810,9 @@ def f_login(request):
             except:
                 driver.quit()
                 display.stop()
+                request.session.clear()
                 messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/')
+                return redirect('/login/')
             driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
             #------------------------------------------------------------------------------------------------- selenium part
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
@@ -844,8 +850,9 @@ def f_login(request):
             # 존재하지 않으면
             if not st.exists():
                 display.stop()
+                request.session.clear()
                 messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-                return redirect('/')
+                return redirect('/login/')
 
             # 2. uis 크롤링 ----------------------------------------------------------------------------
             url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'

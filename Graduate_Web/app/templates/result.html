@@ -1,6 +1,5 @@
 {% extends 'reference.html' %}
 {% block content %}
-
 <div class="lcontainer">
 
     <!-- 총학점 -->
@@ -60,9 +59,9 @@
                     <i class="fas fa-question-circle"></i>
                 </span>
                 <!-- 클릭시 툴팁 -->
-                <div class="tooltip_text text1">
-                    전공 필수 과목을 35학점 이상 이수하면 통과할 수 있습니다
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 전공 필수 과목으로 기준학점을 채우면 통과됩니다.<br>
+                    - 전공 필수 과목에서 초과되는 학점은 전공 선택 학점에 추가됩니다.
                 </div>
             </div>
             <!-- 내용 -->
@@ -94,7 +93,7 @@
                     <i class="fas fa-question-circle"></i>
                 </span>
                 <div class="tooltip_text text2">
-                    전공 선택 과목을 41학점 이상 이수하면 통과할 수 있습니다
+                    - 전공 선택 과목으로 기준학점을 채우면 통과됩니다.
                     <div class="point"></div>
                 </div>
             </div>
@@ -108,13 +107,11 @@
                         <span class="r" id="grade2"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade" style="letter-spacing: -0.5px;">이수 학점</span>
                         <span class="r" id="mygrade2"></span>
-                        <span class="tooltip" id="myremain" style="color:#d32f2f; ">
-                        </span>
+                        <span class="tooltip" id="myremain" style="color:#d32f2f; "></span>
                         <div class="tooltip_text">
                             전필 영역에서 기준 학점 초과시 전선 학점으로 인정됩니다.
-                            <div class="point"></div>
                         </div>
                     </div>
                     <button class="rbutton" id="myBtn2">Recommend</button>
@@ -129,9 +126,9 @@
                 <span class="tooltip t3">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text3">
-                    교양 필수 과목을 모두 이수하면 통과할 수 있습니다.
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 교양 필수 과목을 모두 이수하면 통과됩니다.<br>
+                    ( 필수 과목을 모두 들으면 기준학점이 만족됩니다. )
                 </div>
             </div>
             <div class="box">
@@ -160,12 +157,14 @@
         <div class="resultbox container4">
             <div class="name name1">
                 교양(중핵) 선택
-                <span class="tooltip t4">
+                <span class="tooltip">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text4">
-                    교양 선택 과목을 15학점 이상 이수하고 다섯가지 영역 중 세가지 영역을 채우면 통과할 수 있습니다
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 교양선택1은 세가지 조건을 만족해야합니다.<br>
+                    1. 교양선택1 과목으로 기준 학점을 채워야 합니다.<br>
+                    2. 필수과목을 모두 이수하여야 합니다.<br>
+                    3. 서로 다른 선택영역의 과목을 최소 3개 들어야 합니다.
                 </div>
             </div>
             <div class="box">
@@ -201,9 +200,9 @@
                 <span class="tooltip t5">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text text5">
-                    기초 교양 과목을 모두 이수하면 통과할 수 있습니다
-                    <div class="point"></div>
+                <div class="tooltip_text">
+                    - 학문 기초 교양 과목을 모두 이수하면 통과됩니다.<br>
+                    ( 필수 과목을 모두 들으면 기준학점이 만족됩니다. )
                 </div>
             </div>
             <div class="box">
@@ -235,7 +234,8 @@
                     <i class="fas fa-question-circle"></i>
                 </span>
                 <div class="tooltip_text text8">
-                    TOEIC 700점 이상의 증빙서류를 제출하거나 INTENCIVE 과목을 수료하면 통과할 수 있습니다
+                    - 5가지의 영어 시험 중 하나만 기준 점수를 넘기면 통과합니다.<br>
+                    - 혹은 Entensive English 과목을 이수하면 통과합니다.
                     <div class="point"></div>
                 </div>
             </div>
@@ -261,9 +261,10 @@
                     <i class="fas fa-question-circle"></i>
                 </span>
                 <div class="tooltip_text text7">
-                    영역별 기준 권수를 만족하여야 통과됩니다.<br>
-                    - 3학년 2학기 이전 : 고전강독 강의를 듣거나 시험을 봐서 권수를 채웁니다.<br>
-                    - 4학년 1학기 이후 : 최소 5권 만족시 고전특강 강의를 들을 수 있습니다.
+                    - 영역별 기준 권수를 만족하면 통과합니다.<br>
+                    1. 3학년 2학기 이전 : 고전강독 강의를 듣거나 시험을 봐서 권수를 채웁니다.<br>
+                    2. 4학년 1학기 이후 : 최소 5권 만족시 고전특강 강의를 들을 수 있습니다.<br>
+                    고전특강을 들으면 통과합니다.
                     <div class="point"></div>
                 </div>
             </div>
@@ -312,13 +313,7 @@
         <div class="resultbox container6">
             <div class="name name1">
                 공학 인증
-                <span class="tooltip t6">
-                    <i class="fas fa-question-circle"></i>
-                </span>
-                <div class="tooltip_text text6">
-                    공학 인증 과목들을 모두 이수하면 인증할 수 있습니다
-                    <div class="point"></div>
-                </div>
+                
             </div>
             <div class="box">
                 <div class="sbox" style="width:100%; margin-left:50px;">

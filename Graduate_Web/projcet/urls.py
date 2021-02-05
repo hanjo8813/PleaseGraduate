@@ -24,6 +24,7 @@ urlpatterns = [
 
     # 페이지 렌더링
     path('', views.r_head),
+    path('login/', views.r_login),
     path('loading/', views.r_loading),
     path('en_result/', views.r_en_result),
 
