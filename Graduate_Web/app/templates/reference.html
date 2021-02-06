@@ -38,10 +38,10 @@
             {% load static %}
             <a href="javascript:back_confirm()"><img src="{% static 'img/logo.png' %}"></a>
         </div>
-
+        
         <ul class="navbar_menu">
             <li>
-                <a>피드백하기</a>
+                <a href='javascript:go_feedback()'>피드백하기</a>
             </li>
             <li>
                 <!-- 로그인 세션 활용 -->
@@ -114,6 +114,11 @@
             }
         }
     };
+    // 피드백 클릭시
+    function go_feedback(){
+        window.onbeforeunload = null;
+        window.open('https://forms.gle/f2vUqVg9wQFneBLf7', '_blank'); 
+    }
 </script>
 
 </html>

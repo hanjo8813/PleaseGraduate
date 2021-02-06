@@ -88,7 +88,7 @@ def make_recommend_list(my_dic, dic):
         nl = NewLecture.objects.filter(subject_num = s_num)
         # 부족 과목이 열리고 있다면
         if nl.exists():
-            recommend.append(nl[0].subject_num.subject_num)
+            recommend.append(nl[0].subject_num)
         # 더이상 열리지 않는다면 -> 그룹번호로 동일과목 찾은 후 열리는 것만 저장
         else:
             g_num = dic_[s_num]
@@ -101,7 +101,7 @@ def make_recommend_list(my_dic, dic):
                 for s in sg:
                     nl2 = NewLecture.objects.filter(subject_num = s.subject_num)
                     if nl2.exists():
-                        recommend.append(nl2[0].subject_num.subject_num)
+                        recommend.append(nl2[0].subject_num)
     return recommend, list(check.values())
 
 def add_same_lecture(list_):
@@ -220,11 +220,11 @@ def r_result(request):
     
     # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
     # ind로 필수과목 추출후 딕셔너리 만들기
-    dic_ce = make_dic([int(s_num) for s_num in s_row.ce_list.split(',')])
+    dic_ce = make_dic([s_num for s_num in s_row.ce_list.split(',')])
     # 3. 중선(교선1) 필수과목
-    dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
+    dic_cs = make_dic([s_num for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
-    dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')]) 
+    dic_b = make_dic([s_num for s_num in s_row.b_list.split(',')]) 
 
     #------------------------------------------------------------------------------
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
@@ -241,10 +241,10 @@ def r_result(request):
     df_ms = data[data['이수구분'].isin(['전선'])]
     df_ms.reset_index(inplace=True,drop=True)
     # 중필(교필)
-    df_ce = data[data['이수구분'].isin(['교필'])]
+    df_ce = data[data['이수구분'].isin(['교필', '중필'])]
     df_ce.reset_index(inplace=True,drop=True)
     # 중선(교선)
-    df_cs = data[data['이수구분'].isin(['교선1'])]
+    df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
     df_cs.reset_index(inplace=True,drop=True)
     # 기교
     df_b = data[data['이수구분'].isin(['기교'])]
@@ -314,14 +314,13 @@ def r_result(request):
     ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     ug_MR = UserGrade.objects.filter(classification = '전필')
     ug_MC = UserGrade.objects.filter(classification = '전선')
-    ug_EC = UserGrade.objects.filter(classification = '교선1')
+    ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
     for u in ug_MR:
         mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
     for u in ug_MC:
         mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
     for u in ug_EC:
         ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    
     # 만약 사용자가 전필을 아예 안들었다면?
     if user_id not in mr_train['학번'].tolist() :
         new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}
@@ -340,7 +339,7 @@ def r_result(request):
         ec_train = ec_train.reset_index(drop = True)
         new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
-        
+
     # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
     user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
     recommend_sel = {
@@ -400,8 +399,8 @@ def r_result(request):
 # --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
 def r_en_result(request):
-    user_id = request.session.get('id')
-    # user_id = '16011140'
+    #user_id = request.session.get('id')
+    user_id = '16011174'
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
@@ -425,23 +424,23 @@ def r_en_result(request):
     my_engine_admit = make_dic(data['학수번호'].tolist())
 
     # 1.전문 교양
-    dic_pro = make_dic([int(s_num) for s_num in s_row.pro_acc_list.split(',')])
+    dic_pro = make_dic([s_num for s_num in s_row.pro_acc_list.split(',')])
     recom_pro, check_pro = make_recommend_list(my_engine_admit, dic_pro)
     mynum_pro = data[data['학수번호'].isin(dic_pro.keys())]['학점'].sum()
 
     # 2. bsm 필수
-    dic_bsm_ess = make_dic([int(s_num) for s_num in s_row.bsm_ess_list.split(',')])
+    dic_bsm_ess = make_dic([s_num for s_num in s_row.bsm_ess_list.split(',')])
     recom_bsm_ess, check_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
     mynum_bsm_ess = data[data['학수번호'].isin(dic_bsm_ess.keys())]['학점'].sum()
 
     # 3. bsm 선택 (16학번일때만 해당)
     if s_row.bsm_sel_list:
-        dic_bsm_sel = make_dic([int(s_num) for s_num in s_row.bsm_sel_list.split(',')])
+        dic_bsm_sel = make_dic([s_num for s_num in s_row.bsm_sel_list.split(',')])
         mynum_bsm_ess += data[data['학수번호'].isin(dic_bsm_sel.keys())]['학점'].sum()  # bsm 선택 이수학점을 더한다.
 
     # 4. 전공 설계
     # 4-1. 전공 전체 학점
-    dic_build = make_dic([int(s_num) for s_num in s_row.engine_major_list.split(',')])
+    dic_build = make_dic([s_num for s_num in s_row.engine_major_list.split(',')])
     recom_build, check_build =make_recommend_list(my_engine_admit,dic_build)
     mynum_build = data[data['학수번호'].isin(dic_build.keys())]['학점'].sum()
  
@@ -484,11 +483,11 @@ def r_en_result(request):
     my_engine_admit2 = make_dic(data2['학수번호'].tolist())
 
     # 4-2. 설계 필수과목 안들은 리스트
-    dic_build_ess = make_dic([int(s_num) for s_num in s_row.build_ess_list.split(',')])
+    dic_build_ess = make_dic([s_num for s_num in s_row.build_ess_list.split(',')])
     recom_build_ess, check_build_ess = make_recommend_list(my_engine_admit2, dic_build_ess)
 
     # 4-3. 설계 선택과목 중 안들은 리스트
-    dic_build_sel = make_dic([int(s_num) for s_num in s_row.build_sel_list.split(',')])
+    dic_build_sel = make_dic([s_num for s_num in s_row.build_sel_list.split(',')])
     recom_build_sel, check_build_sel = make_recommend_list(my_engine_admit2, dic_build_sel)
 
 
@@ -596,189 +595,192 @@ def get_Driver(url):
     return driver
 
 def f_login(request):
-    try:
-        # r_loading에서 받은 세션 꺼내기
-        id = request.session.get('id')
-        pw = request.session.get('pw')
-        year = id[:2]
 
-        if platform.system() == 'Windows':
-            # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
-            url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
-            driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
-            time.sleep(0.5)
-            # id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            # id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)
-            time.sleep(0.5)
-            # 로그인버튼 클릭
-            login_btn = driver.find_element_by_id('loginBtn')
-            login_btn.click()
-            # ID/PW 틀렸을 때 예외처리 ***
-            try:
-                driver.switch_to.frame(0)
-            except:
-                driver.quit()
-                request.session.clear()
-                messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/login/')
-            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-            #------------------------------------------------------------------------------------------------- selenium part
-            html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
-            # 독서 권수 리스트에 저장
-            soup = BeautifulSoup(html, 'html.parser')
-             # 유저 학과 저장
-            soup_major = soup.select_one("li > dl > dd")
-            major = soup_major.string.strip().strip()
-            for dd in soup_major:
-                if dd.string.strip() == '' :  # 공백제거 및 필요없는 문자 지우기
-                    continue
-                major = dd.string.strip().replace('학과', '')
-            # 유저 이름 저장
-            soup_name = soup.select("li > dl > dd")
-            name = soup_name[2].string
-            # 인증 여부
-            soup_cert = soup.select("li > dl > dd")
-            cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
-            # 고특으로 대체이수 하지 않았을 때
-            if cert[-4:] == '대체이수':
-                book = '고특통과'
-            else :
-                book=[]
-                soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
-                  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
-                for td in soup1:
-                    if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
-                        continue
-                    book.append(td.string.strip().strip().replace('권', ''))
-                book = ''.join(book[:4]).replace(' ','')
-            driver.quit()
-
-            # 학과-학번이 기준에 있는지 검사 - 예외처리
-            st = Standard.objects.filter(user_year = year, user_dep = major)
-            # 존재하지 않으면
-            if not st.exists():
-                request.session.clear()
-                messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-                return redirect('/login/')
-
-            # 2. uis 크롤링 ----------------------------------------------------------------------------
-            url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
-            driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            #id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            #id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)  
-            #로그인버튼 클릭
-            login_btn = driver.find_element_by_id('logbtn')
-            login_btn.click()
-            driver.switch_to.frame(2)
-            # 수업/성적 메뉴선택
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
-            # 성적 및 강의평가 선택
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
-            time.sleep(0.5)
-            # 기이수성적조회로 클릭 이동
-            driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
-            time.sleep(1)
-            # 최상위(default) 프레임으로 이동
-            driver.switch_to.default_content()
-            time.sleep(0.5)
-            # 프레임 경우의 수 다 찾고 이동
-            driver.switch_to.frame(3)
+    # r_loading에서 받은 세션 꺼내기
+    id = request.session.get('id')
+    pw = request.session.get('pw')
+    year = id[:2]
+    
+    if platform.system() == 'Windows':
+        # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
+        url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+        driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+        if checked:
+            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+            alert = driver.switch_to_alert()
+            alert.dismiss()
+        # id , pw 입력할 곳 찾기
+        tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+        tag_pw = driver.find_element_by_id("password")
+        tag_id.clear()
+        # id , pw 보내기
+        tag_id.send_keys(id)
+        tag_pw.send_keys(pw)
+        time.sleep(0.5)
+        # 로그인버튼 클릭
+        login_btn = driver.find_element_by_id('loginBtn')
+        login_btn.click()
+        # ID/PW 틀렸을 때 예외처리 ***
+        try:
             driver.switch_to.frame(0)
-            time.sleep(0.5)
-            # 다운로드 버튼 x_path 클릭
-            x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
-            x.click()
-            time.sleep(1.5)
-            # 영어인증 test
-            driver.switch_to_default_content()
-            driver.switch_to.frame(2)
-            driver.execute_script("javaScript:frameResize(this);")
-            time.sleep(0.5)
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
-            time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
+        except:
+            driver.quit()
+            request.session.clear()
+            messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+            return redirect('/login/')
+        driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+        #------------------------------------------------------------------------------------------------- selenium part
+        html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+        # 독서 권수 리스트에 저장
+        soup = BeautifulSoup(html, 'html.parser')
+         # 유저 학과 저장
+        soup_major = soup.select_one("li > dl > dd")
+        major = soup_major.string.strip().strip()
+        for dd in soup_major:
+            if dd.string.strip() == '' :  # 공백제거 및 필요없는 문자 지우기
+                continue
+            major = dd.string.strip().replace('학과', '')
+        # 유저 이름 저장
+        soup_name = soup.select("li > dl > dd")
+        name = soup_name[2].string
+        # 인증 여부
+        soup_cert = soup.select("li > dl > dd")
+        cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
+        # 고특으로 대체이수 하지 않았을 때
+        if cert[-4:] == '대체이수':
+            book = '고특통과'
+        else :
+            book=[]
+            soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+              # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+            for td in soup1:
+                if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+                    continue
+                book.append(td.string.strip().strip().replace('권', ''))
+            book = ''.join(book[:4]).replace(' ','')
+        driver.quit()
+
+        # 학과-학번이 기준에 있는지 검사 - 예외처리
+        st = Standard.objects.filter(user_year = year, user_dep = major)
+        # 존재하지 않으면
+        if not st.exists():
+            request.session.clear()
+            messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
+            return redirect('/login/')
+
+        # 2. uis 크롤링 ----------------------------------------------------------------------------
+        url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+        driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+        #id , pw 입력할 곳 찾기
+        tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
+        tag_pw = driver.find_element_by_id("password")
+        tag_id.clear()
+        #id , pw 보내기
+        tag_id.send_keys(id)
+        tag_pw.send_keys(pw)  
+        #로그인버튼 클릭
+        login_btn = driver.find_element_by_id('logbtn')
+        login_btn.click()
+        driver.switch_to.frame(2)
+        # 수업/성적 메뉴선택
+        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
+        # 성적 및 강의평가 선택
+        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
+        time.sleep(0.5)
+        # 기이수성적조회로 클릭 이동
+        driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
+        time.sleep(0.5)
+        # 최상위(default) 프레임으로 이동
+        driver.switch_to.default_content()
+        # 프레임 경우의 수 다 찾고 이동
+        driver.switch_to.frame(3)
+        driver.switch_to.frame(0)
+        time.sleep(0.5)
+        # 다운로드 버튼 x_path 클릭
+        x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
+        x.click()
+        time.sleep(1.5)
+        # 영어인증 test
+        driver.switch_to_default_content()
+        driver.switch_to.frame(2)
+        driver.execute_script("javaScript:frameResize(this);")
+        time.sleep(0.5)
+        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
+        time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
+        # 졸업자 예외처리 - 졸업자는 영어 통과로 고정
+        try : 
             driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
             time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
             popup = driver.window_handles[1]  # 팝업 창
             driver.switch_to_window(popup)
             driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
             eng = 0
-            driver.quit()
+        except:
+            eng = 1
+        driver.quit()
 
-            # 기존 회원인지 검사
-            ui = UserInfo.objects.filter(student_id = id)
-            if not ui.exists():
-                # user_info 테이블에 정보 추가
-                new_ui = UserInfo()
-                new_ui.student_id = id
-                new_ui.year = int(id[:2])
-                new_ui.major = major
-                new_ui.name = name
-                new_ui.book = book
-                new_ui.eng = eng
-                new_ui.save()
-            else:
-                # user_info 테이블에 정보 수정
-                for u in ui:
-                    u.book = book
-                    u.eng = eng
-                    u.save()
-                # user_grade 테이블의 해당 회원 성적표 삭제하기
-                ug = UserGrade.objects.filter(student_id = id)
-                ug.delete()
-
-            # 파일명 변경
-            file_path = './app/uploaded_media/'
-            new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-            file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
-            shutil.move(file_name,os.path.join(file_path,new_file_name))
-            time.sleep(1)
-            df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
-            os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-            # 논패, F과목 삭제
-            n = df.shape[0]
-            flag = 0    
-            while(True):
-                for i in range(n):
-                    if i == n-1 :
-                        flag = 1
-                    if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
-                        df = df.drop(df.index[i])
-                        n -= 1
-                        df.reset_index(inplace=True, drop=True)
-                        break
-                if flag == 1:
-                    break
-            # DF에서 불필요 칼럼 삭제
-            df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
-            # DF를 테이블에 추가
-            for i, row in df.iterrows():
-                new_ug = UserGrade()
-                new_ug.student_id = id
-                new_ug.year = row['년도']
-                new_ug.semester = row['학기']
-                new_ug.subject_num = row['학수번호']
-                new_ug.subject_name = row['교과목명']
-                new_ug.classification = row['이수구분']
-                new_ug.selection = row['선택영역']
-                new_ug.grade = row['학점']
-                new_ug.save()
-
+        # 기존 회원인지 검사
+        ui = UserInfo.objects.filter(student_id = id)
+        if not ui.exists():
+            # user_info 테이블에 정보 추가
+            new_ui = UserInfo()
+            new_ui.student_id = id
+            new_ui.year = int(id[:2])
+            new_ui.major = major
+            new_ui.name = name
+            new_ui.book = book
+            new_ui.eng = eng
+            new_ui.save()
         else:
+            # user_info 테이블에 정보 수정
+            for u in ui:
+                u.book = book
+                u.eng = eng
+                u.save()
+            # user_grade 테이블의 해당 회원 성적표 삭제하기
+            ug = UserGrade.objects.filter(student_id = id)
+            ug.delete()
+
+        # 파일명 변경
+        file_path = './app/uploaded_media/'
+        new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+        file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
+        shutil.move(file_name,os.path.join(file_path,new_file_name))
+        time.sleep(1)
+        df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
+        os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
+        # 논패, F과목 삭제
+        n = df.shape[0]
+        flag = 0    
+        while(True):
+            for i in range(n):
+                if i == n-1 :
+                    flag = 1
+                if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
+                    df = df.drop(df.index[i])
+                    n -= 1
+                    df.reset_index(inplace=True, drop=True)
+                    break
+            if flag == 1:
+                break
+        # DF에서 불필요 칼럼 삭제
+        df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
+        # DF를 테이블에 추가
+        for i, row in df.iterrows():
+            new_ug = UserGrade()
+            new_ug.student_id = id
+            new_ug.year = row['년도']
+            new_ug.semester = row['학기']
+            new_ug.subject_num = str(row['학수번호']).lstrip('0')
+            new_ug.subject_name = row['교과목명']
+            new_ug.classification = row['이수구분']
+            new_ug.selection = row['선택영역']
+            new_ug.grade = row['학점']
+            new_ug.save()
+    
+    else:
+        try:
             # 가상 디스플레이를 활용해 실행속도 단축
             display = Display(visible=0, size=(1024, 768))
             display.start()
@@ -790,7 +792,6 @@ def f_login(request):
                 driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
                 alert = driver.switch_to_alert()
                 alert.dismiss()
-            time.sleep(0.5)
             # id , pw 입력할 곳 찾기
             tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
             tag_pw = driver.find_element_by_id("password")
@@ -842,7 +843,6 @@ def f_login(request):
                     book.append(td.string.strip().strip().replace('권', ''))
                 book = ''.join(book[:4]).replace(' ','')
             driver.quit()
-
             # 학과-학번이 기준에 있는지 검사 - 예외처리
             st = Standard.objects.filter(user_year = year, user_dep = major)
             # 존재하지 않으면
@@ -851,7 +851,6 @@ def f_login(request):
                 request.session.clear()
                 messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
                 return redirect('/login/')
-
             # 2. uis 크롤링 ----------------------------------------------------------------------------
             url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
             driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
@@ -873,10 +872,9 @@ def f_login(request):
             time.sleep(0.5)
             # 기이수성적조회로 클릭 이동
             driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
-            time.sleep(1)
+            time.sleep(0.5)
             # 최상위(default) 프레임으로 이동
             driver.switch_to.default_content()
-            time.sleep(0.5)
             # 프레임 경우의 수 다 찾고 이동
             driver.switch_to.frame(3)
             driver.switch_to.frame(0)
@@ -885,7 +883,6 @@ def f_login(request):
             x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
             x.click()
             time.sleep(1.5)
-            '''
             #---------------------------------------------------------------- 영어성적 가져오기
             driver.switch_to_default_content()
             driver.switch_to.frame(2)
@@ -893,26 +890,27 @@ def f_login(request):
             time.sleep(0.5)
             driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
             time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
-            driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
-            time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
-            popup = driver.window_handles[1]  # 팝업 창
-            driver.switch_to_window(popup)
-            time.sleep(0.5)
-            driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
-            driver.find_element_by_xpath('//*[@id="ckb2_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
-            driver.find_element_by_id('btnClose_btn').click()
-            time.sleep(0.5)
-            driver.switch_to_window(     driver.window_handles[0])  # 다시 uis 창으로 윈도우 바꿔놓기
-            driver.switch_to_frame(3)  # 이 사이트에서는 프레임 0 - 3 총 4개
-            soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
-            driver.switch_to_frame(0)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
-            k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')
-            eng = 1
-            if k == '불합격':
-                eng = 0
-            '''
-            eng = 1
+            # 졸업생 예외처리 (uis 페이지가 다름)
+            try : 
+                driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
+                time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
+                popup = driver.window_handles[1]  # 팝업 창
+                driver.switch_to_window(popup)
+                driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
+                driver.find_element_by_xpath('//*[@id="ckb2_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
+                driver.find_element_by_id('btnClose_btn').click()
+                time.sleep(0.5)
+                driver.switch_to_window(     driver.window_handles[0])  # 다시 uis 창으로 윈도우 바꿔놓기
+                driver.switch_to_frame(3)  # 이 사이트에서는 프레임 0 - 3 총 4개
+                soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
+                driver.switch_to_frame(0)
+                soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
+                k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')
+                eng = 1
+                if k == '불합격':
+                    eng = 0
+            except: # 졸업자의 경우
+                eng = 1
             driver.quit()
             display.stop()
 
@@ -968,20 +966,20 @@ def f_login(request):
                 new_ug.student_id = id
                 new_ug.year = row['년도']
                 new_ug.semester = row['학기']
-                new_ug.subject_num = row['학수번호']
+                new_ug.subject_num = str(row['학수번호']).lstrip('0')
                 new_ug.subject_name = row['교과목명']
                 new_ug.classification = row['이수구분']
                 new_ug.selection = row['선택영역']
                 new_ug.grade = row['학점']
                 new_ug.save()
-    # 어디든 오류 발생시
-    except: 
-        if 'driver' in locals():
-            driver.quit()
-        if 'display' in locals():
-            display.stop()
-        messages.error(request, '예기치 못한 오류가 발생했습니다.')
-        return redirect('/')
+        # 어디든 오류 발생시
+        except: 
+            if 'driver' in locals():
+                driver.quit()
+            if 'display' in locals():
+                display.stop()
+            messages.error(request, '예기치 못한 오류가 발생했습니다.')
+            return redirect('/')
     return r_result(request)
         
      
@@ -1019,8 +1017,7 @@ def f_login(request):
 
 # result 페이지 테스트용.
 def result_test(request):
-    # 세션에 담긴 변수 추출
-    user_id = '15011187'
+    user_id = '15011133'
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
@@ -1072,11 +1069,11 @@ def result_test(request):
     
     # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
     # ind로 필수과목 추출후 딕셔너리 만들기
-    dic_ce = make_dic([int(s_num) for s_num in s_row.ce_list.split(',')])
+    dic_ce = make_dic([s_num for s_num in s_row.ce_list.split(',')])
     # 3. 중선(교선1) 필수과목
-    dic_cs = make_dic([int(s_num) for s_num in s_row.cs_list.split(',')])
+    dic_cs = make_dic([s_num for s_num in s_row.cs_list.split(',')])
     # 4. 기교 필수과목 
-    dic_b = make_dic([int(s_num) for s_num in s_row.b_list.split(',')]) 
+    dic_b = make_dic([s_num for s_num in s_row.b_list.split(',')]) 
 
     #------------------------------------------------------------------------------
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
@@ -1093,10 +1090,10 @@ def result_test(request):
     df_ms = data[data['이수구분'].isin(['전선'])]
     df_ms.reset_index(inplace=True,drop=True)
     # 중필(교필)
-    df_ce = data[data['이수구분'].isin(['교필'])]
+    df_ce = data[data['이수구분'].isin(['교필', '중필'])]
     df_ce.reset_index(inplace=True,drop=True)
     # 중선(교선)
-    df_cs = data[data['이수구분'].isin(['교선1'])]
+    df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
     df_cs.reset_index(inplace=True,drop=True)
     # 기교
     df_b = data[data['이수구분'].isin(['기교'])]
@@ -1166,14 +1163,13 @@ def result_test(request):
     ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     ug_MR = UserGrade.objects.filter(classification = '전필')
     ug_MC = UserGrade.objects.filter(classification = '전선')
-    ug_EC = UserGrade.objects.filter(classification = '교선1')
+    ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
     for u in ug_MR:
         mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
     for u in ug_MC:
         mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
     for u in ug_EC:
         ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    
     # 만약 사용자가 전필을 아예 안들었다면?
     if user_id not in mr_train['학번'].tolist() :
         new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}

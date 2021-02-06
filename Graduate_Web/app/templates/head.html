@@ -26,9 +26,8 @@
         <span class="close">&times;</span>
         <br>
         <div class="modal_div">
-            현재 버전은 모바일 환경에서 화면이 깨질 수 있으므로 웹 환경에서의 사용을 권장합니다.
+            현재 버전은 모바일 환경에서 화면이 깨질 수 있으므로 PC 환경에서의 사용을 권장합니다.
             <br>
-            * 추후 모바일 환경 화면 업데이트 예정
         </div>
     </div>
 </div>
@@ -40,16 +39,16 @@
 {% block js_section %}
 <!-- js 파트 -->
 <script>
-    const toggleb = document.querySelector('.navbar_toggle');
-    const menu = document.querySelector('.navbar_menu');
+    // 기기 검사
+    var filter = "win16|win32|win64|mac|macintel"; 
+    if ( navigator.platform ) { 
+        // pc 경우 모달 안띄움
+        if(filter.indexOf( navigator.platform.toLowerCase() ) >= 0 ) { 
+            document.getElementById('myModal').style.display="none";
+        } 
+    }
 
-    toggleb.addEventListener('click', () => {
-        menu
-            .classList
-            .toggle('active');
-    });
-
-
+    // 모달 창
     var Spanclick = function (x, y) {
         x.onclick = function () {
             y.style.display = "none";
