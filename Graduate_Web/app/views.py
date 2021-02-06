@@ -885,6 +885,7 @@ def f_login(request):
             x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
             x.click()
             time.sleep(1.5)
+            '''
             #---------------------------------------------------------------- 영어성적 가져오기
             driver.switch_to_default_content()
             driver.switch_to.frame(2)
@@ -910,6 +911,8 @@ def f_login(request):
             eng = 1
             if k == '불합격':
                 eng = 0
+            '''
+            eng = 1
             driver.quit()
             display.stop()
 
