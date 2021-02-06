@@ -399,8 +399,8 @@ def r_result(request):
 # --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
 def r_en_result(request):
-    #user_id = request.session.get('id')
-    user_id = '16011174'
+    #user_id = '16011174'
+    user_id = request.session.get('id')
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
