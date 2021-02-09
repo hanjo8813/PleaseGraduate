@@ -1,0 +1,88 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<!-- 메인 -->
+<header class="main_bg">
+    <!-- 세종대 로고 -->
+    <div class="sejong_logo"></div>
+    <!-- 소개 문구 -->
+    <div class="bg_text_btn">
+        <div class="bg_small_text fadein_text">
+            세종인을 위한 간편한 졸업요건 검사 사이트
+        </div>
+        <div class="bg_big_text fadein_text">
+            Please Graduate
+        </div>
+        <div class="bg_btn">
+            <button class="bg_btn_style" onclick="location.href='/login/'">검사하기</button>
+        </div>
+    </div>
+    <!-- 방문자 + 검사횟수 -->
+    <div class ="num_visit_test">
+        <div><i class="fas fa-user"></i>&nbsp;&nbsp;총 방문자 수 : {{visit_num}}</div>
+        <div style="margin-top:0.4rem;"><i class="fas fa-mouse" style="margin-right:0.1rem;"></i>&nbsp;&nbsp;총 검사 횟수 : {{test_num}}</div>
+    </div>
+</header>
+
+
+<!-- 웹 권장 모달 (모바일에서만 뜸)
+<div id='myModal' class="modal" style ="display: none;">
+    <div class="modal-content">
+        <span class="close" style="font-size:5rem;">&times;</span>
+        <div class="modal_div">
+            <br><br><br><br><br>
+            <div style="font-size:3rem; font-weight:bold; padding-bottom:6rem;">사이트 이용시 모바일 환경에서는 화면이 깨질 수 있으므로 PC 환경에서의 사용을 권장합니다.</div>
+        </div>
+    </div>
+</div>
+-->
+
+<!-- 사용 못함 -->
+<div id='myModal' class="modal" style ="display: block;">
+    <div class="modal-content">
+        
+        <div class="modal_div">
+            <br>
+            <div style="font-size:2rem; font-weight:bold;">UIS 홈페이지에서의 우회 로그인 방법을 차단하여 더 이상 검사하실 수 없습니다</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block js_section %}
+<!-- js 파트 -->
+<script>
+    /*
+    // 기기 검사
+    var filter = "win16|win32|win64|mac|macintel"; 
+    if ( navigator.platform ) { 
+        // 모바일에서만 보이게함
+        if(filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+            document.getElementById('myModal').style.display="block";
+        } 
+    }
+    
+    // 모달 창
+    var Spanclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "none";
+        }
+    }
+    
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+
+    Spanclick(span, modal);
+    */
+</script>
+{% endblock %}

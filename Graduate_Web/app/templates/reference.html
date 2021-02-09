@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!--
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    -->
+    <meta name="viewport" content="width=1280">
+    
+    <!-- static 폴더 참조 -->
+    <!-- 원그래프 js는 각 페이지에서 소환해야됨 (일회성 호출이라서.) -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- favicon -->
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
+
+    <!-- 웹 참조-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/e8a335040d.js" crossorigin="anonymous"></script>
+
+    <!-- 웹 폰트 참조-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+
+    <title>Please Graduate</title>
+
+    <!-- loading.html 때문에 만듬 -->
+    {% block meta %}
+    {% endblock %}
+</head>
+
+<body>
+    <!-- 로고 / 메뉴바-->
+    <nav class="navbar">
+        <div class="navbar_logo">
+            {% load static %}
+            <a href="javascript:back_confirm()"><img src="{% static 'img/logo.png' %}"></a>
+        </div>
+        
+        <ul class="navbar_menu">
+            <li>
+                <a href='javascript:go_feedback()'>피드백하기</a>
+            </li>
+            <li>
+                <!-- 로그인 세션 활용 -->
+                {% if not request.session.id  %}
+                <a href='/login/'>로그인</a>
+                {% else %}
+                <a href='javascript:back_confirm()'>로그아웃</a>
+                {% endif %}
+            </li>
+        </ul>
+        <a href="#" class="navbar_toggle">
+            <i class="fas fa-bars"></i>
+        </a>
+    </nav>
+
+
+    {% block content %}
+    {% endblock %}
+
+
+    <!--footer-->
+    <footer class="footer">
+        <ul class="footer_list">
+            <li>
+                - Contact -
+            </li>
+            <li>
+                Email : hanjo8813@gmail.com
+            </li>
+            <li>
+                GitHub : 추후 업로드
+            </li>
+        </ul>
+        <h2 class="copyright">Copyright
+            <i class="far fa-copyright"></i>
+            2021 PleaseGraduate team <br>
+            강전호, 강홍구, 권정현, 안재현, 한재원
+        </h2>
+    </footer>
+</body>
+
+
+
+
+{% block js_section %}
+{% endblock %}
+
+<!-- 예외처리 -->
+{% if messages %}
+    {% for m in messages %}
+    <script>
+        alert('{{ m }}') ;
+    </script>
+    {% endfor %}
+{% endif %}
+
+<script>
+    // 로고 클릭시
+    function back_confirm(){
+        // 세션없을때
+        if('{{request.session.id}}' == ''){
+            location.href = '/f_logout/';
+        }
+        // 세션 있을때
+        else{
+            var back_head = confirm('⚠️ 확인을 누르면 로그아웃 됩니다. ⚠️');
+            if(back_head){
+                window.onbeforeunload = null;
+                window.location.href = '/';
+            }
+        }
+    };
+    // 피드백 클릭시
+    function go_feedback(){
+        window.onbeforeunload = null;
+        window.open('https://forms.gle/f2vUqVg9wQFneBLf7', '_blank'); 
+    }
+</script>
+
+</html>

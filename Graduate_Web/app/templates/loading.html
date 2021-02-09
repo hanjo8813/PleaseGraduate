@@ -1,0 +1,38 @@
+{% extends 'reference.html' %}
+
+{% block meta %}
+<!-- 넘어오자마자 f_login 함수 호출 -->
+<meta http-equiv="refresh" content="0; url=/f_login/"> 
+{% endblock %}
+
+
+{% block content %}
+<div class="loadcontainer">
+    <div class="sk-chase">
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+    </div>
+    <div class="loading">
+        <span>성</span>
+        <span>적</span>
+        <span>표</span>
+        <span>를</span>
+        <span>분</span>
+        <span>석</span>
+        <span>중</span>
+        <span>입</span>
+        <span>니</span>
+        <span>다</span>
+        <span>.</span>
+        <span>.</span>
+        <span>.</span>
+    </div>
+    <div style=" letter-spacing:1px; margin-top:0.8rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+        20초 정도 소요됩니다. 창을 이동하지 마세요!
+    </div>
+</div>
+{% endblock %}

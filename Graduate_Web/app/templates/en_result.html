@@ -1,0 +1,688 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+<div class="lcontainer">
+
+    <!-- 공학인증 총 학점 -->
+    <div class="fcontainer">
+        <div class="resultbox container0">
+            <div class="name name0">공학 인증 Total
+
+            </div>
+            <div class="box">
+                <div id="chart0">
+                    <strong class="total_strong"></strong>
+                </div>
+                <div class="Sbox">
+                    <div class="gbox">
+                        <span class="grade Grade">학번</span>
+                        <span class="t" id="studentnumber"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade Grade">이름</span>
+                        <span class="t" id="name"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade Grade">총 기준 학점
+                        </span>
+                        <span class="t" id="totalgrade"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade Grade">총 이수 학점
+                            </span>
+
+                            <span class="t" id="mytotalgrade"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="gbox Gbox">
+                            <span class="cap"><i class="fas fa-graduation-cap"></i></span>
+
+                            <div class="T" id="cangraduate"> </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rcontainer">
+
+        <!-- 전공 -->
+        <div class="resultbox container1">
+            <div class="name name1">전공
+                <span class="tooltip">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text">
+                    - 공학인증 전공 영역에서는 세 가지 조건을 만족해야합니다.<br>
+                    1. 지정설계과목을 모두 이수해야합니다.<br>
+                    2. 선택 설계과목을 세개 이상 들어야합니다.<br>
+                    (SW설계기초를 이수한 학기 이후부터 인정됨)<br>
+                    3. 그 외 전공영역 과목을 들어 기준 학점을 이수해야합니다.<br>
+                    (학점이 인정되는 전공영역 과목을 들어야 함)
+                </div>
+            </div>
+            <div class="box">
+                <div id="chart1">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade1"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade1"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn1">Recommend</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전문교양 -->
+        <div class="resultbox container2">
+            <div class="name name1">전문 교양
+                <span class="tooltip t2">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text">
+                    - 전문 교양 필수과목을 모두 들으면 통과합니다.
+                </div>
+            </div>
+            <div class="box">
+
+                <div id="chart2">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade2"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade2"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn2">Recommend</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BSM -->
+        <div class="resultbox container3">
+            <div class="name name1">BSM
+                <span class="tooltip t3">
+                    <i class="fas fa-question-circle"></i>
+                </span>
+                <div class="tooltip_text">
+                    - BSM 필수과목을 모두 들으면 통과합니다.
+                </div>
+            </div>
+            <div class="box">
+
+                <div id="chart3">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점
+                        </span>
+                        <span class="r" id="grade3"></span>
+                    </div>
+                    <div>
+                        <div class="gbox">
+                            <span class="grade">이수 학점
+                            </span>
+                            <span class="r" id="mygrade3"></span>
+                        </div>
+                    </div>
+                    <button class="rbutton" id="myBtn3">Recommend</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 추천 모달-->
+
+<!-- 전공 -->
+<div id="myModal1" class="modal modal1">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <br>
+        <div class="modal_div">
+            <!-- 지정설계 과목 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 지정설계 과목
+                </div>
+                <div class="mydiv">지정설계 과목을 모두 이수해야합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q,c in standard_list.build_ess %}
+                    {% if c %}
+                    <tr class="mytr">
+                    {% else %}
+                    <tr class="mytr" style="color: #d32f2f">
+                    {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if pass_obj.build_ess %}
+                    <span style="color:#17a55e">지정 설계과목 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">지정 설계과목이 부족합니다</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 선택과목 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택설계 과목
+                </div>
+                <div class="mydiv">3개의 설계 과목을 선택해 들어야 합니다. SW설계기초 강의를 이수한 학기 이후부터 인정됩니다.</div>
+                <hr>
+                {% if pass_obj.build_sel != -1 %}
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q,c in standard_list.build_sel %}
+                    {% if not c %}
+                    <tr class="mytr">
+                    {% else %}
+                    <tr class="mytr" style="color: #17a55e">
+                    {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+
+                <div class="partdiv">
+                    {% if pass_obj.build_sel == 1 %}
+                    <span style="color:#17a55e">선택 설계과목 조건을 만족하셨습니다</span>
+                    {% elif pass_obj.build_sel == 0  %}
+                    <span style="color:#d32f2f">선택 설계과목이 부족합니다</span>
+                    {% else %}
+                    <p><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#d32f2f"></i></p>
+                    <span style="color:#d32f2f">SW설계기초 강의를 듣지 않았습니다! SW설계기초를 듣고 나서부터 선택과목이 인정됩니다!
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 추천 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 전공영역 추천
+                </div>
+                <div class="mydiv">공학인증 전공영역이 인정되는 강의 중, 자신이 들은 것을 제외한 강의를 부족한 학점만큼 추천합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in recommend.build %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if 0 >= pass_obj.n %}
+                    <span style="color:#17a55e">기준 학점을 만족했습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">{{pass_obj.n}} 학점이 부족합니다</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 전문 교양 -->
+<div id="myModal2" class="modal modal2">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <br>
+        <div class="modal_div">
+            <!-- 필수과목 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 필수과목 목록
+                </div>
+                <div class="mydiv">전문교양 필수과목을 모두 들었을 때 통과합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q,c in standard_list.pro %}
+                    {% if c %}
+                    <tr class="mytr">
+                    {% else %}
+                    <tr class="mytr" style="color: #d32f2f">
+                    {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if pass_obj.pro %}
+                    <span style="color:#17a55e">필수과목 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">필수과목이 부족합니다</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 필수과목 추천 -->
+            {% if not pass_obj.pro %}
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 추천
+                </div>
+                <div class="mydiv">최근 1년의 강의목록 중 동일 과목으로 추천합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in recommend.pro %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- BSM-->
+<div id="myModal3" class="modal modal3">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <br>
+        <div class="modal_div">
+
+            <!-- 선택과목 -->
+            {% if standard_list.bsm_sel %}
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택과목 목록
+                </div>
+                <div class="mydiv">선택과목 두개중 한개를 만족했을 때 통과입니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in standard_list.bsm_sel %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if pass_obj.bsm_sel == 1 %}
+                    <span style="color:#17a55e">선택과목 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">위 과목 중 하나를 들어야 만족합니다.</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 필수과목 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 필수과목 목록
+                </div>
+                <div class="mydiv">BSM 필수과목을 모두 들었을 때 통과합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q,c in standard_list.bsm_ess %}
+                    {% if c %}
+                    <tr class="mytr">
+                    {% else %}
+                    <tr class="mytr" style="color: #d32f2f">
+                    {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if pass_obj.bsm_ess %}
+                    <span style="color:#17a55e">필수과목 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">필수과목이 부족합니다</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 필수과목 추천 -->
+            {% if not pass_obj.bsm_ess %}
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 추천
+                </div>
+                <div class="mydiv">최근 1년의 강의목록 중 동일 과목으로 추천합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in recommend.bsm_ess %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+<!-- js 파트 -->
+{% block js_section %}
+
+<!-- 원그래프 js 참조 -->
+{% load static %}
+<script src="{% static 'js/circle-progress.js' %}"></script>
+
+<script>
+    // 퍼센트화 함수
+    function to_percent(my, standard) {
+        a = (my / standard) * 100
+        if (a > 100) {
+            return a - a % 100;
+        }
+        else {
+            return a;
+        }
+    }
+
+    var Studentnumber = '{{user_info.id}}';
+    var Name = '{{user_info.name}}';
+
+    var Totalgrade = '{{standard_num.total}}';
+    var Grade1 = '{{standard_num.build}}';
+    var Grade2 = '{{standard_num.pro}}';
+    var Grade3 = '{{standard_num.bsm}}';
+
+    var Mytotalgrade = '{{my_num.total}}';
+    var Mygrade1 = '{{my_num.build}}';
+    var Mygrade2 = '{{my_num.pro}}';
+    var Mygrade3 = '{{my_num.bsm}}';
+
+    var pernum0 = to_percent(Mytotalgrade, Totalgrade);
+    var pernum1 = to_percent(Mygrade1, Grade1);
+    var pernum2 = to_percent(Mygrade2, Grade2);
+    var pernum3 = to_percent(Mygrade3, Grade3);
+
+
+
+
+    if (pernum0 == 100) {
+        var Cangraduate = "축하합니다! 공학인증이 가능합니다!!";
+        document.querySelector('.T').style.fontSize = '24px';
+    } else {
+        document.querySelector('.cap').style.display = 'none';
+        document.querySelector('.T').style.fontSize = '23px';
+        var Cangraduate = "공학인증까지 " + (
+            Totalgrade - Mytotalgrade
+        ) + "학점이 필요합니다!!";
+    }
+    const toggleb = document.querySelector('.navbar_toggle');
+    const menu = document.querySelector('.navbar_menu');
+    let tooltipeb = document.querySelectorAll('.tooltip');
+    let text = document.querySelectorAll('.tooltip_text');
+
+    var modal1 = document.getElementById('myModal1');
+    var modal2 = document.getElementById('myModal2');
+    var modal3 = document.getElementById('myModal3');
+
+    var btn1 = document.getElementById("myBtn1");
+    var btn2 = document.getElementById("myBtn2");
+    var btn3 = document.getElementById("myBtn3");
+
+
+    var span1 = document.getElementsByClassName("close")[0];
+    var span2 = document.getElementsByClassName("close")[1];
+    var span3 = document.getElementsByClassName("close")[2];
+
+
+    document
+        .getElementById("name")
+        .innerHTML = Name;
+    document
+        .getElementById("studentnumber")
+        .innerHTML = Studentnumber;
+
+    document
+        .getElementById("grade1")
+        .innerHTML = Grade1;
+    document
+        .getElementById("grade2")
+        .innerHTML = Grade2;
+    document
+        .getElementById("grade3")
+        .innerHTML = Grade3;
+
+    document
+        .getElementById("mygrade1")
+        .innerHTML = Mygrade1;
+    document
+        .getElementById("mygrade2")
+        .innerHTML = Mygrade2;
+    document
+        .getElementById("mygrade3")
+        .innerHTML = Mygrade3;
+
+
+    document
+        .getElementById("mytotalgrade")
+        .innerHTML = Mytotalgrade;
+    document
+        .getElementById("totalgrade")
+        .innerHTML = Totalgrade;
+
+    document
+        .getElementById("cangraduate")
+        .innerHTML = Cangraduate;
+
+
+
+    toggleb.addEventListener('click', () => {
+        menu
+            .classList
+            .toggle('active');
+    });
+
+    var CircleProgress = function (x, y, z) {
+        if (x == 100) {
+            $(y)
+                .circleProgress({
+                    value: x / 100,
+                    startAngle: 300,
+                    size: z,
+                    animation: {
+                        duration: 2200,
+                        easing: "swing"
+                    },
+                    thickness: 15,
+                    fill: {
+
+                        gradient: ["#9ae6b3", "#6aa87f"]
+                    }
+                })
+                .on('circle-animation-progress', function (event, progress, stepValue) {
+
+                    $(this)
+                        .find('strong')
+                        .html(Math.round(x * progress) + '<i>%</i>');
+                });
+        } else {
+            $(y)
+                .circleProgress({
+                    value: x / 100,
+                    startAngle: 300,
+                    size: z,
+                    animation: {
+                        duration: 2200,
+                        easing: "swing"
+                    },
+                    thickness: 15,
+                    fill: {
+
+                        gradient: ["#f5aeb0", "#b06163"]
+                    }
+                })
+                .on('circle-animation-progress', function (event, progress, stepValue) {
+
+                    $(this)
+                        .find('strong')
+                        .html(Math.round(x * progress) + '<i>%</i>');
+                });
+        }
+    }
+    var Tooltipeb = function (x, y) {
+        x.addEventListener('click', () => {
+            y
+                .classList
+                .toggle('active');
+        });
+    }
+    var Btnclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "block";
+        }
+
+    }
+    var Spanclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "none";
+        }
+
+    }
+
+    for (i = 0; i < 3; i++) {
+        Tooltipeb(tooltipeb[i], text[i]);
+    }
+    Btnclick(btn1, modal1);
+    Btnclick(btn2, modal2);
+    Btnclick(btn3, modal3);
+
+
+    Spanclick(span1, modal1);
+    Spanclick(span2, modal2);
+    Spanclick(span3, modal3);
+
+
+    CircleProgress(pernum0, '#chart0', 250);
+    CircleProgress(pernum1, '#chart1', 150);
+    CircleProgress(pernum2, '#chart2', 150);
+    CircleProgress(pernum3, '#chart3', 150);
+
+
+    window.onclick = function (event) {
+        if (event.target == modal1) {
+            modal1.style.display = "none";
+        }
+        if (event.target == modal2) {
+            modal2.style.display = "none";
+        }
+        if (event.target == modal3) {
+            modal3.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}
