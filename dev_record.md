@@ -56,7 +56,7 @@
 - `pip install pandas`
 - `pip install xlrd`
 - `pip install selenium`
-- `pip install beutifulsoup4`
+- `pip install beautifulsoup4`
 - `pip install surprise`
 - `pip install django-pandas`
 - `pip install pylint-django` (vs코드용)
