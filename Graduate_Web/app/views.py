@@ -606,6 +606,7 @@ def get_Driver(url):
 
         ua = UserAgent(verify_ssl=False)
         userAgent = ua.random
+        print(userAgent)
         options.add_argument(f'user-agent={userAgent}')
 
         # 크롬창을 열지않고 백그라운드로 실행
@@ -934,6 +935,8 @@ def f_login(request):
                 eng = 1
             driver.quit()
             display.stop()
+
+            return render(request, "head.html") 
 
             # 기존 회원인지 검사
             ui = UserInfo.objects.filter(student_id = id)
