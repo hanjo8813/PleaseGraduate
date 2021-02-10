@@ -858,6 +858,13 @@ def f_login(request):
                 request.session.clear()
                 messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
                 return redirect('/login/')
+        except :
+            driver.quit()
+            display.stop()
+            messages.error(request, '대양 금지')
+            return redirect('/')
+
+        try:
             # 2. uis 크롤링 ----------------------------------------------------------------------------
             url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
             driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
@@ -927,6 +934,11 @@ def f_login(request):
                 eng = 1
             driver.quit()
             display.stop()
+        except:
+            driver.quit()
+            display.stop()
+            messages.error(request, 'uis에서 오류')
+            return redirect('/')
 
             # 기존 회원인지 검사
             ui = UserInfo.objects.filter(student_id = id)
