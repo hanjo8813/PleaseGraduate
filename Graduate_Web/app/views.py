@@ -17,6 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
+from fake_useragent import UserAgent
 # 장고 관련 참조
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -587,6 +588,14 @@ def get_Driver(url):
     # 윈도우일 때 -> 개발용
     if platform.system() == 'Windows':
         options = webdriver.ChromeOptions()
+
+
+        ua = UserAgent(verify_ssl=False)
+        userAgent = ua.random
+        print(userAgent)
+        options.add_argument(f'user-agent={userAgent}')
+
+
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = os.getcwd() + '\\app\\uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
@@ -594,6 +603,11 @@ def get_Driver(url):
     # ubuntu일 때 -> 배포용
     else:
         options = webdriver.ChromeOptions()
+
+        ua = UserAgent(verify_ssl=False)
+        userAgent = ua.random
+        options.add_argument(f'user-agent={userAgent}')
+
         # 크롬창을 열지않고 백그라운드로 실행
         #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
