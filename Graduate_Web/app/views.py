@@ -939,7 +939,7 @@ def f_login(request):
             display.stop()
             messages.error(request, 'uis에서 오류')
             return redirect('/')
-
+        try:
             # 기존 회원인지 검사
             ui = UserInfo.objects.filter(student_id = id)
             if not ui.exists():
