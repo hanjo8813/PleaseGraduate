@@ -26,7 +26,7 @@
 </header>
 
 
-<!-- 웹 권장 모달 (모바일에서만 뜸)
+<!-- 웹 권장 모달 (모바일에서만 뜸) -->
 <div id='myModal' class="modal" style ="display: none;">
     <div class="modal-content">
         <span class="close" style="font-size:5rem;">&times;</span>
@@ -36,9 +36,8 @@
         </div>
     </div>
 </div>
--->
 
-<!-- 사용 못함 -->
+<!-- 사용 못함 
 <div id='myModal' class="modal" style ="display: block;">
     <div class="modal-content">
         <span class="close" style="font-size:3rem;">&times;</span>
@@ -48,7 +47,7 @@
         </div>
     </div>
 </div>
-
+-->
 
 {% endblock %}
 
@@ -57,7 +56,6 @@
 {% block js_section %}
 <!-- js 파트 -->
 <script>
-    /*
     // 기기 검사
     var filter = "win16|win32|win64|mac|macintel"; 
     if ( navigator.platform ) { 
@@ -65,7 +63,7 @@
         if(filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
             document.getElementById('myModal').style.display="block";
         } 
-    }*/
+    }
     
     // 모달 창
     var Spanclick = function (x, y) {

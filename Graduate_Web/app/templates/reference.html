@@ -92,9 +92,26 @@
 <!-- 예외처리 -->
 {% if messages %}
     {% for m in messages %}
-    <script>
-        alert('{{ m }}') ;
-    </script>
+        <!-- 로그인 오류 / 기타오류 발생시 -->
+        {% if m.tags == 'error' %}
+        <script>
+            alert('{{ m }}') ;
+        </script>
+
+        <!-- 기존 사용자가 재검사 할 경우 -->
+        {% elif m.tags == 'info' %}
+        <script>
+            var update = confirm('{{ m }}') ;
+            // 확인을 누르면 바로 검사창으로
+            if(update){
+                location.href='/loading3/';
+            }
+            // uis 크롤링 호출
+            else{
+                location.href='/f_uis/';
+            }
+        </script>
+        {% endif %}
     {% endfor %}
 {% endif %}
 

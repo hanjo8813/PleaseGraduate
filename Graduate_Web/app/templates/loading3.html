@@ -1,8 +1,8 @@
 {% extends 'reference.html' %}
 
 {% block meta %}
-<!-- 첫 검사일때에만 바로 호출됨. 재검사일 경우엔 confirm 먼저 출력 -->
-<meta http-equiv="refresh" content="0; url=/f_uis/"> 
+<!-- 바로 검사 함수 호출 -->
+<meta http-equiv="refresh" content="0; url=/result/"> 
 {% endblock %}
 
 
@@ -17,24 +17,24 @@
         <div class="sk-chase-dot"></div>
     </div>
     <div class="loading">
-        <span>2</span>
+        <span>3</span>
         <span>.</span>
         <span>성</span>
         <span>적</span>
         <span>표</span>
         <span>를</span>
-        <span>불</span>
-        <span>러</span>
-        <span>오</span>
-        <span>는</span>
+        <span>분</span>
+        <span>석</span>
         <span>중</span>
+        <span>입</span>
+        <span>니</span>
+        <span>다</span>
         <span>.</span>
         <span>.</span>
         <span>.</span>
-
     </div>
     <div style=" letter-spacing:1px; margin-top:0.8rem; font-size:0.9rem; color:rgb(199, 199, 199)">
-        15초 정도 소요됩니다. 창을 이동하지 마세요!
+        5초 정도 소요됩니다. 창을 이동하지 마세요!
     </div>
 </div>
 {% endblock %}

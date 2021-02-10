@@ -53,6 +53,9 @@ def r_loading(request):
 def r_loading2(request):
     return render(request, "loading2.html")
 
+def r_loading3(request):
+    return render(request, "loading3.html")
+
 
 def list_to_query(list_):
     al = AllLecture.objects.none()
@@ -612,10 +615,13 @@ def f_login(request):
     id = request.session.get('id')
     pw = request.session.get('pw')
     year = id[:2]
-    
+
+    # 대양휴머니티칼리지 url
+    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+
+    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
     if platform.system() == 'Windows':
-        # 1. 기존 회원인지 체크 & 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
-        url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+        # 기존 회원인지 체크 & 고전독서인증센터 크롤링 
         driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
         checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
         if checked:
@@ -642,7 +648,6 @@ def f_login(request):
             messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
             return redirect('/login/')
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-        #------------------------------------------------------------------------------------------------- selenium part
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
         # 독서 권수 리스트에 저장
         soup = BeautifulSoup(html, 'html.parser')
@@ -672,43 +677,106 @@ def f_login(request):
             book = ''.join(book[:4]).replace(' ','')
         driver.quit()
 
-        # 대휴칼에서 받아온 데이터를 세션에 저장.
-        temp_user_info = {
-            'student_id' : id,
-            'year' : year,
-            'name' : name,
-            'major' : major,
-            'book' : book,
-        }
-        request.session['temp_user_info'] = temp_user_info
-
-        # 만약 검사 이력이 있다면
-        if UserInfo.objects.filter(student_id=id).exists() :
-            messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\n(⚠️ 데이터를 업데이트하려면 20초가 걸립니다. 자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.)')
-            return render(request, "loading2.html")
-        # 첫 사용자라면 바로 loading2 -> uis 크롤링
-        else :
-            return render(request, "loading2.html")
-            
-            
-
-        
-
-
-
-
-
-
-        # 학과-학번이 기준에 있는지 검사 - 예외처리
-        st = Standard.objects.filter(user_year = year, user_dep = major)
-        # 존재하지 않으면
-        if not st.exists():
+    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
+    else:
+        # 가상 디스플레이를 활용해 실행속도 단축
+        display = Display(visible=0, size=(1024, 768))
+        display.start()
+        # 기존 회원인지 체크 & 고전독서인증센터 크롤링 
+        driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
+        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+        if checked:
+            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+            alert = driver.switch_to_alert()
+            alert.dismiss()
+        # id , pw 입력할 곳 찾기
+        tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+        tag_pw = driver.find_element_by_id("password")
+        tag_id.clear()
+        # id , pw 보내기
+        tag_id.send_keys(id)
+        tag_pw.send_keys(pw)
+        time.sleep(0.5)
+        # 로그인버튼 클릭
+        login_btn = driver.find_element_by_id('loginBtn')
+        login_btn.click()
+        # ID/PW 틀렸을 때 예외처리 ***
+        try:
+            driver.switch_to.frame(0)
+        except:
+            driver.quit()
+            display.stop()
             request.session.clear()
-            messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
+            messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
             return redirect('/login/')
+        driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+        html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+        # 독서 권수 리스트에 저장
+        soup = BeautifulSoup(html, 'html.parser')
+         # 유저 학과 저장
+        soup_major = soup.select_one("li > dl > dd")
+        major = soup_major.string[:-2]
+        # 지능기전공학부의 경우 
+        if major == '무인이동체공학' or major == '스마트기기공학':
+            major = '지능기전공' 
+        # 유저 이름 저장
+        soup_name = soup.select("li > dl > dd")
+        name = soup_name[2].string
+        # 인증 여부
+        soup_cert = soup.select("li > dl > dd")
+        cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
+        # 고특으로 대체이수 하지 않았을 때
+        if cert[-4:] == '대체이수':
+            book = '고특통과'
+        else :
+            book=[]
+            soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+              # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+            for td in soup1:
+                if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+                    continue
+                book.append(td.string.strip().strip().replace('권', ''))
+            book = ''.join(book[:4]).replace(' ','')
+        driver.quit()
+        display.stop()
 
-        # 2. uis 크롤링 ----------------------------------------------------------------------------
-        url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+    # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 --------------------------------------------------------------------------
+    # 만약 존재하지 않으면
+    if not Standard.objects.filter(user_year = year, user_dep = major).exists():
+        request.session.clear()
+        messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
+        return redirect('/login/')
+    # 여기까지 성공적으로 오면 총 검사수 +1 증가
+    stc = SuccessTestCount.objects.get(index=0)
+    stc.num_count += 1
+    stc.save()
+    # 대휴칼에서 받아온 데이터를 세션에 임시로 저장.
+    temp_user_info = {
+        'year' : year,
+        'name' : name,
+        'major' : major,
+        'book' : book,
+    }
+    request.session['temp_user_info'] = temp_user_info
+    # 만약 검사 이력이 있다면 메시지를 줘서 js 선택창을 호출함.
+    if UserInfo.objects.filter(student_id=id).exists() :
+        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
+    # 첫 사용자라면 바로 loading2 -> uis 크롤링
+    return render(request, "loading2.html")
+    
+            
+def f_uis(request):
+    #  세션 꺼내기
+    id = request.session.get('id')
+    pw = request.session.get('pw')
+
+    # uis 사이트 url
+    url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+
+    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
+    if platform.system() == 'Windows':
+        file_path = './app/uploaded_media/'
+        # uis 크롤링 
         driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
         #id , pw 입력할 곳 찾기
         tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
@@ -758,139 +826,14 @@ def f_login(request):
             eng = 1
         driver.quit()
 
-        # 기존 회원인지 검사
-        ui = UserInfo.objects.filter(student_id = id)
-        if not ui.exists():
-            # user_info 테이블에 정보 추가
-            new_ui = UserInfo()
-            new_ui.student_id = id
-            new_ui.year = int(id[:2])
-            new_ui.major = major
-            new_ui.name = name
-            new_ui.book = book
-            new_ui.eng = eng
-            new_ui.save()
-        else:
-            # user_info 테이블에 정보 수정
-            for u in ui:
-                u.book = book
-                u.eng = eng
-                u.save()
-            # user_grade 테이블의 해당 회원 성적표 삭제하기
-            ug = UserGrade.objects.filter(student_id = id)
-            ug.delete()
-
-        # 파일명 변경
-        file_path = './app/uploaded_media/'
-        new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-        file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
-        shutil.move(file_name,os.path.join(file_path,new_file_name))
-        time.sleep(1)
-        df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
-        df.fillna('', inplace = True)
-        os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-        # 논패, F과목 삭제
-        n = df.shape[0]
-        flag = 0    
-        while(True):
-            for i in range(n):
-                if i == n-1 :
-                    flag = 1
-                if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
-                    df = df.drop(df.index[i])
-                    n -= 1
-                    df.reset_index(inplace=True, drop=True)
-                    break
-            if flag == 1:
-                break
-        # DF에서 불필요 칼럼 삭제
-        df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
-        # DF를 테이블에 추가
-        for i, row in df.iterrows():
-            new_ug = UserGrade()
-            new_ug.student_id = id
-            new_ug.year = row['년도']
-            new_ug.semester = row['학기']
-            new_ug.subject_num = str(row['학수번호']).lstrip('0')
-            new_ug.subject_name = row['교과목명']
-            new_ug.classification = row['이수구분']
-            new_ug.selection = row['선택영역']
-            new_ug.grade = row['학점']
-            new_ug.save()
-    
+    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
     else:
         try:
+            file_path = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
             # 가상 디스플레이를 활용해 실행속도 단축
             display = Display(visible=0, size=(1024, 768))
             display.start()
-            # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
-            url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
-            driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
-            # id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            # id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)
-            time.sleep(0.5)
-            # 로그인버튼 클릭
-            login_btn = driver.find_element_by_id('loginBtn')
-            login_btn.click()
-            # ID/PW 틀렸을 때 예외처리 ***
-            try:
-                driver.switch_to.frame(0)
-            except:
-                driver.quit()
-                display.stop()
-                request.session.clear()
-                messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/login/')
-            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-            #------------------------------------------------------------------------------------------------- selenium part
-            html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
-            # 독서 권수 리스트에 저장
-            soup = BeautifulSoup(html, 'html.parser')
-             # 유저 학과 저장
-            soup_major = soup.select_one("li > dl > dd")
-            major = soup_major.string[:-2]
-            # 지능기전공학부의 경우 
-            if major == '무인이동체공학' or major == '스마트기기공학':
-                major = '지능기전공' 
-            # 유저 이름 저장
-            soup_name = soup.select("li > dl > dd")
-            name = soup_name[2].string
-            # 인증 여부
-            soup_cert = soup.select("li > dl > dd")
-            cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
-            # 고특으로 대체이수 하지 않았을 때
-            if cert[-4:] == '대체이수':
-                book = '고특통과'
-            else :
-                book=[]
-                soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
-                  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
-                for td in soup1:
-                    if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
-                        continue
-                    book.append(td.string.strip().strip().replace('권', ''))
-                book = ''.join(book[:4]).replace(' ','')
-            driver.quit()
-            # 학과-학번이 기준에 있는지 검사 - 예외처리
-            st = Standard.objects.filter(user_year = year, user_dep = major)
-            # 존재하지 않으면
-            if not st.exists():
-                display.stop()
-                request.session.clear()
-                messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-                return redirect('/login/')
-            # 2. uis 크롤링 ----------------------------------------------------------------------------
-            url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
+            # uis 크롤링 
             driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
             #id , pw 입력할 곳 찾기
             tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
@@ -951,66 +894,6 @@ def f_login(request):
                 eng = 1
             driver.quit()
             display.stop()
-
-            # 기존 회원인지 검사
-            ui = UserInfo.objects.filter(student_id = id)
-            if not ui.exists():
-                # user_info 테이블에 정보 추가
-                new_ui = UserInfo()
-                new_ui.student_id = id
-                new_ui.year = int(id[:2])
-                new_ui.major = major
-                new_ui.name = name
-                new_ui.book = book
-                new_ui.eng = eng
-                new_ui.save()
-            else:
-                # user_info 테이블에 정보 수정
-                for u in ui:
-                    u.book = book
-                    u.eng = eng
-                    u.save()
-                # user_grade 테이블의 해당 회원 성적표 삭제하기
-                ug = UserGrade.objects.filter(student_id = id)
-                ug.delete()
-
-            # 파일명 변경
-            file_path = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
-            new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-            file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
-            shutil.move(file_name,os.path.join(file_path,new_file_name))
-            time.sleep(1)
-            df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
-            df.fillna('', inplace = True)
-            os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-            # 논패, F과목 삭제
-            n = df.shape[0]
-            flag = 0    
-            while(True):
-                for i in range(n):
-                    if i == n-1 :
-                        flag = 1
-                    if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
-                        df = df.drop(df.index[i])
-                        n -= 1
-                        df.reset_index(inplace=True, drop=True)
-                        break
-                if flag == 1:
-                    break
-            # DF에서 불필요 칼럼 삭제
-            df.drop(['교직영역', '평가방식', '등급', '평점', '개설학과코드'], axis=1, inplace=True)
-            # DF를 테이블에 추가
-            for i, row in df.iterrows():
-                new_ug = UserGrade()
-                new_ug.student_id = id
-                new_ug.year = row['년도']
-                new_ug.semester = row['학기']
-                new_ug.subject_num = str(row['학수번호']).lstrip('0')
-                new_ug.subject_name = row['교과목명']
-                new_ug.classification = row['이수구분']
-                new_ug.selection = row['선택영역']
-                new_ug.grade = row['학점']
-                new_ug.save()
         # 어디든 오류 발생시
         except: 
             # 드라이버랑 가상디스플레이 안꺼졌으면 끄기
@@ -1019,18 +902,73 @@ def f_login(request):
             if 'display' in locals():
                 display.stop()
             # 엑셀 파일은 삭제
-            file_path = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
             for f in os.listdir(file_path):
                 os.remove(file_path + f)
-            messages.error(request, '예기치 못한 오류가 발생했습니다.')
+            messages.error(request, 'UIS 사이트에서 예기치 못한 오류가 발생했습니다.')
             return redirect('/')
 
-    # 여기까지 성공적으로 오면 총 검사수 +1 증가
-    stc = SuccessTestCount.objects.get(index=0)
-    stc.num_count += 1
-    stc.save()
+    # 세션에서 대휴칼에서 받아온 정보 꺼냄
+    temp_user_info = request.session.get('temp_user_info')
 
-    return r_result(request)
+    # 기존 회원인지 검사
+    ui = UserInfo.objects.filter(student_id = id)
+    if not ui.exists():
+        # user_info 테이블에 정보 추가
+        new_ui = UserInfo()
+        new_ui.student_id = id
+        new_ui.year = temp_user_info['year']
+        new_ui.major = temp_user_info['major']
+        new_ui.name = temp_user_info['name']
+        new_ui.book = temp_user_info['book']
+        new_ui.eng = eng
+        new_ui.save()
+    else:
+        # user_info 테이블에 정보 수정
+        for u in ui:
+            u.book = temp_user_info['book']
+            u.eng = eng
+            u.save()
+        # user_grade 테이블의 해당 회원 성적표 삭제하기
+        ug = UserGrade.objects.filter(student_id = id)
+        ug.delete()
+    # 파일명 변경
+    new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
+    file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
+    shutil.move(file_name,os.path.join(file_path,new_file_name))
+    time.sleep(1)
+    df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
+    df.fillna('', inplace = True)
+    os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
+    # 논패, F과목 삭제
+    n = df.shape[0]
+    flag = 0    
+    while(True):
+        for i in range(n):
+            if i == n-1 :
+                flag = 1
+            if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
+                df = df.drop(df.index[i])
+                n -= 1
+                df.reset_index(inplace=True, drop=True)
+                break
+        if flag == 1:
+            break
+    # DF에서 불필요 칼럼 삭제
+    df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
+    # DF를 테이블에 추가
+    for i, row in df.iterrows():
+        new_ug = UserGrade()
+        new_ug.student_id = id
+        new_ug.year = row['년도']
+        new_ug.semester = row['학기']
+        new_ug.subject_num = str(row['학수번호']).lstrip('0')
+        new_ug.subject_name = row['교과목명']
+        new_ug.classification = row['이수구분']
+        new_ug.selection = row['선택영역']
+        new_ug.grade = row['학점']
+        new_ug.save()
+
+    return render(request, "loading3.html")
         
      
 
