@@ -41,6 +41,7 @@
 <!-- 사용 못함 -->
 <div id='myModal' class="modal" style ="display: block;">
     <div class="modal-content">
+        <span class="close" style="font-size:3rem;">&times;</span>
         <div class="modal_div">
             <br>
             <div style="font-size:2rem; font-weight:bold;">UIS 사이트에서 우회 로그인 방법을 차단하여 검사 방식을 수정중입니다.</div>
@@ -64,7 +65,7 @@
         if(filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
             document.getElementById('myModal').style.display="block";
         } 
-    }
+    }*/
     
     // 모달 창
     var Spanclick = function (x, y) {
@@ -83,6 +84,5 @@
     var span = document.getElementsByClassName("close")[0];
 
     Spanclick(span, modal);
-    */
 </script>
 {% endblock %}
