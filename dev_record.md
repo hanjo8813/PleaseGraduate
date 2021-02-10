@@ -63,7 +63,9 @@
 
 
 ## 참고 사이트 
-
+https://jootc.com/p/202004053362
+- [HTTPS 개념](https://webactually.com/2018/11/16/http%EC%97%90%EC%84%9C-https%EB%A1%9C-%EC%A0%84%ED%99%98%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%9C-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C/)
+- [AWS -> ACM + 로드밸런서 + Route53 HTTPS 적용](https://jootc.com/p/202004053362)
 - [AWS mysql 설치](https://ndb796.tistory.com/314)
 - [AWS-Django 연동](https://nerogarret.tistory.com/47)
 - [AWS-Django 연동2](https://nachwon.github.io/django-deploy-3-nginx/)
@@ -72,5 +74,3 @@
 - [ubuntu 파일 권한 변경 chmod](https://withcoding.com/103)
 - [Django 세션 settings](https://ndjman7.github.io/django/2019/12/21/Django%EC%97%90%EC%84%9C-%EC%84%B8%EC%85%98-%EC%9C%A0%EC%A7%80%EC%8B%9C%EA%B0%84-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0.html)
 - [Django 세션DB 클리어](http://www.iorchard.net/docs/pvdi2/django_clearsessions.html)
-- 등등... 더 이상 안올림
-
