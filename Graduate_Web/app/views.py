@@ -867,11 +867,11 @@ def f_login(request):
             tag_id.clear()
             #id , pw 보내기
             tag_id.send_keys(id)
-            tag_pw.send_keys(pw)  
-            #로그인버튼 클릭
-            login_btn = driver.find_element_by_id('logbtn')
-            login_btn.click()
+            tag_pw.send_keys(pw)
             try:
+                #로그인버튼 클릭
+                login_btn = driver.find_element_by_id('logbtn')
+                login_btn.click()
                 driver.switch_to.frame(2)
             except:
                 messages.error(request, '오류')
