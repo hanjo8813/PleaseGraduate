@@ -597,7 +597,7 @@ def get_Driver(url):
         # 크롬창을 열지않고 백그라운드로 실행
         #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
+        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
@@ -890,7 +890,7 @@ def f_login(request):
         # 다운로드 버튼 x_path 클릭
         x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
         x.click()
-        time.sleep(1.5)
+        time.sleep(3)
         #---------------------------------------------------------------- 영어성적 가져오기
         driver.switch_to_default_content()
         driver.switch_to.frame(2)
