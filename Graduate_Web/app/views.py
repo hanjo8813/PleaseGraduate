@@ -596,10 +596,10 @@ def get_Driver(url):
         options = webdriver.ChromeOptions()
         # 크롬창을 열지않고 백그라운드로 실행
         #options.add_argument("headless")
-        
+
         options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
-        options.add_argument("disable-gpu")
+        options.add_argument("--disable-gpu")
 
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media'
