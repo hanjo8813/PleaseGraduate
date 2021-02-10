@@ -59,6 +59,7 @@
 - `pip install beautifulsoup4`
 - `pip install surprise`
 - `pip install django-pandas`
+- `pip install fake-useragent`
 - `pip install pylint-django` (vs코드용)
 
 
