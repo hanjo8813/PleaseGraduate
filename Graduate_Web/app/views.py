@@ -17,7 +17,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
-from fake_useragent import UserAgent
 # 장고 관련 참조
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -54,6 +53,10 @@ def r_loading2(request):
     return render(request, "loading2.html")
 
 def r_loading3(request):
+    # 여기까지 성공적으로 오면 총 검사수 +1 증가
+    stc = SuccessTestCount.objects.get(index=0)
+    stc.num_count += 1
+    stc.save()
     return render(request, "loading3.html")
 
 
@@ -746,10 +749,6 @@ def f_login(request):
         request.session.clear()
         messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
         return redirect('/login/')
-    # 여기까지 성공적으로 오면 총 검사수 +1 증가
-    stc = SuccessTestCount.objects.get(index=0)
-    stc.num_count += 1
-    stc.save()
     # 대휴칼에서 받아온 데이터를 세션에 임시로 저장.
     temp_user_info = {
         'year' : year,
@@ -760,9 +759,9 @@ def f_login(request):
     request.session['temp_user_info'] = temp_user_info
     # 만약 검사 이력이 있다면 메시지를 줘서 js 선택창을 호출함.
     if UserInfo.objects.filter(student_id=id).exists() :
-        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
+        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
     # 첫 사용자라면 바로 loading2 -> uis 크롤링
-    return render(request, "loading2.html")
+    return redirect("/loading2/")
     
             
 def f_uis(request):
@@ -968,7 +967,7 @@ def f_uis(request):
         new_ug.grade = row['학점']
         new_ug.save()
 
-    return render(request, "loading3.html")
+    return redirect("/loading3/")
         
      
 
