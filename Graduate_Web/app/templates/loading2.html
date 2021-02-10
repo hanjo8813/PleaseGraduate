@@ -1,0 +1,40 @@
+{% extends 'reference.html' %}
+
+{% block meta %}
+<!-- 넘어오자마자 경고창 호출 (기존 회원이라면) -->
+{% if messages %}
+    {% for m in messages %}
+    <script>
+        var update = confirm('{{ m }}') ;
+        // 확인을 누르면 바로 검사창으로
+        if(update){
+            location.href='/result/';
+        }
+        // 취소를 누르면 아래로 가서 uis 크롤링
+    </script>
+    {% endfor %}
+{% endif %}
+<!-- 기존 회원이 취소로 alert 끄거나 첫 회원일때-->
+<meta http-equiv="refresh" content="0; url=/f_uis/"> 
+{% endblock %}
+
+
+{% block content %}
+<div class="loadcontainer">
+    <div class="sk-chase">
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+    </div>
+    <div class="loading">
+        <span>오</span>
+        <span>옹</span>
+    </div>
+    <div style=" letter-spacing:1px; margin-top:0.8rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+        20초 정도 소요됩니다. 창을 이동하지 마세요!
+    </div>
+</div>
+{% endblock %}

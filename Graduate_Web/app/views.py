@@ -50,6 +50,9 @@ def r_loading(request):
     request.session['pw']=request.POST.get('pw')
     return render(request, "loading.html")
 
+def r_loading2(request):
+    return render(request, "loading2.html")
+
 
 def list_to_query(list_):
     al = AllLecture.objects.none()
@@ -595,20 +598,14 @@ def get_Driver(url):
     # ubuntu일 때 -> 배포용
     else:
         options = webdriver.ChromeOptions()
-
-        ua = UserAgent(verify_ssl=False)
-        userAgent = ua.random
-        print(userAgent)
-        options.add_argument(f'user-agent={userAgent}')
-
-        # 크롬창을 열지않고 백그라운드로 실행
-        #options.add_argument("headless")
+        options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
     return driver
+
 
 def f_login(request):
     # r_loading에서 받은 세션 꺼내기
@@ -617,7 +614,7 @@ def f_login(request):
     year = id[:2]
     
     if platform.system() == 'Windows':
-        # 1. 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
+        # 1. 기존 회원인지 체크 & 고전독서인증센터 크롤링 ----------------------------------------------------------------------------
         url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
         driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
         checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
@@ -674,6 +671,33 @@ def f_login(request):
                 book.append(td.string.strip().strip().replace('권', ''))
             book = ''.join(book[:4]).replace(' ','')
         driver.quit()
+
+        # 대휴칼에서 받아온 데이터를 세션에 저장.
+        temp_user_info = {
+            'student_id' : id,
+            'year' : year,
+            'name' : name,
+            'major' : major,
+            'book' : book,
+        }
+        request.session['temp_user_info'] = temp_user_info
+
+        # 만약 검사 이력이 있다면
+        if UserInfo.objects.filter(student_id=id).exists() :
+            messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\n(⚠️ 데이터를 업데이트하려면 20초가 걸립니다. 자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.)')
+            return render(request, "loading2.html")
+        # 첫 사용자라면 바로 loading2 -> uis 크롤링
+        else :
+            return render(request, "loading2.html")
+            
+            
+
+        
+
+
+
+
+
 
         # 학과-학번이 기준에 있는지 검사 - 예외처리
         st = Standard.objects.filter(user_year = year, user_dep = major)

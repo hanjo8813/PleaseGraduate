@@ -40,14 +40,13 @@ SECRET_KEY = get_secret("SECRET_KEY")
 
 
 # 개발시엔 True로 디버그 확인, 배포시엔 False
-DEBUG = True    # 우선 사용자 피드백을 위해 켜두자
+#DEBUG = True    # 우선 사용자 피드백을 위해 켜두자
 
-'''
 if platform.system() == 'Windows':
     DEBUG = True
 else:
     DEBUG = False
-'''
+
 
 # 호스트 설정
 ALLOWED_HOSTS = [
