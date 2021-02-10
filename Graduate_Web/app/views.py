@@ -588,14 +588,6 @@ def get_Driver(url):
     # 윈도우일 때 -> 개발용
     if platform.system() == 'Windows':
         options = webdriver.ChromeOptions()
-
-
-        ua = UserAgent(verify_ssl=False)
-        userAgent = ua.random
-        print(userAgent)
-        options.add_argument(f'user-agent={userAgent}')
-
-
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = os.getcwd() + '\\app\\uploaded_media'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
@@ -612,7 +604,7 @@ def get_Driver(url):
         # 크롬창을 열지않고 백그라운드로 실행
         #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media'
+        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
         driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
     driver.get(url)
@@ -935,8 +927,6 @@ def f_login(request):
                 eng = 1
             driver.quit()
             display.stop()
-
-            return render(request, "head.html") 
 
             # 기존 회원인지 검사
             ui = UserInfo.objects.filter(student_id = id)
