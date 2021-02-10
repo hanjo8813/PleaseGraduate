@@ -861,19 +861,21 @@ def f_login(request):
             # 2. uis 크롤링 ----------------------------------------------------------------------------
             url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
             driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            #id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            #id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)
             try:
+                #id , pw 입력할 곳 찾기
+                tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
+                tag_pw = driver.find_element_by_id("password")
+                tag_id.clear()
+                #id , pw 보내기
+                tag_id.send_keys(id)
+                tag_pw.send_keys(pw)
                 #로그인버튼 클릭
                 login_btn = driver.find_element_by_id('logbtn')
                 login_btn.click()
                 driver.switch_to.frame(2)
             except:
+                driver.quit()
+                display.stop()
                 messages.error(request, '오류')
                 return redirect('/')
                 
