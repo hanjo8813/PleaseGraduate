@@ -759,7 +759,7 @@ def f_login(request):
     request.session['temp_user_info'] = temp_user_info
     # 만약 검사 이력이 있다면 메시지를 줘서 js 선택창을 호출함.
     if UserInfo.objects.filter(student_id=id).exists() :
-        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
+        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
     # 첫 사용자라면 바로 loading2 -> uis 크롤링
     return redirect("/loading2/")
     
