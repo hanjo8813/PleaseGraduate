@@ -25,8 +25,23 @@
     </div>
 </header>
 
+<!-- 업데이트 공지 -->
+<div id='myModal' class="modal" style ="display: block;">
+    <div class="modal-content">
+        <span class="close" style="font-size:3rem;">&times;</span>
+        <div class="modal_div">
+            <br>
+            <div style="font-size:1.5rem; font-weight:bold;">
+                <p style="font-size:2rem">✔️ 02.11 업데이트 </p>
+                <p>1. 다시 사용 가능</p>
+                <p>2. 동일 사용자가 재검사시 성적표를 한번 더 다운받지 않도록 방식 변경</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- 웹 권장 모달 (모바일에서만 뜸) -->
+
+<!-- 웹 권장 모달 (모바일에서만 뜸) 
 <div id='myModal' class="modal" style ="display: none;">
     <div class="modal-content">
         <span class="close" style="font-size:5rem;">&times;</span>
@@ -36,6 +51,7 @@
         </div>
     </div>
 </div>
+-->
 
 <!-- 사용 못함 
 <div id='myModal' class="modal" style ="display: block;">
@@ -56,6 +72,7 @@
 {% block js_section %}
 <!-- js 파트 -->
 <script>
+    /*
     // 기기 검사
     var filter = "win16|win32|win64|mac|macintel"; 
     if ( navigator.platform ) { 
@@ -64,6 +81,7 @@
             document.getElementById('myModal').style.display="block";
         } 
     }
+    */
     
     // 모달 창
     var Spanclick = function (x, y) {
