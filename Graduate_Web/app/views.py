@@ -604,7 +604,7 @@ def get_Driver(url):
     # ubuntu일 때 -> 배포용
     else:
         options = webdriver.ChromeOptions()
-        options.add_argument("headless")
+        #options.add_argument("headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
         options.add_experimental_option('prefs', {'download.default_directory' : root} )
