@@ -912,7 +912,7 @@ def f_uis(request):
             for f in os.listdir(file_path):
                 os.remove(file_path + f)
             messages.error(request, 'UIS 사이트에서 예기치 못한 오류가 발생했습니다.')
-            return redirect('/')
+            return redirect('/login/')
 
     # 세션에서 대휴칼에서 받아온 정보 꺼냄
     temp_user_info = request.session.get('temp_user_info')
