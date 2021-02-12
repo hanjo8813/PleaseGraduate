@@ -115,6 +115,7 @@ class SubjectGroup(models.Model):
 
 class UserGrade(models.Model):
     student_id = models.CharField(max_length=10)
+    major = models.CharField(max_length=45, blank=True, null=True)
     year = models.CharField(max_length=10)
     semester = models.CharField(max_length=45)
     subject_num = models.CharField(max_length=10)

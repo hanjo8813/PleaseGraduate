@@ -343,26 +343,32 @@
             <div class="mydiv">빅데이터를 기반으로 머신러닝을 통해 추천합니다.</div>
             <hr>
             {% if not pass_obj.n_me %}
-            <table class="mytable">
-                <tr class="myth" style="background-color: #f8f8f8;">
-                    <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
-                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                    <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
-                    <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
-                    <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                    <th style="width:12%">추천지수</th>
-                </tr>
-                {% for a,b in recommend_sel.me %}
-                <tr class="mytr">
-                    <td class="mytd">{{ a.subject_num }}</td>
-                    <td class="mytd">{{ a.subject_name }}</td>
-                    <td class="mytd">{{ a.classification }}</td>
-                    <td class="mytd">{{ a.selection }}</td>
-                    <td class="mytd">{{ a.grade }}</td>
-                    <td class="mytd" style="border-right :0px">{{ b }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+                {% if pass_obj.ml_me %}
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
+                        <th style="border-right :1px solid #cccccc; width:8%">학점</th>
+                        <th style="width:12%">추천지수</th>
+                    </tr>
+                    {% for a,b in recommend_sel.me %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ a.subject_num }}</td>
+                        <td class="mytd">{{ a.subject_name }}</td>
+                        <td class="mytd">{{ a.classification }}</td>
+                        <td class="mytd">{{ a.selection }}</td>
+                        <td class="mytd">{{ a.grade }}</td>
+                        <td class="mytd" style="border-right :0px">{{ b }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
+                    😱 죄송합니다... 아직 머신러닝할 '{{user_info.major}}학과'의 데이터가 부족합니다...
+                    </div>
+                {% endif %}
             {% endif %}
             <div class="partdiv">
                 {% if pass_obj.n_me %}
@@ -388,26 +394,32 @@
                 <div class="mydiv">빅데이터를 기반으로 머신러닝을 통해 추천합니다.</div>
                 <hr>
                 {% if not pass_obj.n_ms %}
-                <table class="mytable">
-                    <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
-                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                        <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
-                        <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
-                        <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">추천지수</th>
-                    </tr>
-                    {% for a,b in recommend_sel.ms %}
-                    <tr class="mytr">
-                        <td class="mytd">{{ a.subject_num }}</td>
-                        <td class="mytd">{{ a.subject_name }}</td>
-                        <td class="mytd">{{ a.classification }}</td>
-                        <td class="mytd">{{ a.selection }}</td>
-                        <td class="mytd">{{ a.grade }}</td>
-                        <td class="mytd" style="border-right :0px">{{ b }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                    {% if pass_obj.ml_ms %}
+                    <table class="mytable">
+                        <tr class="myth" style="background-color: #f8f8f8;">
+                            <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                            <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                            <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
+                            <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
+                            <th style="border-right :1px solid #cccccc; width:8%">학점</th>
+                            <th style="width:12%">추천지수</th>
+                        </tr>
+                        {% for a,b in recommend_sel.ms %}
+                        <tr class="mytr">
+                            <td class="mytd">{{ a.subject_num }}</td>
+                            <td class="mytd">{{ a.subject_name }}</td>
+                            <td class="mytd">{{ a.classification }}</td>
+                            <td class="mytd">{{ a.selection }}</td>
+                            <td class="mytd">{{ a.grade }}</td>
+                            <td class="mytd" style="border-right :0px">{{ b }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% else %}
+                        <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
+                            😱 죄송합니다... 아직 머신러닝할 '{{user_info.major}}학과'의 데이터가 부족합니다...
+                        </div>
+                    {% endif %}
                 {% endif %}
                 <div class="partdiv">
                     {% if pass_obj.n_ms %}

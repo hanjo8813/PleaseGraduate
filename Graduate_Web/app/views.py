@@ -181,10 +181,14 @@ def recom_machine_learning(what, user_id, user_list):
             continue
         if row['item'] in user_list:
             result = result.drop([i])
+    
+    pass_ml = 0
+    if result['item'].tolist():
+        pass_ml = 1
 
     # 추천 과목 리스트를 쿼리로 바꾸고 추천 지수와 묶어서 7개까지 추천
     zipped = zip(list_to_query(result['item'].tolist()[:7]), result['score'].tolist()[:7])
-    return zipped
+    return zipped, pass_ml
 
 # --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
@@ -333,9 +337,9 @@ def r_result(request):
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ug_MR = UserGrade.objects.filter(classification = '전필')
-    ug_MC = UserGrade.objects.filter(classification = '전선')
-    ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
+    ug_MR = UserGrade.objects.filter(major = u_row.major, classification = '전필')
+    ug_MC = UserGrade.objects.filter(major = u_row.major, classification = '전선')
+    ug_EC = UserGrade.objects.filter(major = u_row.major, classification = '교선1') | UserGrade.objects.filter(major = u_row.major, classification = '중선')
     for u in ug_MR:
         mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
     for u in ug_MC:
@@ -973,6 +977,7 @@ def f_uis(request):
     for i, row in df.iterrows():
         new_ug = UserGrade()
         new_ug.student_id = id
+        new_ug.major = temp_user_info['major']
         new_ug.year = row['년도']
         new_ug.semester = row['학기']
         new_ug.subject_num = str(row['학수번호']).lstrip('0')
@@ -1166,8 +1171,8 @@ def result_test(request):
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ug_MR = UserGrade.objects.filter(classification = '전필')
-    ug_MC = UserGrade.objects.filter(classification = '전선')
+    ug_MR = UserGrade.objects.filter(major = u_row.major, classification = '전필')
+    ug_MC = UserGrade.objects.filter(major = u_row.major, classification = '전선')
     ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
     for u in ug_MR:
         mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
@@ -1193,13 +1198,16 @@ def result_test(request):
         ec_train = ec_train.reset_index(drop = True)
         new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
-
     # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
     user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
+    zip_me, pass_ml_me = recom_machine_learning(mr_train, user_id, user_major_lec)
+    zip_ms, pass_ml_ms = recom_machine_learning(mc_train, user_id, user_major_lec)
+    zip_cs, pass_ml_cs = recom_machine_learning(ec_train, user_id, [])
+
     recommend_sel = {
-        'me' : recom_machine_learning(mr_train, user_id, user_major_lec),    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_machine_learning(mc_train, user_id, user_major_lec),    # 전선
-        'cs' : recom_machine_learning(ec_train, user_id, []),                # 교선
+        'me' : zip_me,    # 전필 zip(학수번호, 추천지수)    
+        'ms' : zip_ms,    # 전선
+        'cs' : zip_cs,    # 교선
     }
 
     # 과목 통과 여부 
@@ -1213,7 +1221,7 @@ def result_test(request):
     if not recom_b: pass_b = 1
     if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and u_row.eng!=0:
         pass_total = 1
-        
+    
     pass_obj = {
         'total' : pass_total,
         'n_me' : pass_me,
@@ -1228,7 +1236,9 @@ def result_test(request):
         'l_b' : pass_b,         # 기교 필수과목 통과여부
         'book' : pass_book,     # 고전독서 인증여부
         'eng' : u_row.eng,      # 영어인증여부
-    } 
+        'ml_me' : pass_ml_me,
+        'ml_ms' : pass_ml_ms,
+    }
 
     # 공학인증 기준이 있는지 검사.
     en_exist = 0
@@ -1377,5 +1387,14 @@ def f_update(request):
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 def f_test(request):
+    '''
+    ui = UserInfo.objects.all()
+    for ui_row in ui:
+        ug = UserGrade.objects.filter(student_id = ui_row.student_id)
+        for ug_row in ug:
+            ug_row.major = ui_row.major
+            ug_row.save()
+    '''
+
     return HttpResponse('테스트 완료, 터미널 확인')
 
