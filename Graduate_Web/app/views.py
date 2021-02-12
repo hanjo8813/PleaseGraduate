@@ -420,9 +420,13 @@ def r_result(request):
 # --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
 def r_en_result(request):
+    # 테스트용
+    global test_id
     # 세션에서 학번 꺼내기
     user_id = request.session.get('id')
-
+    if test_id != '':
+        user_id = test_id
+        
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
 
@@ -444,7 +448,7 @@ def r_en_result(request):
     my_engine_admit = make_dic(data['학수번호'].tolist())
 
     # 1.전문 교양
-    dic_pro = make_dic([s_num for s_num in s_row.pro_acc_list.split('/')])
+    dic_pro = make_dic([s_num for s_num in s_row.pro_ess_list.split('/')])
     recom_pro, check_pro = make_recommend_list(my_engine_admit, dic_pro)
     mynum_pro = data[data['학수번호'].isin(dic_pro.keys())]['학점'].sum()
 
@@ -458,21 +462,21 @@ def r_en_result(request):
         dic_bsm_sel = make_dic([s_num for s_num in s_row.bsm_sel_list.split('/')])
         mynum_bsm_ess += data[data['학수번호'].isin(dic_bsm_sel.keys())]['학점'].sum()  # bsm 선택 이수학점을 더한다.
 
-    # 4. 전공 설계
+    # 4. 전공 영역
     # 4-1. 전공 전체 학점
-    dic_build = make_dic([s_num for s_num in s_row.engine_major_list.split('/')])
-    recom_build, check_build =make_recommend_list(my_engine_admit,dic_build)
-    mynum_build = data[data['학수번호'].isin(dic_build.keys())]['학점'].sum()
- 
+    dic_eng_major = make_dic([s_num for s_num in s_row.eng_major_list.split('/')])
+    recom_eng_major, check_eng_major =make_recommend_list(my_engine_admit,dic_eng_major)
+    mynum_eng_major = data[data['학수번호'].isin(dic_eng_major.keys())]['학점'].sum()
+
     # int화
-    df_e = data[data['학수번호'] == 9993]
+    df_e = data[data['학수번호'] == s_row.build_start ]
     if not df_e.empty:
         num_df_e = df_e['년도'].sum()
         num_df_2 = int(df_e['학기'].sum().replace('학기', ''))
-    df_e2 = data[data['학수번호'] == 9960]
+    df_e2 = data[data['학수번호'] == s_row.build_end]
     num_df_e2 = df_e2['년도'].sum()
 
-    # 소설기부터 df 추출
+    # 기초설계 ~ 종합설계 사이의 DF 추출
     data2 = data
     n = data2.shape[0]
     flag = 0
@@ -502,69 +506,72 @@ def r_en_result(request):
     # 사용자가 소설기부터 들은 강의의 학수번호 리스트->딕셔너리
     my_engine_admit2 = make_dic(data2['학수번호'].tolist())
 
-    # 4-2. 설계 필수과목 안들은 리스트
-    dic_build_ess = make_dic([s_num for s_num in s_row.build_ess_list.split('/')])
-    recom_build_ess, check_build_ess = make_recommend_list(my_engine_admit2, dic_build_ess)
+    # 4-2. 기초설계 추천 뽑아내기
+    dic_build_start = make_dic([s_row.build_start])
+    recom_build_start, check_build_start = make_recommend_list(my_engine_admit2, dic_build_start)
 
-    # 4-3. 설계 선택과목 중 안들은 리스트
+    # 4-3. 종합설계 추천 뽑아내기
+    dic_build_end = make_dic([s_row.build_end])
+    recom_build_end, check_build_end = make_recommend_list(my_engine_admit2, dic_build_end)
+
+    # 4-4. 요소설계 과목중 안들은 리스트
     dic_build_sel = make_dic([s_num for s_num in s_row.build_sel_list.split('/')])
     recom_build_sel, check_build_sel = make_recommend_list(my_engine_admit2, dic_build_sel)
 
 
     standard_num ={
-        'total' : s_row.sum_eng,    # 공학인증 총학점 기준 - 92
-        'pro' : s_row.pro,          # 전문교양 기준 학점
-        'bsm' : s_row.bsm,          # bsm 기준 학점
-        'build' : s_row.build,      # 설계과목 기준학점
+        'total' : s_row.sum_eng,                # 공학인증 총학점 기준 
+        'pro' : s_row.pro,                      # 전문교양 기준 학점
+        'bsm' : s_row.bsm,                      # bsm 기준 학점
+        'eng_major' : s_row.eng_major,          # 설계과목 기준학점
+        'build_sel_num' : s_row.build_sel_num,  # 들어야되는 요소설계 과목수
     }
 
     my_num = {
-        'total' : mynum_pro+mynum_build+mynum_bsm_ess,              
+        'total' : mynum_pro+mynum_eng_major+mynum_bsm_ess,              
         'pro' : mynum_pro,
         'bsm' : mynum_bsm_ess,        
-        'build' : mynum_build,
+        'eng_major' : mynum_eng_major,
     }
 
     standard_list = {
         'pro' : zip(list_to_query(dic_pro.keys()),check_pro),
         'bsm_ess' : zip(list_to_query(dic_bsm_ess.keys()), check_bsm_ess),
         'bsm_sel' : [],
-        'build_ess' : zip(list_to_query(dic_build_ess.keys()),check_build_ess),
+        'build_start' : zip(list_to_query(dic_build_start.keys()),check_build_start),
+        'build_end' : zip(list_to_query(dic_build_end.keys()),check_build_end),
         'build_sel' : zip(list_to_query(dic_build_sel.keys()),check_build_sel),
     }
 
     # 전공영역 추천 과목 중 부족학점만큼 랜덤으로 골라주기
-    n = standard_num['build'] - my_num['build']
-    random.shuffle(recom_build)
-    recom_build = recom_build[:n//3+1]
+    n = standard_num['eng_major'] - my_num['eng_major']
+    random.shuffle(recom_eng_major)
+    recom_eng_major = recom_eng_major[:n//3+1]
 
     recommend = {
         'pro' : list_to_query(recom_pro),
         'bsm_ess' : list_to_query(recom_bsm_ess), # bsm 추천시 합쳐서 추천.
-        'build' : list_to_query(recom_build),
+        'eng_major' : list_to_query(recom_eng_major),
     }
 
     # 필수과목 패스 여부
     pass_pro = 0
     pass_bsm_ess = 0
-    pass_build_ess = 0
+    pass_build_start = 0
+    pass_build_end = 0
     pass_build_sel = 0
-    if not recom_pro:
-        pass_pro = 1
-    if not recom_bsm_ess:
-        pass_bsm_ess = 1
-    if not recom_build_ess:
-        pass_build_ess = 1
-    # 설계선택 여부
-    if sum(check_build_sel) >= 3 :
-        pass_build_sel = 1
-    if len(recom_build_ess) == 2:  # 소설기도 안들은 경우
-        pass_build_sel = -1
-    
+    if not recom_pro : pass_pro = 1                                         # 전문교양 여부
+    if not recom_bsm_ess : pass_bsm_ess = 1                                 # bsm 여부
+    if not recom_build_end : pass_build_end = 1                             # 종합설계 여부
+    if sum(check_build_sel) >= s_row.build_sel_num : pass_build_sel = 1     # 선택설계 여부
+    if not recom_build_start : pass_build_start = 1                         # 기초설계 여부
+    else : pass_build_sel = -1
+
     pass_obj = {
         'pro' : pass_pro,
         'bsm_ess' : pass_bsm_ess,
-        'build_ess' : pass_build_ess,
+        'build_start' : pass_build_start,
+        'build_end' : pass_build_end,
         'build_sel' : pass_build_sel,
         'n' : n,
     }
@@ -920,7 +927,7 @@ def f_uis(request):
     # 기존 회원인지 검사
     ui = UserInfo.objects.filter(student_id = id)
     if not ui.exists():
-        # user_info 테이블에 정보 추가
+        # user_info 테이블에 정보 추가 -> 비번은 저장 X
         new_ui = UserInfo()
         new_ui.student_id = id
         new_ui.year = temp_user_info['year']
@@ -960,7 +967,7 @@ def f_uis(request):
                 break
         if flag == 1:
             break
-    # DF에서 불필요 칼럼 삭제
+    # DF에서 불필요 칼럼 삭제 (평점 삭제)
     df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
     # DF를 테이블에 추가
     for i, row in df.iterrows():
@@ -1009,10 +1016,14 @@ def f_uis(request):
 
 # ----------------------------------------------- (웹 연동 테스트) --------------------------------------------------------------------
 
+# 테스트용 ID
+test_id = ''
 
 # result 페이지 테스트용.
 def result_test(request):
-    user_id = ''
+    # 테스트용
+    global test_id
+    user_id = test_id
 
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)

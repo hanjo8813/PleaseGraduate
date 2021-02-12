@@ -56,13 +56,18 @@
                 <span class="tooltip">
                     <i class="fas fa-question-circle"></i>
                 </span>
-                <div class="tooltip_text">
-                    - 공학인증 전공 영역에서는 세 가지 조건을 만족해야합니다.<br>
-                    1. 지정설계과목을 모두 이수해야합니다.<br>
-                    2. 선택 설계과목을 세개 이상 들어야합니다.<br>
-                    (SW설계기초를 이수한 학기 이후부터 인정됨)<br>
-                    3. 그 외 전공영역 과목을 들어 기준 학점을 이수해야합니다.<br>
-                    (학점이 인정되는 전공영역 과목을 들어야 함)
+                <div class="tooltip_text" style="width:600px; text-align: left;">
+                    1. 재학기간동안 지정된 전공 교과목 내에서 총 {{standard_num.eng_major}}학점을 채워야합니다.<br>
+                    2. {{standard_num.eng_major}}학점 중에서 과목 중 일부는 설계과목으로 채워야합니다.<br>
+                    3. 설계과목은 3가지 종류로 나누어집니다.<br>
+                    &nbsp;&nbsp;&nbsp;* 기초설계(1개 지정) -> 요소설계({{standard_num.build_sel_num}}개 선택) -> 종합설계(1개 지정)<br>
+                    4. 요소설계 과목은 지정된 과목 리스트 후보에서 {{standard_num.build_sel_num}}개를 선택하여 들어야합니다.<br>
+                    5. 반드시 기초설계를 들은 이후부터 ~ 종합설계를 듣기 전까지 요소설계 과목을 채워야합니다.<br>
+                    &nbsp;&nbsp;&nbsp;* 기초설계를 듣기 전이나, 종합설계를 들은 이후의 요소설계 과목은 인정되지 않으므로 주의!!<br><br>
+                    ※ 18학번 이전 : 기초설계, 종합설계 = 지정설계 / 요소설계 = 선택설계<br>
+                    ※ 전공영역 기준 설명이 이해가 안된다면 학교 사이트를 참고하세요. 👉
+                    <a class="link_site" target="_blank"
+                        href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a>
                 </div>
             </div>
             <div class="box">
@@ -158,17 +163,17 @@
 
 <!-- 추천 모달-->
 
-<!-- 전공 -->
+<!-- 전공영역 -->
 <div id="myModal1" class="modal modal1">
     <div class="modal-content">
         <span class="close">&times;</span>
         <br>
         <div class="modal_div">
-            <!-- 지정설계 과목 -->
+            <!-- 기초설계 과목 -->
             <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 지정설계 과목
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 1단계 : 기초(지정)설계 과목
                 </div>
-                <div class="mydiv">지정설계 과목을 모두 이수해야합니다.</div>
+                <div class="mydiv">기초설계 과목을 먼저 이수해야합니다.</div>
                 <hr>
                 <table class="mytable">
                     <tr class="myth" style="background-color: #f8f8f8;">
@@ -178,12 +183,12 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q,c in standard_list.build_ess %}
+                    {% for q,c in standard_list.build_start %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -193,19 +198,19 @@
                     {% endfor %}
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.build_ess %}
-                    <span style="color:#17a55e">지정 설계과목 조건을 만족하셨습니다</span>
+                    {% if pass_obj.build_start %}
+                    <span style="color:#17a55e">기초설계 과목 조건을 만족하셨습니다</span>
                     {% else %}
-                    <span style="color:#d32f2f">지정 설계과목이 부족합니다</span>
+                    <span style="color:#d32f2f">기초설계 과목이 부족합니다</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- 선택과목 -->
+            <!-- 요소설계과목 -->
             <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택설계 과목
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 2단계 : 요소(선택)설계 과목
                 </div>
-                <div class="mydiv">3개의 설계 과목을 선택해 들어야 합니다. SW설계기초 강의를 이수한 학기 이후부터 인정됩니다.</div>
+                <div class="mydiv">아래 지정된 리스트에서 {{standard_num.build_sel_num}}개의 요소설계 과목을 선택해 들어야 합니다.</div>
                 <hr>
                 {% if pass_obj.build_sel != -1 %}
                 <table class="mytable">
@@ -219,9 +224,9 @@
                     {% for q,c in standard_list.build_sel %}
                     {% if not c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #17a55e">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -234,13 +239,50 @@
 
                 <div class="partdiv">
                     {% if pass_obj.build_sel == 1 %}
-                    <span style="color:#17a55e">선택 설계과목 조건을 만족하셨습니다</span>
-                    {% elif pass_obj.build_sel == 0  %}
-                    <span style="color:#d32f2f">선택 설계과목이 부족합니다</span>
+                    <span style="color:#17a55e">요소설계 과목 조건을 만족하셨습니다</span>
+                    {% elif pass_obj.build_sel == 0 %}
+                    <span style="color:#d32f2f">요소설계 과목이 부족합니다</span>
                     {% else %}
                     <p><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#d32f2f"></i></p>
-                    <span style="color:#d32f2f">SW설계기초 강의를 듣지 않았습니다! SW설계기초를 듣고 나서부터 선택과목이 인정됩니다!
+                    <span style="color:#d32f2f">기초설계 과목을 듣지 않았습니다! 기초설계 과목을 들은 이후부터 요소설계 과목이 인정됩니다!
                     </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 종합설계 과목 -->
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 3단계 : 종합(지정)설계 과목
+                </div>
+                <div class="mydiv">종합설계 과목을 마지막에 이수해야합니다.</div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q,c in standard_list.build_end %}
+                    {% if c %}
+                    <tr class="mytr">
+                        {% else %}
+                    <tr class="mytr" style="color: #d32f2f">
+                        {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if pass_obj.build_end %}
+                    <span style="color:#17a55e">종합설계 과목 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">종합설계 과목이 부족합니다</span>
                     {% endif %}
                 </div>
             </div>
@@ -259,7 +301,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q in recommend.build %}
+                    {% for q in recommend.eng_major %}
                     <tr class="mytr">
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
@@ -305,9 +347,9 @@
                     {% for q,c in standard_list.pro %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -415,9 +457,9 @@
                     {% for q,c in standard_list.bsm_ess %}
                     {% if c %}
                     <tr class="mytr">
-                    {% else %}
+                        {% else %}
                     <tr class="mytr" style="color: #d32f2f">
-                    {% endif %}
+                        {% endif %}
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
                         <td class="mytd">{{ q.classification }}</td>
@@ -493,12 +535,12 @@
     var Name = '{{user_info.name}}';
 
     var Totalgrade = '{{standard_num.total}}';
-    var Grade1 = '{{standard_num.build}}';
+    var Grade1 = '{{standard_num.eng_major}}';
     var Grade2 = '{{standard_num.pro}}';
     var Grade3 = '{{standard_num.bsm}}';
 
     var Mytotalgrade = '{{my_num.total}}';
-    var Mygrade1 = '{{my_num.build}}';
+    var Mygrade1 = '{{my_num.eng_major}}';
     var Mygrade2 = '{{my_num.pro}}';
     var Mygrade3 = '{{my_num.bsm}}';
 

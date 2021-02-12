@@ -88,13 +88,15 @@ class Standard(models.Model):
     sum_eng = models.IntegerField()
     pro = models.IntegerField(blank=True, null=True)
     bsm = models.IntegerField(blank=True, null=True)
-    build = models.IntegerField(blank=True, null=True)
-    pro_acc_list = models.CharField(max_length=100, blank=True, null=True)
+    eng_major = models.IntegerField(blank=True, null=True)
+    build_sel_num = models.IntegerField(blank=True, null=True)
+    pro_ess_list = models.CharField(max_length=100, blank=True, null=True)
     bsm_ess_list = models.CharField(max_length=100, blank=True, null=True)
     bsm_sel_list = models.CharField(max_length=100, blank=True, null=True)
-    build_ess_list = models.CharField(max_length=100, blank=True, null=True)
+    build_start = models.CharField(max_length=10, blank=True, null=True)
     build_sel_list = models.CharField(max_length=100, blank=True, null=True)
-    engine_major_list = models.CharField(max_length=200, blank=True, null=True)
+    build_end = models.CharField(max_length=10, blank=True, null=True)
+    eng_major_list = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         managed = False
