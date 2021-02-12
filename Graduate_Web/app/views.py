@@ -422,6 +422,7 @@ def r_result(request):
         'pass_obj' : pass_obj,              # 패스 여부
         'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
+    return render(request, "result.html", context)
 
 
 # --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
