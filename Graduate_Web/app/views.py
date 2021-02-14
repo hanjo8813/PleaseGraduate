@@ -23,6 +23,8 @@ from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
+from django.db import models
+from django.db.models import Value
 from .models import *
 
 
@@ -181,18 +183,16 @@ def recom_machine_learning(what, user_id, user_list):
             continue
         if row['item'] in user_list:
             result = result.drop([i])
-    
+    # 만약 학습시킬게 없어서 추천리스트가 비었을경우
     pass_ml = 0
     if result['item'].tolist():
         pass_ml = 1
-    '''
-    print(result)
-    print(result['item'].tolist()[:7])
-    print(list_to_query(result['item'].tolist()[:7]))
-    print(result['score'].tolist()[:7])
-    '''
-    # 추천 과목 리스트를 쿼리로 바꾸고 추천 지수와 묶어서 7개까지 추천
-    zipped = zip(list_to_query(result['item'].tolist()[:7]), result['score'].tolist()[:7])
+
+    # 추천 과목 쿼리 + 추천지수를 7개까지 묶어서 리턴하기
+    zipped = []
+    for s_num, score in zip(result['item'].tolist()[:7], result['score'].tolist()[:7]):
+        temp = AllLecture.objects.filter(subject_num = s_num)
+        zipped.append([temp[0], score])
     return zipped, pass_ml
 
 # --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
