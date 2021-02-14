@@ -2,16 +2,19 @@
 
 ## SejongGraduateHellper 프로젝트를 AWS 서버에 배포하기.
 
-- [이전 repository](https://github.com/hon99oo/SejongGraduateHellper)
 - [협업때 쓰던 commit 규칙](/commit_rule.md)
 
 ## 개발/업데이트 기록
 
+> 02/12
+- 전자정보통신공학과 기준 추가
+- 공학인증 기준 DB 구조 변경 + 알고리즘 보완
+- 머신러닝 추천시, 참고 데이터를 같은 학과로만 구성하도록 변경
+
 > 02/11
 - uis에서 특정 ip의 다수의 우회 로그인 감지시 당일 해당 ip 차단함을 알게됨
 - 따라서 일단 보완점으로 재검사하는 사용자는 크롤링하지 않도록 방식 변경
-- uis 관리자에게 문의 완료 -> 우회 로그인 허가를 받던가 방식을 바꾸던가 결정해야함
-- 보안 취약점 보완 -> ACM + 로드밸런서 + Route53 사용하여 사이트에 HTTPS 적용 
+- 보안 취약점 보완 , https 적용
 
 > 02/10
 - 장고 secret key , DB 정보 git hub 노출 관련 피드백 수정

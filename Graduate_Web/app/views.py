@@ -185,7 +185,12 @@ def recom_machine_learning(what, user_id, user_list):
     pass_ml = 0
     if result['item'].tolist():
         pass_ml = 1
-
+    '''
+    print(result)
+    print(result['item'].tolist()[:7])
+    print(list_to_query(result['item'].tolist()[:7]))
+    print(result['score'].tolist()[:7])
+    '''
     # 추천 과목 리스트를 쿼리로 바꾸고 추천 지수와 묶어서 7개까지 추천
     zipped = zip(list_to_query(result['item'].tolist()[:7]), result['score'].tolist()[:7])
     return zipped, pass_ml
@@ -1391,14 +1396,13 @@ def f_update(request):
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 def f_test(request):
-    '''
+    
     ui = UserInfo.objects.all()
     for ui_row in ui:
         ug = UserGrade.objects.filter(student_id = ui_row.student_id)
         for ug_row in ug:
             ug_row.major = ui_row.major
             ug_row.save()
-    '''
 
     return HttpResponse('테스트 완료, 터미널 확인')
 
