@@ -49,13 +49,6 @@ def f_logout(request):
 def r_loading(request):
     temp_id = request.POST.get('id')
     temp_pw = request.POST.get('pw')
-
-#*************************************************** 만약 기존 사용자가 아니라 새로 온 사람이면? ***************************************************
-    if not UserInfo.objects.filter(student_id=temp_id).exists():
-        messages.error(request, '수강신청 기간에는 재검사만 가능합니다. 😢')
-        return redirect('/login/')
-#************************************************************************************************************************************************
-
     # 사용자 id(학번)과 pw을 세션에 저장 (request의 세션부분에 저장되는것)
     request.session['id']=temp_id
     request.session['pw']=temp_pw

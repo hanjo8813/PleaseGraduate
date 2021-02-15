@@ -48,7 +48,9 @@ a {
     cursor: pointer;
 }
 
-.navbar_menu li a:hover {
+.navbar_menu li a:hover,
+.regi_find_pwd a:hover 
+{
     font-weight: bold;
     color : rgb(164, 26, 55);
 }
@@ -186,7 +188,6 @@ body:not(.device-touch) .bg_btn_style {
 }
 
 
-
 /* ---------------------------------( login 배경 )---------------------------------------- */
 
 .gray_sec{
@@ -207,71 +208,6 @@ body:not(.device-touch) .bg_btn_style {
     padding-right : 10rem;
 }
 
-.info_title{
-    font-size : 1.8rem;
-    font-weight: bold;
-    padding-top:2.5rem;
-    padding-left:0.5rem;
-}
-
-.info_box{
-    font-weight:normal;
-    font-size:0.9rem;
-    padding:1rem;
-    padding-left:2rem;
-    text-align:left;
-    margin: 0 auto; 
-    width:100%;
-    margin-top:1rem;
-    border:0.001px solid rgb(216, 216, 216);
-    background-color: white; 
-}
-
-/* ---------------------------------( login 검사대상 테이블 )---------------------------------------- */
-
-.possible_com{
-    background-color: white;
-    width: 90%;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.possible_com_th {
-    height: 2rem;
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #3b1b1b;
-}
-
-.possible_com_td {
-    border-right :1px solid #dadada;
-    border-bottom: 1px solid #dadada;
-}
-
-.possible_com_tr {
-    color: black;
-    height: 2rem ;
-    border-bottom: 1px solid #dadada;
-}
-
-/* ---------------------------------( login 링크 / 강조 )---------------------------------------- */
-
-.link_site{
-    font-size:0.8rem;
-    padding:0.1rem 0.3rem 0.1rem 0.3rem;
-    color:white;
-    border-radius: 3px;
-    background-color: rgb(164, 26, 55);
-}
-
-.caution_info{
-    color:#d32f2f; 
-    font-weight:bold;
-}
-
-.info_agree{
-    padding-top:1rem;
-    text-align:right;
-}
 
 .login_title{
     text-align: center;    
@@ -284,10 +220,11 @@ body:not(.device-touch) .bg_btn_style {
     text-align:center;
     margin: 0 auto; 
     width:60%;
-    margin-top:1rem;
+    margin-top:1.5rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
     padding:2rem;
+    padding-bottom:3rem;
     margin-bottom:4rem;
 }
 
@@ -326,19 +263,29 @@ body:not(.device-touch) .bg_btn_style {
     font-size: 1.2rem;
     font-weight: bold;
     border: none;
-    margin-top: 22px;
+    margin-top: 1.5rem;
     border-radius: 3px;
     padding:0.5rem;
     cursor: pointer;
     outline: 0;
 }
 
-.login_btn_default{
-    margin-top: 22px;
-    color:#d32f2f; 
-    font-weight: bold;
-    font-size:1.2rem;
+.regi_find_pwd{
+    font-size:1rem;
+    margin-top: 1.5rem;
+    color:rgb(204, 204, 204)
 }
+
+
+.regi_find_pwd a{
+    text-decoration: none;
+    color: #313131;
+}
+
+.regi_find_pwd span{
+    margin-left : 1rem;
+    margin-right : 1rem;
+} 
 
 .login_btn:hover{
     background-color: #FEC034;
@@ -348,6 +295,85 @@ body:not(.device-touch) .bg_btn_style {
 body:not(.device-touch) .login_btn {
     transition: background-color .2s linear;
     -webkit-transition: background-color .2s linear;
+}
+
+.login_btn_default{
+    margin-top: 22px;
+    color:#d32f2f; 
+    font-weight: bold;
+    font-size:1.2rem;
+}
+
+/* ---------------------------------( register )---------------------------------------- */
+
+
+.info_title{
+    font-size : 1.8rem;
+    font-weight: bold;
+    padding-top:2.5rem;
+    padding-left:0.5rem;
+}
+
+.info_box{
+    font-weight:normal;
+    font-size:0.9rem;
+    padding-bottom:1rem;
+    padding-top:1rem;
+    padding-left:2rem;
+    text-align:left;
+    margin: 0 auto; 
+    width:100%;
+    margin-top:1rem;
+    border:0.001px solid rgb(216, 216, 216);
+    background-color: white; 
+}
+
+/* ---------------------------------( register 검사대상 테이블 )---------------------------------------- */
+
+
+.possible_com{
+    background-color: white;
+    width: 90%;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.possible_com_th {
+    height: 2rem;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #3b1b1b;
+}
+
+.possible_com_td {
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.possible_com_tr {
+    color: black;
+    height: 2rem ;
+    border-bottom: 1px solid #dadada;
+}
+
+/* ---------------------------------( register 링크 / 강조 )---------------------------------------- */
+
+
+.link_site{
+    font-size:0.8rem;
+    padding:0.1rem 0.3rem 0.1rem 0.3rem;
+    color:white;
+    border-radius: 3px;
+    background-color: rgb(164, 26, 55);
+}
+
+.caution_info{
+    color:#d32f2f; 
+    font-weight:bold;
+}
+
+.info_agree{
+    padding-top:1rem;
+    text-align:right;
 }
 
 
