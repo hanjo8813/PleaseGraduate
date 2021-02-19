@@ -188,7 +188,7 @@ body:not(.device-touch) .bg_btn_style {
 }
 
 
-/* ---------------------------------( login 배경 )---------------------------------------- */
+/* ---------------------------------( login  )---------------------------------------- */
 
 .gray_sec{
     background-color:rgb(248,249,250) ;
@@ -204,8 +204,8 @@ body:not(.device-touch) .bg_btn_style {
 
 .container {
     text-align:center;
-    padding-left : 10rem;
-    padding-right : 10rem;
+    padding-left : 17rem;
+    padding-right : 17rem;
 }
 
 
@@ -219,12 +219,12 @@ body:not(.device-touch) .bg_btn_style {
 .login_box{
     text-align:center;
     margin: 0 auto; 
-    width:60%;
+    width:75%;
     margin-top:1.5rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
-    padding:2rem;
-    padding-bottom:3rem;
+    padding:1.5rem;
+    padding-bottom:2.5rem;
     margin-bottom:4rem;
 }
 
@@ -276,7 +276,6 @@ body:not(.device-touch) .bg_btn_style {
     color:rgb(204, 204, 204)
 }
 
-
 .regi_find_pwd a{
     text-decoration: none;
     color: #313131;
@@ -304,7 +303,7 @@ body:not(.device-touch) .login_btn {
     font-size:1.2rem;
 }
 
-/* ---------------------------------( register )---------------------------------------- */
+/* ---------------------------------( agree )---------------------------------------- */
 
 
 .info_title{
@@ -315,31 +314,51 @@ body:not(.device-touch) .login_btn {
 }
 
 .info_box{
-    font-weight:normal;
-    font-size:0.9rem;
-    padding-bottom:1rem;
-    padding-top:1rem;
-    padding-left:2rem;
-    text-align:left;
     margin: 0 auto; 
-    width:100%;
+    width: 100%;
     margin-top:1rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
 }
 
-/* ---------------------------------( register 검사대상 테이블 )---------------------------------------- */
+.info_content{
+    margin-bottom:1.3rem;
+    margin-top:1.3rem;
+    margin-left:2rem;
+    margin:2rem;
+    font-weight:normal;
+    font-size:0.9rem;
+    text-align:left;
+}
+
+.confirm_btn {
+    background: rgb(164, 26, 55);
+    width:15%;  
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    margin-top: 1.5rem;
+    border-radius: 3px;
+    padding:0.5rem;
+    float:right;
+    cursor: pointer;
+    outline: 0;
+}
+
+/* ---------------------------------( agree 검사대상 테이블 )---------------------------------------- */
 
 
 .possible_com{
+    margin:0 auto;
     background-color: white;
-    width: 90%;
+    width: 100%;
     text-align: center;
     font-size: 0.9rem;
 }
 
 .possible_com_th {
-    height: 2rem;
+    height: 3.5rem;
     background-color: #f8f8f8;
     border-bottom: 1px solid #3b1b1b;
 }
@@ -355,7 +374,7 @@ body:not(.device-touch) .login_btn {
     border-bottom: 1px solid #dadada;
 }
 
-/* ---------------------------------( register 링크 / 강조 )---------------------------------------- */
+/* ---------------------------------( agree 링크 / 강조 )---------------------------------------- */
 
 
 .link_site{
@@ -377,22 +396,10 @@ body:not(.device-touch) .login_btn {
 }
 
 
+/* ---------------------------------( register )---------------------------------------- */
 
-@media screen and (max-width: 900px) {
-    .navbar_logo {
-        padding: 10px;
-    }
-    .navbar_menu li:hover {
-        background-color: white;
-    }
-    .txtcontainer {
-        order: 2;
-    }
-    .signup {
-        margin-left: 180px;
-        margin-top: -20px;
-    }
-}
+
+
 
 /* ---------------------------------( result )---------------------------------------- */
 
@@ -665,55 +672,7 @@ strong {
     font-size: 50px;
 }
 
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
 
-.modal-content {
-    background-color: #fefefe;
-    border-radius: 5px;
-    margin: 5% auto; /* 15% from the top and centered */
-    padding: 5rem;
-    border: 1px solid #888;
-    width: 80%;
-    height: auto;
-    /* Could be more or less, depending on screen size */                          
-}
-
-.login-content {
-    margin: 2% auto;
-    width: 30%;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:focus,
-.close:hover {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
 
 .Gbox {
     display: flex;
@@ -741,15 +700,7 @@ strong {
     width: 100%;
 }
 
-.modal_div {
-    padding: 1rem; 
-    display : flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
-    justify-content: flex-start;
-    text-align: center;
-}
+
 
 .mytd {
     border-right :1px solid #dadada;
@@ -809,8 +760,90 @@ strong {
  }
 
 
+ 
+/* ---------------------------------( 모달 )---------------------------------------- */
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 5rem;
+    border: 1px solid #888;
+    width: 80%;
+    height: auto;
+    /* Could be more or less, depending on screen size */                          
+}
+
+.load-modal-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+    margin: 7% auto;
+    padding: 2.2rem;
+    border: 1px solid #888;
+    width: 40%;
+    height: auto;
+}
+
+.modal_div {
+    padding: 1rem;
+    display : flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+.login-content {
+    margin: 2% auto;
+    width: 30%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:focus,
+.close:hover {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 /* ---------------------------------( loading )---------------------------------------- */
 
+.modal_loadcontainer{
+    height: 50vh;
+    width: 100%;
+    font-weight: 700;
+    font-size: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .loadcontainer{
     height: 100vh;
@@ -823,6 +856,14 @@ strong {
     align-items: center;
     background-color: rgb(248,249,250);
 }
+
+.load_info{
+    letter-spacing:1px; 
+    margin-top:0.8rem; 
+    font-size:1rem; 
+    color:rgb(199, 199, 199)
+}
+
 .loading span {
     display: inline-block;
     margin: 0 -.075em;

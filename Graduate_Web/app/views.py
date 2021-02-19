@@ -29,7 +29,6 @@ from .models import *
 
 
 def r_head(request):
-    request.session.clear()
     context = {
         # 세션 테이블의 행의 개수 (방문자 수)를 센다
         'visit_num' : DjangoSession.objects.count(),
@@ -42,16 +41,18 @@ def r_login(request):
     request.session.clear()
     return render(request, "login.html")
 
+def r_agree(request):
+    return render(request, "agree.html")
+
+
 def f_logout(request):
     request.session.clear()
     return redirect('/')
 
 def r_loading(request):
-    temp_id = request.POST.get('id')
-    temp_pw = request.POST.get('pw')
     # 사용자 id(학번)과 pw을 세션에 저장 (request의 세션부분에 저장되는것)
-    request.session['id']=temp_id
-    request.session['pw']=temp_pw
+    request.session['id']=request.POST.get('id')
+    request.session['pw']=request.POST.get('pw')
     return render(request, "loading.html")
 
 def r_loading2(request):
@@ -636,11 +637,18 @@ def get_Driver(url):
     return driver
 
 
-def f_login(request):
-    # r_loading에서 받은 세션 꺼내기
-    id = request.session.get('id')
-    pw = request.session.get('pw')
+def r_register(request):
+    # 입력받은 id/pw을 꺼낸다.
+    id = request.POST.get('id')
+    pw = request.POST.get('pw')
     year = id[:2]
+
+    '''
+    # 학번 중복 검사
+    if UserInfo.objects.filter(student_id=id).exists():
+        messages.error(request, '이미 가입된 학번입니다!')
+        return redirect('/agree/')
+    '''
 
     # 대양휴머니티칼리지 url
     url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
@@ -671,17 +679,14 @@ def f_login(request):
         except:
             driver.quit()
             messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-            return redirect('/login/')
+            return redirect('/agree/')
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
         # 독서 권수 리스트에 저장
         soup = BeautifulSoup(html, 'html.parser')
-        # 유저 학과 저장
+        # 유저 학과/학부 저장
         soup_major = soup.select_one("li > dl > dd")
         major = soup_major.string[:-2]
-        # 지능기전공학부의 경우 
-        if major == '무인이동체공학' or major == '스마트기기공학':
-            major = '지능기전공'      
         # 유저 이름 저장
         soup_name = soup.select("li > dl > dd")
         name = soup_name[2].string
@@ -733,7 +738,7 @@ def f_login(request):
                 driver.quit()
                 display.stop()
                 messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/login/')
+                return redirect('/agree/')
             driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
             # 독서 권수 리스트에 저장
@@ -741,9 +746,6 @@ def f_login(request):
              # 유저 학과 저장
             soup_major = soup.select_one("li > dl > dd")
             major = soup_major.string[:-2]
-            # 지능기전공학부의 경우 
-            if major == '무인이동체공학' or major == '스마트기기공학':
-                major = '지능기전공' 
             # 유저 이름 저장
             soup_name = soup.select("li > dl > dd")
             name = soup_name[2].string
@@ -772,15 +774,17 @@ def f_login(request):
             if 'display' in locals():
                 display.stop()
             messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다.')
-            return redirect('/login/')
+            return redirect('/agree/')
 
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 --------------------------------------------------------------------------
     # 만약 존재하지 않으면
     if not Standard.objects.filter(user_year = year, user_dep = major).exists():
         messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-        return redirect('/login/')
+        return redirect('/agree/')
+
     # 대휴칼에서 받아온 데이터를 세션에 임시로 저장.
     temp_user_info = {
+        'id' : id,
         'year' : year,
         'name' : name,
         'major' : major,
@@ -788,17 +792,7 @@ def f_login(request):
     }
     request.session['temp_user_info'] = temp_user_info
 
-#************************************************************************************************************************************************
-    '''
-    # 만약 검사 이력이 있다면 메시지를 줘서 js 선택창을 호출함.
-    if UserInfo.objects.filter(student_id=id).exists() :
-        messages.info(request, '검사 이력이 존재합니다. 기존 데이터로 검사하시겠습니까?\\n▫️ 확인 - 이전에 검사했던 데이터를 불러옵니다.\\n▫️ 취소 - 데이터를 업데이트합니다. (15초 소요)\\n\\n⚠️자신의 이수과목에 변동이 있을 경우에만 업데이트하세요.⚠️')
-    # 첫 사용자라면 바로 loading2 -> uis 크롤링
-    return redirect("/loading2/")
-    '''
-    # 수강신청땐 바로 검사로 보내버리기.
-    return redirect("/loading3/")
-#************************************************************************************************************************************************
+    return render(request, "register.html")
 
             
 def f_uis(request):

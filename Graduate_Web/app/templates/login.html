@@ -8,11 +8,10 @@
         <div style="font-size:4rem;">
             <i class="fas fa-graduation-cap"></i>
         </div>
-        <div style="font-size:2rem; font-weight:bold;"><span>Please Graduate</span>에 오신걸 환영합니다</div>
+        <div style="font-size:2rem; font-weight:bold;">Please Graduate에 오신걸 환영합니다</div>
         <div style="margin-top:0.5rem; font-size:1rem; color:rgb(199, 199, 199)">(version 1.1 / 02.13 updated)</div>
     </div>
 </div>
-
 
 <!-- 로그인 박스 -->
 <div class="white_sec">
@@ -23,7 +22,7 @@
         </div>
         <div class="login_box">
             <!-- 로그인 폼 -->
-            <form action="/loading/" method="post">
+            <form action="#" method="post">
                 {% csrf_token %}
                 <div class="textbox">
                     <label>아이디</label>
@@ -35,12 +34,10 @@
                     <input type='submit' class='login_btn' value='로그인'>
                 </div>
                 <div class="regi_find_pwd">
-                    <a href="#">회원가입</a>
+                    <a href="/agree/">회원가입</a>
                     <span>|</span>
                     <a href="#">비밀번호찾기</a>
                 </div>
-                
-
             </form>
         </div>
     </div>
@@ -51,6 +48,4 @@
 
 
 {% block js_section %}
-
-
 {% endblock %}

@@ -25,6 +25,8 @@ urlpatterns = [
     # 페이지 렌더링
     path('', views.r_head),
     path('login/', views.r_login),
+    path('agree/', views.r_agree),
+    path('register/', views.r_register),
     path('loading/', views.r_loading),
     path('loading2/', views.r_loading2),
     path('loading3/', views.r_loading3),
@@ -32,7 +34,6 @@ urlpatterns = [
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴
-    path('f_login/', views.f_login),
     path('f_logout/', views.f_logout),
     path('f_uis/', views.f_uis),
     
