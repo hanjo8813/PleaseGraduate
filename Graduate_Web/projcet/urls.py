@@ -27,15 +27,12 @@ urlpatterns = [
     path('login/', views.r_login),
     path('agree/', views.r_agree),
     path('register/', views.r_register),
-    path('loading/', views.r_loading),
-    path('loading2/', views.r_loading2),
-    path('loading3/', views.r_loading3),
     path('result/', views.r_result),
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴
     path('f_logout/', views.f_logout),
-    path('f_uis/', views.f_uis),
+    path('f_register/', views.f_register),
     
     # 테스트용
     path('admin_test/', views.r_admin_test),

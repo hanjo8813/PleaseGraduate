@@ -32,6 +32,21 @@ class TestNewLecture(models.Model):
         managed = False
         db_table = 'test_new_lecture'
 
+
+class TestUserInfo(models.Model):
+    student_id = models.CharField(primary_key=True, max_length=10)
+    password = models.CharField(max_length=100)
+    year = models.IntegerField()
+    major = models.CharField(max_length=45)
+    major_status = models.CharField(max_length=10)
+    name = models.CharField(max_length=45)
+    book = models.CharField(max_length=45)
+    eng = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'test_user_info'
+
 # ---------------------------------------------------------------------------
 
 class DjangoSession(models.Model):

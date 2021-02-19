@@ -286,12 +286,15 @@ body:not(.device-touch) .bg_btn_style {
     margin-right : 1rem;
 } 
 
-.login_btn:hover{
+.login_btn:hover,
+.regi_btn:hover{
     background-color: #FEC034;
     font-weight: bold;
 }
 
-body:not(.device-touch) .login_btn {
+body:not(.device-touch) .login_btn,
+body:not(.device-touch) .regi_btn
+{
     transition: background-color .2s linear;
     -webkit-transition: background-color .2s linear;
 }
@@ -399,7 +402,61 @@ body:not(.device-touch) .login_btn {
 /* ---------------------------------( register )---------------------------------------- */
 
 
+.regi_box {
+    margin: 0 auto; 
+    width: 45%;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
 
+.regi_box label{
+    text-align: left;
+    font-size:1.1rem;
+    margin-top: 2rem;
+}
+
+.regi_box input {
+    font-size: 1rem;
+    background: none;
+    border:0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    margin-top:0.5rem;
+    outline: 0;
+    height:1.5rem;
+}
+
+.regi_box input::placeholder {
+    color:rgb(143, 143, 143);
+}
+
+.regi_box select{
+    font-size: 1rem;
+    background: none;
+    border:0.01px solid rgb(216, 216, 216);
+    padding: 0px 10px 0px 10px;
+    margin-top:0.5rem;
+    outline: 0;
+    height:2.8rem;
+}
+
+.regi_btn{
+    background: rgb(164, 26, 55);
+    width:15%;  
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    margin-top: 1.5rem;
+    border-radius: 3px;
+    padding:0.7rem;
+    cursor: pointer;
+    outline: 0;
+    margin-top:2.5rem;
+    margin-bottom: 3rem;
+}
 
 /* ---------------------------------( result )---------------------------------------- */
 

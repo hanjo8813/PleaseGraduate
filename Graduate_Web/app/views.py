@@ -44,27 +44,239 @@ def r_login(request):
 def r_agree(request):
     return render(request, "agree.html")
 
-
 def f_logout(request):
     request.session.clear()
     return redirect('/')
 
-def r_loading(request):
-    # 사용자 id(학번)과 pw을 세션에 저장 (request의 세션부분에 저장되는것)
-    request.session['id']=request.POST.get('id')
-    request.session['pw']=request.POST.get('pw')
-    return render(request, "loading.html")
+# --------------------------------------------- ( 셀레니움 ) ----------------------------------------------------------------
 
-def r_loading2(request):
-    return render(request, "loading2.html")
+def selenium_DHC(id, pw):
+    # 대양휴머니티칼리지 url
+    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+    # 옵션 넣고 드라이버 생성
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = webdriver.Chrome('./chromedriver.exe', options=options)
+    driver.get(url)
 
-def r_loading3(request):
-    # 여기까지 성공적으로 오면 총 검사수 +1 증가
-    stc = SuccessTestCount.objects.get(index=0)
-    stc.num_count += 1
-    stc.save()
-    return render(request, "loading3.html")
+    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
+    if platform.system() == 'Windows':
+        # 크롤링시작
+        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+        if checked:
+            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+            alert = driver.switch_to_alert()
+            alert.dismiss()
+        # id , pw 입력할 곳 찾기
+        tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+        tag_pw = driver.find_element_by_id("password")
+        tag_id.clear()
+        # id , pw 보내기
+        tag_id.send_keys(id)
+        tag_pw.send_keys(pw)
+        time.sleep(0.5)
+        # 로그인버튼 클릭
+        login_btn = driver.find_element_by_id('loginBtn')
+        login_btn.click()
+        # ID/PW 틀렸을 때 예외처리 ***
+        try:
+            driver.switch_to.frame(0)
+        except:
+            driver.quit()
+            return 1
+        driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+        html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+        # 독서 권수 리스트에 저장
+        soup = BeautifulSoup(html, 'html.parser')
+        # 유저 학과/학부 저장
+        soup_major = soup.select_one("li > dl > dd")
+        major_full = soup_major.string
+        major = soup_major.string[:-2]
+        # 유저 이름 저장
+        soup_name = soup.select("li > dl > dd")
+        name = soup_name[2].string
+        # 인증 여부
+        soup_cert = soup.select("li > dl > dd")
+        cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
+        # 고특으로 대체이수 하지 않았을 때
+        if cert[-4:] == '대체이수':
+            book = '고특통과'
+        else :
+            book=[]
+            soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+              # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+            for td in soup1:
+                if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+                    continue
+                book.append(td.string.strip().strip().replace('권', ''))
+            book = ''.join(book[:4]).replace(' ','')
+        driver.quit()
 
+    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
+    else:
+        try:
+            # 가상 디스플레이를 활용해 실행속도 단축
+            display = Display(visible=0, size=(1024, 768))
+            display.start()
+            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+            if checked:
+                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+                alert = driver.switch_to_alert()
+                alert.dismiss()
+            # id , pw 입력할 곳 찾기
+            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+            tag_pw = driver.find_element_by_id("password")
+            tag_id.clear()
+            # id , pw 보내기
+            tag_id.send_keys(id)
+            tag_pw.send_keys(pw)
+            time.sleep(0.5)
+            # 로그인버튼 클릭
+            login_btn = driver.find_element_by_id('loginBtn')
+            login_btn.click()
+            # ID/PW 틀렸을 때 예외처리 ***
+            try:
+                driver.switch_to.frame(0)
+            except:
+                driver.quit()
+                display.stop()
+                return 1
+            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+            html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+            # 독서 권수 리스트에 저장
+            soup = BeautifulSoup(html, 'html.parser')
+             # 유저 학과 저장
+            soup_major = soup.select_one("li > dl > dd")
+            major = soup_major.string[:-2]
+            # 유저 이름 저장
+            soup_name = soup.select("li > dl > dd")
+            name = soup_name[2].string
+            # 인증 여부
+            soup_cert = soup.select("li > dl > dd")
+            cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
+            # 고특으로 대체이수 하지 않았을 때
+            if cert[-4:] == '대체이수':
+                book = '고특통과'
+            else :
+                book=[]
+                soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+                  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+                for td in soup1:
+                    if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+                        continue
+                    book.append(td.string.strip().strip().replace('권', ''))
+                book = ''.join(book[:4]).replace(' ','')
+            driver.quit()
+            display.stop()
+        # 어디든 오류 발생시
+        except: 
+            # 드라이버랑 가상디스플레이 안꺼졌으면 끄기
+            if 'driver' in locals():
+                driver.quit()
+            if 'display' in locals():
+                display.stop()
+            return 2
+
+    # 크롤링으로 받아온 값 리턴
+    context = {
+        'name' : name,
+        'major' : major,
+        'major_full' : major_full,
+        'book' : book,
+    }
+    return context
+
+# --------------------------------------------- ( 회원가입 섹션 ) ----------------------------------------------------------------
+
+def r_register(request):
+    # 입력받은 id/pw을 꺼낸다.
+    id = request.POST.get('id')
+    pw = request.POST.get('pw')
+    year = id[:2]
+
+    # 학번 중복 검사
+    if TestUserInfo.objects.filter(student_id=id).exists():
+        messages.error(request, '이미 가입된 학번입니다!')
+        return redirect('/agree/')
+
+    # 대휴칼 셀레니움 돌리기
+    temp_user_info = selenium_DHC(id, pw)
+
+    # 예외처리
+    if temp_user_info == 1:
+        messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+        return redirect('/agree/')
+    elif temp_user_info == 2:
+        messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도하세요.')
+        return redirect('/agree/')
+
+# ***********************************************************************************
+    
+    #temp_user_info['major_full'] = '지능기전공학부'
+    
+# ***********************************************************************************
+
+    # 학부로 뜨는 경우(1학년에 해당)
+    major_select = []
+    if temp_user_info['major_full'] == '지능기전공학부':
+        major_select.extend(['무인이동체공학', '스마트기기공학'])
+
+    # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
+    if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
+        messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
+        return redirect('/agree/')
+    
+    # 나머지 데이터도 추가해주기
+    temp_user_info['id'] = id
+    temp_user_info['year'] = year
+    temp_user_info['major_select'] = major_select
+    # 세션에 저장
+    request.session['temp_user_info'] = temp_user_info
+    return render(request, "register.html")
+
+
+def f_register(request):
+    # 1. 세션에 있는것부터 꺼내자
+    temp_user_info = request.session.get('temp_user_info')
+    student_id = temp_user_info['id']
+    year = temp_user_info['year']
+    name = temp_user_info['name']
+    book = temp_user_info['book']
+    
+    # 2. post로 받은것 꺼내기
+    major_status = request.POST.get('major_status')
+    password = request.POST.get('password')
+
+    # 만약 학부생일 경우 전공을 선택한것으로 저장
+    if request.POST.get('major_select') : 
+        major = request.POST.get('major_select')
+    # 선택지가 아예없었다면 그냥 세션 전공 저장
+    else : 
+        major = temp_user_info['major']
+
+    # 영어에서 해당없음이면 'x'로 저장
+    # 만약 영어 점수 썼다면 ex) 'toeic/550' <- 이런형태로 저장됨.
+    eng = request.POST.get('eng')
+    if eng != 'x':
+        eng = eng + '/' + str(request.POST.get('eng_score'))
+
+    # 테스트 user_info 테이블에 데이터 입력
+    new_ui = TestUserInfo()
+    new_ui.student_id = student_id
+    new_ui.password = password
+    new_ui.year = year
+    new_ui.major = major
+    new_ui.major_status = major_status
+    new_ui.name = name
+    new_ui.book = book
+    new_ui.eng = eng
+    new_ui.save()
+
+    return HttpResponse('삽입완료?')
+
+
+
+# --------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
 
 def list_to_query(list_):
     al = AllLecture.objects.none()
@@ -610,417 +822,6 @@ def r_en_result(request):
     }
    
     return render(request, "en_result.html", context)
-
-
-
-
-# --------------------------------------------- (셀레니움 파트) ----------------------------------------------------------------
-
-
-def get_Driver(url):
-    # 윈도우일 때 -> 개발용
-    if platform.system() == 'Windows':
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        root = os.getcwd() + '\\app\\uploaded_media'
-        options.add_experimental_option('prefs', {'download.default_directory' : root} )
-        driver = webdriver.Chrome('./chromedriver.exe', options=options)
-    # ubuntu일 때 -> 배포용
-    else:
-        options = webdriver.ChromeOptions()
-        #options.add_argument("headless")
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        root = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
-        options.add_experimental_option('prefs', {'download.default_directory' : root} )
-        driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
-    driver.get(url)
-    return driver
-
-
-def r_register(request):
-    # 입력받은 id/pw을 꺼낸다.
-    id = request.POST.get('id')
-    pw = request.POST.get('pw')
-    year = id[:2]
-
-    '''
-    # 학번 중복 검사
-    if UserInfo.objects.filter(student_id=id).exists():
-        messages.error(request, '이미 가입된 학번입니다!')
-        return redirect('/agree/')
-    '''
-
-    # 대양휴머니티칼리지 url
-    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
-
-    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
-    if platform.system() == 'Windows':
-        # 기존 회원인지 체크 & 고전독서인증센터 크롤링 
-        driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-        if checked:
-            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-            alert = driver.switch_to_alert()
-            alert.dismiss()
-        # id , pw 입력할 곳 찾기
-        tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-        tag_pw = driver.find_element_by_id("password")
-        tag_id.clear()
-        # id , pw 보내기
-        tag_id.send_keys(id)
-        tag_pw.send_keys(pw)
-        time.sleep(0.5)
-        # 로그인버튼 클릭
-        login_btn = driver.find_element_by_id('loginBtn')
-        login_btn.click()
-        # ID/PW 틀렸을 때 예외처리 ***
-        try:
-            driver.switch_to.frame(0)
-        except:
-            driver.quit()
-            messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-            return redirect('/agree/')
-        driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-        html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
-        # 독서 권수 리스트에 저장
-        soup = BeautifulSoup(html, 'html.parser')
-        # 유저 학과/학부 저장
-        soup_major = soup.select_one("li > dl > dd")
-        major = soup_major.string[:-2]
-        # 유저 이름 저장
-        soup_name = soup.select("li > dl > dd")
-        name = soup_name[2].string
-        # 인증 여부
-        soup_cert = soup.select("li > dl > dd")
-        cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
-        # 고특으로 대체이수 하지 않았을 때
-        if cert[-4:] == '대체이수':
-            book = '고특통과'
-        else :
-            book=[]
-            soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
-              # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
-            for td in soup1:
-                if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
-                    continue
-                book.append(td.string.strip().strip().replace('권', ''))
-            book = ''.join(book[:4]).replace(' ','')
-        driver.quit()
-
-    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
-    else:
-        try:
-            # 가상 디스플레이를 활용해 실행속도 단축
-            display = Display(visible=0, size=(1024, 768))
-            display.start()
-            # 기존 회원인지 체크 & 고전독서인증센터 크롤링 
-            driver = get_Driver(url)  # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
-            # id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            # id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)
-            time.sleep(0.5)
-            # 로그인버튼 클릭
-            login_btn = driver.find_element_by_id('loginBtn')
-            login_btn.click()
-            # ID/PW 틀렸을 때 예외처리 ***
-            try:
-                driver.switch_to.frame(0)
-            except:
-                driver.quit()
-                display.stop()
-                messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-                return redirect('/agree/')
-            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-            html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
-            # 독서 권수 리스트에 저장
-            soup = BeautifulSoup(html, 'html.parser')
-             # 유저 학과 저장
-            soup_major = soup.select_one("li > dl > dd")
-            major = soup_major.string[:-2]
-            # 유저 이름 저장
-            soup_name = soup.select("li > dl > dd")
-            name = soup_name[2].string
-            # 인증 여부
-            soup_cert = soup.select("li > dl > dd")
-            cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
-            # 고특으로 대체이수 하지 않았을 때
-            if cert[-4:] == '대체이수':
-                book = '고특통과'
-            else :
-                book=[]
-                soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
-                  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
-                for td in soup1:
-                    if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
-                        continue
-                    book.append(td.string.strip().strip().replace('권', ''))
-                book = ''.join(book[:4]).replace(' ','')
-            driver.quit()
-            display.stop()
-        # 어디든 오류 발생시
-        except: 
-            # 드라이버랑 가상디스플레이 안꺼졌으면 끄기
-            if 'driver' in locals():
-                driver.quit()
-            if 'display' in locals():
-                display.stop()
-            messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다.')
-            return redirect('/agree/')
-
-    # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 --------------------------------------------------------------------------
-    # 만약 존재하지 않으면
-    if not Standard.objects.filter(user_year = year, user_dep = major).exists():
-        messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
-        return redirect('/agree/')
-
-    # 대휴칼에서 받아온 데이터를 세션에 임시로 저장.
-    temp_user_info = {
-        'id' : id,
-        'year' : year,
-        'name' : name,
-        'major' : major,
-        'book' : book,
-    }
-    request.session['temp_user_info'] = temp_user_info
-
-    return render(request, "register.html")
-
-            
-def f_uis(request):
-    #  세션 꺼내기
-    id = request.session.get('id')
-    pw = request.session.get('pw')
-
-    # uis 사이트 url
-    url = 'https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN'
-
-    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
-    if platform.system() == 'Windows':
-        file_path = './app/uploaded_media/'
-        # uis 크롤링 
-        driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-        #id , pw 입력할 곳 찾기
-        tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
-        tag_pw = driver.find_element_by_id("password")
-        tag_id.clear()
-        #id , pw 보내기
-        tag_id.send_keys(id)
-        tag_pw.send_keys(pw)  
-        #로그인버튼 클릭
-        login_btn = driver.find_element_by_id('logbtn')
-        login_btn.click()
-        driver.switch_to.frame(2)
-        # 수업/성적 메뉴선택
-        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
-        # 성적 및 강의평가 선택
-        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
-        time.sleep(0.5)
-        # 기이수성적조회로 클릭 이동
-        driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
-        time.sleep(0.5)
-        # 최상위(default) 프레임으로 이동
-        driver.switch_to.default_content()
-        # 프레임 경우의 수 다 찾고 이동
-        driver.switch_to.frame(3)
-        driver.switch_to.frame(0)
-        time.sleep(0.5)
-        # 다운로드 버튼 x_path 클릭
-        x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
-        x.click()
-        time.sleep(1.5)
-        # 영어인증 test
-        driver.switch_to_default_content()
-        driver.switch_to.frame(2)
-        driver.execute_script("javaScript:frameResize(this);")
-        time.sleep(0.5)
-        driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
-        time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
-        # 졸업자 예외처리 - 졸업자는 영어 통과로 고정
-        try : 
-            driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
-            time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
-            popup = driver.window_handles[1]  # 팝업 창
-            driver.switch_to_window(popup)
-            driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
-            eng = 0
-        except:
-            eng = 1
-        driver.quit()
-
-    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
-    else:
-        try:
-            file_path = '/srv/SGH_for_AWS/Graduate_Web/app/uploaded_media/'
-            # 가상 디스플레이를 활용해 실행속도 단축
-            display = Display(visible=0, size=(1024, 768))
-            display.start()
-            # uis 크롤링 
-            driver = get_Driver(url) # 크롬 드라이버 <-- 실행하는 로컬 프로젝트 내에 존재해야됨 exe 파일로 존재
-            #id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id") # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            #id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)  
-            #로그인버튼 클릭
-            login_btn = driver.find_element_by_id('logbtn')
-            login_btn.click()
-            driver.switch_to.frame(2)
-            # 수업/성적 메뉴선택
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30');")
-            # 성적 및 강의평가 선택
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_30SCH_SUG05_STUD');")
-            time.sleep(0.5)
-            # 기이수성적조회로 클릭 이동
-            driver.find_element_by_xpath('''//*[@id="SELF_STUDSELF_SUB_30SCH_SUG05_STUD"]/table/tbody/tr[1]''').click()
-            time.sleep(0.5)
-            # 최상위(default) 프레임으로 이동
-            driver.switch_to.default_content()
-            # 프레임 경우의 수 다 찾고 이동
-            driver.switch_to.frame(3)
-            driver.switch_to.frame(0)
-            time.sleep(0.5)
-            # 다운로드 버튼 x_path 클릭
-            x = driver.find_element_by_xpath('''//*[@id="btnDownload_btn"]''')
-            x.click()
-            time.sleep(1.5)
-            #---------------------------------------------------------------- 영어성적 가져오기
-            driver.switch_to_default_content()
-            driver.switch_to.frame(2)
-            driver.execute_script("javaScript:frameResize(this);")
-            time.sleep(0.5)
-            driver.execute_script("javascript:onMenu('SELF_STUDSELF_SUB_20SCH_SUH_STUD');")
-            time.sleep(0.5)  # 자바스크립트 실행시간 기다려줘야함 must need
-            # 졸업생 예외처리 (uis 페이지가 다름)
-            try : 
-                driver.find_element_by_xpath('//*[@id="SELF_STUDSELF_SUB_20SCH_SUH_STUDSuhJudgeSelfQ"]').click()
-                time.sleep(1.5)  # 마찬가지로 창 뜨고 기다려줘야 팝업창 볼 수 있음
-                popup = driver.window_handles[1]  # 팝업 창
-                driver.switch_to_window(popup)
-                driver.find_element_by_xpath('//*[@id="ckb1_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
-                driver.find_element_by_xpath('//*[@id="ckb2_item0"]/table/tbody/tr/td/table/tbody/tr/td/input').click()
-                driver.find_element_by_id('btnClose_btn').click()
-                time.sleep(0.5)
-                driver.switch_to_window(     driver.window_handles[0])  # 다시 uis 창으로 윈도우 바꿔놓기
-                driver.switch_to_frame(3)  # 이 사이트에서는 프레임 0 - 3 총 4개
-                soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
-                driver.switch_to_frame(0)
-                soup = BeautifulSoup(driver.page_source, 'html.parser')  # 드라이버의 현재 source(html) 가져오기
-                k = soup.find('div', id='lbl179').select_one('div').string.strip().replace('\n','')
-                eng = 1
-                if k == '불합격':
-                    eng = 0
-            except: # 졸업자의 경우
-                eng = 1
-            driver.quit()
-            display.stop()
-        # 어디든 오류 발생시
-        except: 
-            # 드라이버랑 가상디스플레이 안꺼졌으면 끄기
-            if 'driver' in locals():
-                driver.quit()
-            if 'display' in locals():
-                display.stop()
-            # 엑셀 파일은 삭제
-            for f in os.listdir(file_path):
-                os.remove(file_path + f)
-            messages.error(request, 'UIS 사이트에서 예기치 못한 오류가 발생했습니다.')
-            return redirect('/login/')
-
-    # 세션에서 대휴칼에서 받아온 정보 꺼냄
-    temp_user_info = request.session.get('temp_user_info')
-
-    # 기존 회원인지 검사
-    ui = UserInfo.objects.filter(student_id = id)
-    if not ui.exists():
-        # user_info 테이블에 정보 추가 -> 비번은 저장 X
-        new_ui = UserInfo()
-        new_ui.student_id = id
-        new_ui.year = temp_user_info['year']
-        new_ui.major = temp_user_info['major']
-        new_ui.name = temp_user_info['name']
-        new_ui.book = temp_user_info['book']
-        new_ui.eng = eng
-        new_ui.save()
-    else:
-        # user_info 테이블에 정보 수정
-        for u in ui:
-            u.book = temp_user_info['book']
-            u.eng = eng
-            u.save()
-        # user_grade 테이블의 해당 회원 성적표 삭제하기
-        ug = UserGrade.objects.filter(student_id = id)
-        ug.delete()
-    # 파일명 변경
-    new_file_name = time.strftime('%y-%m-%d %H_%M_%S') + '.xls'
-    file_name = max([file_path + f for f in os.listdir(file_path)],key=os.path.getctime)
-    shutil.move(file_name,os.path.join(file_path,new_file_name))
-    time.sleep(1)
-    df = pd.read_excel(file_path + new_file_name, index_col=None) # 해당 엑셀을 DF화 시킴
-    df.fillna('', inplace = True)
-    os.remove(file_path + new_file_name)    # 해당 엑셀파일 삭제
-    # 논패, F과목 삭제
-    n = df.shape[0]
-    flag = 0    
-    while(True):
-        for i in range(n):
-            if i == n-1 :
-                flag = 1
-            if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
-                df = df.drop(df.index[i])
-                n -= 1
-                df.reset_index(inplace=True, drop=True)
-                break
-        if flag == 1:
-            break
-    # DF에서 불필요 칼럼 삭제 (평점 삭제)
-    df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
-    # DF를 테이블에 추가
-    for i, row in df.iterrows():
-        new_ug = UserGrade()
-        new_ug.student_id = id
-        new_ug.major = temp_user_info['major']
-        new_ug.year = row['년도']
-        new_ug.semester = row['학기']
-        new_ug.subject_num = str(row['학수번호']).lstrip('0')
-        new_ug.subject_name = row['교과목명']
-        new_ug.classification = row['이수구분']
-        new_ug.selection = row['선택영역']
-        new_ug.grade = row['학점']
-        new_ug.save()
-
-    return redirect("/loading3/")
-        
-     
-
-#---------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
