@@ -37,18 +37,63 @@ def r_head(request):
     }
     return render(request, "head.html", context)
 
-def r_login(request):
-    request.session.clear()
-    return render(request, "login.html")
 
 def r_agree(request):
     return render(request, "agree.html")
+
+# ---------------------------------------------------- ( 로그인 파트 ) ----------------------------------------------------------------
 
 def f_logout(request):
     request.session.clear()
     return redirect('/')
 
-# --------------------------------------------- ( 셀레니움 ) ----------------------------------------------------------------
+def r_login(request):
+    request.session.clear()
+    return render(request, "login.html")
+
+def f_login(request):
+    # ID PW 넘어옴
+    id = request.POST.get('id')
+    pw = request.POST.get('pw')
+    # 그 값으로 모델에서 행 추출
+    ui_row = TestUserInfo.objects.filter(student_id=id)
+    # 우선 회원가입 되지 않았다면?
+    if not ui_row.exists():
+        messages.error(request, '가입되지 않은 ID 입니다.')
+        return redirect('/login/')
+    # 회원인데 비번이 틀렸다면?
+    elif ui_row[0].password != pw :
+        messages.error(request, '비밀번호를 확인하세요.')
+        return redirect('/login/')
+    # 다 통과했다면 세션에 id 담아주고
+    request.session['id'] = id
+    # mypage 렌더링 함수 호출
+    return r_mypage(request)
+
+def r_mypage(request):
+    user_id = request.session.get('id')
+    ui_row = TestUserInfo.objects.get(student_id=user_id)
+    grade = UserGrade.objects.filter(student_id=user_id)
+    # 공학인증 있는 학과라면?
+    is_engine = 0
+    if Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng != -1:
+        is_engine = 1
+    # 만약 성적표 업로드 안했다면
+    if not grade.exists:
+        grade = []
+    context ={
+        'student_id' : ui_row.student_id,
+        'major' : ui_row.major,
+        'major_status' : ui_row.major_status,
+        'name' : ui_row.name,
+        'book' : ui_row.book,
+        'eng' : ui_row.eng,
+        'grade' : grade,
+        'is_engine' : is_engine,
+    }
+    return render(request, "mypage.html", context)
+
+# ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 
 def selenium_DHC(id, pw):
     # 대양휴머니티칼리지 url
@@ -59,7 +104,7 @@ def selenium_DHC(id, pw):
     driver = webdriver.Chrome('./chromedriver.exe', options=options)
     driver.get(url)
 
-    # 로컬 - 개발용 -----------------------------------------------------------------------------------------------
+    # 로컬 - 개발용 -------------------------------------------------------------------------------
     if platform.system() == 'Windows':
         # 크롤링시작
         checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
@@ -90,8 +135,7 @@ def selenium_DHC(id, pw):
         soup = BeautifulSoup(html, 'html.parser')
         # 유저 학과/학부 저장
         soup_major = soup.select_one("li > dl > dd")
-        major_full = soup_major.string
-        major = soup_major.string[:-2]
+        major = soup_major.string
         # 유저 이름 저장
         soup_name = soup.select("li > dl > dd")
         name = soup_name[2].string
@@ -112,7 +156,7 @@ def selenium_DHC(id, pw):
             book = ''.join(book[:4]).replace(' ','')
         driver.quit()
 
-    # 서버 - 배포용 -----------------------------------------------------------------------------------------------
+    # 서버 - 배포용 -------------------------------------------------------------------------------
     else:
         try:
             # 가상 디스플레이를 활용해 실행속도 단축
@@ -181,12 +225,11 @@ def selenium_DHC(id, pw):
     context = {
         'name' : name,
         'major' : major,
-        'major_full' : major_full,
         'book' : book,
     }
     return context
 
-# --------------------------------------------- ( 회원가입 섹션 ) ----------------------------------------------------------------
+# ---------------------------------------------------- ( 회원가입 파트 ) ----------------------------------------------------------------
 
 def r_register(request):
     # 입력받은 id/pw을 꺼낸다.
@@ -212,15 +255,15 @@ def r_register(request):
 
 # ***********************************************************************************
     
-    #temp_user_info['major_full'] = '지능기전공학부'
+    #temp_user_info['major'] = '지능기전공학부'
     
 # ***********************************************************************************
 
     # 학부로 뜨는 경우(1학년에 해당)
     major_select = []
-    if temp_user_info['major_full'] == '지능기전공학부':
-        major_select.extend(['무인이동체공학', '스마트기기공학'])
-
+    if temp_user_info['major'] == '지능기전공학부':
+        major_select.extend(['무인이동체공학전공', '스마트기기공학전공'])
+    
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
     if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
         messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
@@ -235,7 +278,7 @@ def r_register(request):
     return render(request, "register.html")
 
 
-def f_register(request):
+def r_success(request):
     # 1. 세션에 있는것부터 꺼내자
     temp_user_info = request.session.get('temp_user_info')
     student_id = temp_user_info['id']
@@ -244,8 +287,8 @@ def f_register(request):
     book = temp_user_info['book']
     
     # 2. post로 받은것 꺼내기
-    major_status = request.POST.get('major_status')
     password = request.POST.get('password')
+    major_status = request.POST.get('major_status')
 
     # 만약 학부생일 경우 전공을 선택한것으로 저장
     if request.POST.get('major_select') : 
@@ -257,7 +300,7 @@ def f_register(request):
     # 영어에서 해당없음이면 'x'로 저장
     # 만약 영어 점수 썼다면 ex) 'toeic/550' <- 이런형태로 저장됨.
     eng = request.POST.get('eng')
-    if eng != 'x':
+    if eng != '해당없음':
         eng = eng + '/' + str(request.POST.get('eng_score'))
 
     # 테스트 user_info 테이블에 데이터 입력
@@ -272,11 +315,11 @@ def f_register(request):
     new_ui.eng = eng
     new_ui.save()
 
-    return HttpResponse('삽입완료?')
+    return render(request, "success.html")
 
 
 
-# --------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
+# ---------------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
 
 def list_to_query(list_):
     al = AllLecture.objects.none()
@@ -410,7 +453,7 @@ def recom_machine_learning(what, user_id, user_list):
         zipped.append([temp[0], score])
     return zipped, pass_ml
 
-# --------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
+# ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
 def r_result(request):
     # 세션에 담긴 변수 추출
@@ -645,7 +688,7 @@ def r_result(request):
     return render(request, "result.html", context)
 
 
-# --------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
+# ---------------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
 def r_en_result(request):
     # 테스트용
@@ -823,6 +866,7 @@ def r_en_result(request):
    
     return render(request, "en_result.html", context)
 
+# ---------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -832,7 +876,7 @@ def r_en_result(request):
 
 
 
-# ----------------------------------------------- (웹 연동 테스트) --------------------------------------------------------------------
+# ------------------------------------------------------ (웹 연동 테스트) --------------------------------------------------------------------
 
 # 테스트용 ID
 test_id = ''

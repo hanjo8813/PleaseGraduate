@@ -11,11 +11,10 @@
     </div>
 </div>
 
-
 <!-- 입력란 -->
 <div class="white_sec">
     <div class="container">
-        <form action="/f_register/" method="post" name='regi_form' onsubmit="return check_up()">
+        <form action="/success/" method="post" name='regi_form' onsubmit="return check_up()">
             {% csrf_token %}
             <div class="regi_box">
 
@@ -23,14 +22,14 @@
                 <input type="text" name="name" placeholder="{{ request.session.temp_user_info.name }}" style="background-color:rgb(248,249,250);" disabled>
 
                 <label>학과</label>
-                <input type="text" name="major" placeholder='{{ request.session.temp_user_info.major_full }}' style="background-color:rgb(248,249,250);" disabled>
+                <input type="text" name="major" placeholder='{{ request.session.temp_user_info.major }}' style="background-color:rgb(248,249,250);" disabled>
 
                 <!-- 학부일 경우엔 선택지 주기 (1학년 학부생에게만 해당함. )-->
                 {% if request.session.temp_user_info.major_select %}
                 <select id="major_select" name="major_select">
                     <option value="x" selected>-- 선택(필수) --</option>
-                    {% for major in request.session.temp_user_info.major_select %}
-                    <option value="{{ major }}">{{ major }}</option>
+                    {% for ms in request.session.temp_user_info.major_select %}
+                    <option value="{{ ms }}">{{ ms }}</option>
                     {% endfor %}
                 </select>
                 {% endif %}
@@ -40,19 +39,19 @@
 
                 <label>전공상태</label>
                 <select name="major_status">
-                    <option value="x" selected>해당없음</option>
-                    <option value="link">연계전공</option>
-                    <option value="dual">복수전공</option>
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="연계전공">연계전공</option>
+                    <option value="복수전공">복수전공</option>
                 </select>
 
                 <label>영어인증</label>
                 <select onclick="pop_score()" id="eng" name="eng">
-                    <option value="x" selected>해당없음</option>
-                    <option value="toeic">TOEIC</option>
-                    <option value="ibt">IBT</option>
-                    <option value="teps">TEPS</option>
-                    <option value="opic">OPIc Intermediate Low</option>
-                    <option value="toeic_sp">TOEIC Speaking</option>
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="TOEIC">TOEIC</option>
+                    <option value="IBT">IBT</option>
+                    <option value="TEPS">TEPS</option>
+                    <option value="OPIc Intermediate Low">OPIc Intermediate Low</option>
+                    <option value="TOEIC Speaking">TOEIC Speaking</option>
                 </select>
                 <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
 
@@ -70,7 +69,6 @@
 {% endblock %}
 
 
-
 {% block js_section %}
 
 <script>
@@ -78,7 +76,7 @@
     function pop_score(){
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if(eng_box.options[eng_ind].value !== "x")
+        if(eng_box.options[eng_ind].value !== "해당없음")
         {
             document.getElementById('eng_score').style.display = "block";
         }
@@ -103,7 +101,7 @@
             }
         }
         // 2. 영어인증 선택시 점수 입력확인
-        if(eng_box.options[eng_ind].value !== "x"){
+        if(eng_box.options[eng_ind].value !== "해당없음"){
             if(!document.getElementById('eng_score').value){
                 alert('영어 점수를 입력해주세요.') ;
                 regi_form.eng_score.focus();
