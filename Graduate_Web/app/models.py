@@ -74,7 +74,8 @@ class NewLecture(models.Model):
 
 
 class Standard(models.Model):
-    user_year = models.IntegerField(primary_key=True)
+    index = models.IntegerField(primary_key=True)
+    user_year = models.IntegerField()
     user_dep = models.CharField(max_length=50)
     sum_score = models.IntegerField()
     major_essential = models.IntegerField()
@@ -101,7 +102,6 @@ class Standard(models.Model):
     class Meta:
         managed = False
         db_table = 'standard'
-        unique_together = (('user_year', 'user_dep'),)
 
 
 class SubjectGroup(models.Model):

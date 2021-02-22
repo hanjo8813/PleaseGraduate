@@ -43,6 +43,7 @@ urlpatterns = [
     path('f_test/', views.f_test),
     path('dbcheck/', views.r_dbcheck),
     path('result_test/', views.result_test),
+    path('f_input_st/', views.f_input_st),
 ]
 
 # 미디어 루트 설정
