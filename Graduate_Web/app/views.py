@@ -472,6 +472,8 @@ def r_en_result(request):
     recom_bsm_ess, check_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
     mynum_bsm_ess = data[data['학수번호'].isin(dic_bsm_ess.keys())]['학점'].sum()
 
+    print(dic_bsm_ess.keys())
+
     # 3. bsm 선택 (16학번일때만 해당)
     if s_row.bsm_sel_list:
         dic_bsm_sel = make_dic([s_num for s_num in s_row.bsm_sel_list.split('/')])
@@ -1411,7 +1413,7 @@ def f_input_st(request):
     file_name = os.listdir(file_path)[0]
     df = pd.read_excel(file_path + file_name, index_col=None)
     df.fillna(0, inplace = True)
-
+    
     # 테이블 데이터 삭제
     Standard.objects.all().delete()
     time.sleep(5)   # 삭제하는 시간 기다리기
@@ -1421,27 +1423,27 @@ def f_input_st(request):
         new_st.index = i
         new_st.user_year = row['user_year']
         new_st.user_dep = row['user_dep']
-        new_st.sum_score = row['sum_score']
-        new_st.major_essential = row['major_essential']
-        new_st.major_selection = row['major_selection']
-        new_st.core_essential = row['core_essential']
-        new_st.core_selection = row['core_selection']
-        new_st.basic = row['basic']
-        new_st.ce_list = row['ce_list']
-        new_st.cs_list = row['cs_list']
-        new_st.b_list = row['b_list']
-        new_st.sum_eng = row['sum_eng']
-        new_st.pro = row['pro']
-        new_st.bsm = row['bsm']
-        new_st.eng_major = row['eng_major']
-        new_st.build_sel_num = row['build_sel_num']
-        new_st.pro_ess_list = row['pro_ess_list']
-        new_st.bsm_ess_list = row['bsm_ess_list']
-        new_st.bsm_sel_list = row['bsm_sel_list']
-        new_st.build_start = row['build_start']
-        new_st.build_sel_list = row['build_sel_list']
-        new_st.build_end = row['build_end']
-        new_st.eng_major_list = row['eng_major_list']
+        new_st.sum_score = int(row['sum_score'])
+        new_st.major_essential = int(row['major_essential'])
+        new_st.major_selection = int(row['major_selection'])
+        new_st.core_essential = int(row['core_essential'])
+        new_st.core_selection = int(row['core_selection'])
+        new_st.basic = int(row['basic'])
+        new_st.ce_list = str(row['ce_list'])
+        new_st.cs_list = str(row['cs_list'])
+        new_st.b_list = str(row['b_list'])
+        new_st.sum_eng = int(row['sum_eng'])
+        new_st.pro = int(row['pro'])
+        new_st.bsm = int(row['bsm'])
+        new_st.eng_major = int(row['eng_major'])
+        new_st.build_sel_num = int(row['build_sel_num'])
+        new_st.pro_ess_list = str(row['pro_ess_list'])
+        new_st.bsm_ess_list = str(row['bsm_ess_list'])
+        new_st.bsm_sel_list = str(row['bsm_sel_list'])
+        new_st.build_start = str(int(row['build_start']))
+        new_st.build_sel_list = str(row['build_sel_list'])
+        new_st.build_end = str(int(row['build_end']))
+        new_st.eng_major_list = str(row['eng_major_list'])
         new_st.save()
         
 
