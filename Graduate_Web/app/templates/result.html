@@ -309,7 +309,7 @@
             </div>
         </div>
 
-        <!-- 공학인증 -->
+        <!-- 공학인증 
         <div class="resultbox container6">
             <div class="name name1">
                 공학 인증
@@ -324,7 +324,7 @@
                 </div>
             </div>
         </div>
-
+        -->
     </div>
 </div>
 
@@ -774,17 +774,6 @@
 <script src="{% static 'js/circle-progress.js' %}"></script>
 
 <script>
-    // 공학인증으로 넘어가기
-    function go_en_result(){
-        if('{{en_exist}}' == 1){
-            window.onbeforeunload = null;
-            location.href = '/en_result/';
-        }
-        else{
-            alert('아직 {{user_info.major}}학과-{{user_info.year}}학번의 공학인증 기준이 추가되지 않았습니다. 😢');
-        }
-    }
-    
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
@@ -835,7 +824,6 @@
     var pernum3 = to_percent(Mygrade3, Grade3);         // 교필
     var pernum4 = to_percent(Mygrade4, Grade4);         // 교선
     var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
-    var pernum6 = 100;                                  // 공학인증
     var pernum7 = to_percent(Mybook, 10);               // 고전독서
 
     // pass 여부

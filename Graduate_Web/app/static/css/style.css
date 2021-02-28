@@ -15,6 +15,12 @@ a {
     color: black;
 }
 
+/* 아이폰에서 input css 적용하기 */
+input {
+    -webkit-appearance: none;
+ }
+
+
 
 /* ---------------------------------( ref - 메뉴바 )---------------------------------------- */
 
@@ -463,12 +469,12 @@ body:not(.device-touch) .suc_btn
 /* ---------------------------------( success )---------------------------------------- */
 
 .suc_container{
-    height: 90vh;
+    padding-top:8rem;
+    padding-bottom:10rem;
     width: 100%;
     font-weight: bold;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     background-color: rgb(248,249,250);
 }
@@ -483,7 +489,7 @@ body:not(.device-touch) .suc_btn
 }
 
 .suc_content1{
-    margin-top:3rem;
+    margin-top:4rem;
     letter-spacing:1px;
     font-size:2.5rem;
 }
@@ -1149,7 +1155,8 @@ strong {
 /* ---------------------------------( loading )---------------------------------------- */
 
 .modal_loadcontainer{
-    height: 50vh;
+    padding-top:3rem;
+    padding-bottom:3rem;
     width: 100%;
     font-weight: 700;
     font-size: 32px;

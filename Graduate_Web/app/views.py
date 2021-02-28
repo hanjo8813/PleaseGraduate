@@ -65,33 +65,62 @@ def f_login(request):
     elif ui_row[0].password != pw :
         messages.error(request, '비밀번호를 확인하세요.')
         return redirect('/login/')
-    # 다 통과했다면 세션에 id 담아주고
+
+    # 1. 다 통과했다면 세션에 id 담아주고
     request.session['id'] = id
-    # mypage 렌더링 함수 호출
+    # 2. mypage에 필요한 context를 세션(request)에 담는다
+    mypage_context = f_mypage(id)
+    request.session['mypage_context'] = mypage_context
+    # 3. 검사페이지 context 세션에 담기
+    result_context = f_result(id)
+    request.session['result_context'] = result_context
+    # 4. 공학인증 페이지 context 세션에 담기
+    if mypage_context['is_engine'] == 2:
+        en_result_context = f_en_result(id)
+        request.session['en_result_context'] = en_result_context
     return r_mypage(request)
 
 def r_mypage(request):
-    user_id = request.session.get('id')
+    # 세션에 저장된 mypage용 context를 꺼냄
+    context = request.session.get('mypage_context')
+    return render(request, "mypage.html", context)
+
+def r_result(request):
+    # 세션에 저장된 result용 context를 꺼냄
+    context = request.session.get('result_context')
+    return render(request, "result.html", context)
+
+def r_en_result(request):
+    # 세션에 저장된 en_result용 context를 꺼냄
+    context = request.session.get('en_result_context')
+    return render(request, "en_result.html", context)
+
+def f_mypage(user_id):
     ui_row = TestUserInfo.objects.get(student_id=user_id)
     grade = UserGrade.objects.filter(student_id=user_id)
-    # 공학인증 있는 학과라면?
+    # 공학인증 없는학과 
     is_engine = 0
-    if Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng != -1:
+    # 공학인증은 있는데 기준 아직 없다면
+    if Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng == 0:
         is_engine = 1
+    # 공학인증 기준이 있다면
+    else: is_engine = 2
+
     # 만약 성적표 업로드 안했다면
     if not grade.exists:
         grade = []
-    context ={
+    mypage_context ={
         'student_id' : ui_row.student_id,
+        'year' : ui_row.year,
         'major' : ui_row.major,
         'major_status' : ui_row.major_status,
         'name' : ui_row.name,
         'book' : ui_row.book,
         'eng' : ui_row.eng,
-        'grade' : grade,
+        'grade' : list(grade.values()),
         'is_engine' : is_engine,
     }
-    return render(request, "mypage.html", context)
+    return mypage_context
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 
@@ -321,11 +350,18 @@ def r_success(request):
 
 # ---------------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
 
+def to_zip_list(list_1, list_2):
+    zip_list = []
+    for a, b in zip(list_1, list_2):
+        zip_list.append([a,b])
+    return zip_list
+
 def list_to_query(list_):
     al = AllLecture.objects.none()
     for s_num in list_:
         temp = AllLecture.objects.filter(subject_num = s_num)
         al = temp | al
+    al = list(al.values())
     return al
 
 def make_dic(my_list):
@@ -450,15 +486,17 @@ def recom_machine_learning(what, user_id, user_list):
     zipped = []
     for s_num, score in zip(result['item'].tolist()[:7], result['score'].tolist()[:7]):
         temp = AllLecture.objects.filter(subject_num = s_num)
-        zipped.append([temp[0], score])
+        if temp.exists():
+            zipped.append([list(temp.values())[0], score])
+        
     return zipped, pass_ml
 
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
-def r_result(request):
-    # 세션에 담긴 변수 추출
-    user_id = request.session.get('id')
 
+
+
+def f_result(user_id):
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
 
@@ -543,14 +581,15 @@ def r_result(request):
     if standard_num['me'] < df_me['학점'].sum() :
         remain = df_me['학점'].sum() - standard_num['me']
     # 내 이수학점 수치
+    # df는 int64이므로 -> int 로 변경해준다. (세션에 넣을때 int만 들어감)
     my_num ={
-        'ss' : data['학점'].sum(),              # sum_score
-        'me' : df_me['학점'].sum() - remain,    # major_essential
-        'ms' : df_ms['학점'].sum(),             # major_selection
-        'ce' : df_ce['학점'].sum() ,            # core_essential   
-        'cs' : df_cs['학점'].sum(),             # core_selection
-        'b' : df_b['학점'].sum(),               # basic
-        'remain' : remain,
+        'ss' : int(data['학점'].sum()),              # sum_score
+        'me' : int(df_me['학점'].sum() - remain),    # major_essential
+        'ms' : int(df_ms['학점'].sum()),             # major_selection
+        'ce' : int(df_ce['학점'].sum()) ,            # core_essential   
+        'cs' : int(df_cs['학점'].sum()),             # core_selection
+        'b' : int(df_b['학점'].sum()),               # basic
+        'remain' : int(remain),
     }
 
     # 사용자가 들은 dic 추출
@@ -563,9 +602,9 @@ def r_result(request):
     recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
     standard_list = {
-        'ce' : zip(list_to_query(dic_ce.keys()), check_ce),
-        'cs' : zip(list_to_query(dic_cs.keys()), check_cs),
-        'b' : zip(list_to_query(dic_b.keys()), check_b),
+        'ce' : to_zip_list(list_to_query(dic_ce.keys()), check_ce),
+        'cs' : to_zip_list(list_to_query(dic_cs.keys()), check_cs),
+        'b' : to_zip_list(list_to_query(dic_b.keys()), check_b),
     }
 
     recommend_ess = {
@@ -674,7 +713,7 @@ def r_result(request):
     if s_row.sum_eng != 0:  # 존재한다면
         en_exist = 1
 
-    context = {
+    result_context = {
         'user_info' : user_info,            # 사용자 정보
         'my_num' : my_num,                  # 사용자 이수학점들
         'standard_num' : standard_num,      # 기준 수치 
@@ -685,18 +724,18 @@ def r_result(request):
         'pass_obj' : pass_obj,              # 패스 여부
         'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
-    return render(request, "result.html", context)
+
+    return result_context
 
 
 # ---------------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
-def r_en_result(request):
+def f_en_result(user_id):
     # 테스트용
     global test_id
-    # 세션에서 학번 꺼내기
-    user_id = request.session.get('id')
     if test_id != '':
         user_id = test_id
+    
         
     # userinfo 테이블에서 행 추출
     u_row = UserInfo.objects.get(student_id = user_id)
@@ -798,20 +837,21 @@ def r_en_result(request):
         'build_sel_num' : s_row.build_sel_num,  # 들어야되는 요소설계 과목수
     }
 
+    # df는 int64이므로 -> int 로 변경해준다. (세션에 넣을때 int만 들어감)
     my_num = {
-        'total' : mynum_pro+mynum_eng_major+mynum_bsm_ess,              
-        'pro' : mynum_pro,
-        'bsm' : mynum_bsm_ess,        
-        'eng_major' : mynum_eng_major,
+        'total' : int(mynum_pro+mynum_eng_major+mynum_bsm_ess),              
+        'pro' : int(mynum_pro),
+        'bsm' : int(mynum_bsm_ess),        
+        'eng_major' : int(mynum_eng_major),
     }
 
     standard_list = {
-        'pro' : zip(list_to_query(dic_pro.keys()),check_pro),
-        'bsm_ess' : zip(list_to_query(dic_bsm_ess.keys()), check_bsm_ess),
+        'pro' : to_zip_list(list_to_query(dic_pro.keys()),check_pro),
+        'bsm_ess' : to_zip_list(list_to_query(dic_bsm_ess.keys()), check_bsm_ess),
         'bsm_sel' : [],
-        'build_start' : zip(list_to_query(dic_build_start.keys()),check_build_start),
-        'build_end' : zip(list_to_query(dic_build_end.keys()),check_build_end),
-        'build_sel' : zip(list_to_query(dic_build_sel.keys()),check_build_sel),
+        'build_start' : to_zip_list(list_to_query(dic_build_start.keys()),check_build_start),
+        'build_end' : to_zip_list(list_to_query(dic_build_end.keys()),check_build_end),
+        'build_sel' : to_zip_list(list_to_query(dic_build_sel.keys()),check_build_sel),
     }
 
     # 전공영역 추천 과목 중 부족학점만큼 랜덤으로 골라주기
@@ -855,16 +895,15 @@ def r_en_result(request):
         pass_obj['bsm_sel'] = pass_bsm_sel
         standard_list['bsm_sel'] = list_to_query(dic_bsm_sel.keys())
     
-    context={
+    en_result_context={
         'user_info' : user_info,
         'standard_num' : standard_num,
         'my_num' : my_num,
         'standard_list' : standard_list,
         'recommend' : recommend,
         'pass_obj' : pass_obj,
-    }
-   
-    return render(request, "en_result.html", context)
+    }   
+    return en_result_context
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1097,11 +1136,6 @@ def result_test(request):
         'ml_ms' : pass_ml_ms,
     }
 
-    # 공학인증 기준이 있는지 검사.
-    en_exist = 0
-    if s_row.sum_eng != 0:  # 존재한다면
-        en_exist = 1
-
     context = {
         'user_info' : user_info,            # 사용자 정보
         'my_num' : my_num,                  # 사용자 이수학점들
@@ -1111,7 +1145,6 @@ def result_test(request):
         'recommend_sel' : recommend_sel,    # 선택과목 추천리스트
         'cs_part' : cs_part,                # 중선 영역
         'pass_obj' : pass_obj,              # 패스 여부
-        'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
     
     return render(request, "result.html", context)
