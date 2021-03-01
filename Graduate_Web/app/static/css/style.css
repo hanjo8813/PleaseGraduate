@@ -16,7 +16,11 @@ a {
 }
 
 /* 아이폰에서 input css 적용하기 */
-input {
+input[type="submit"],
+input[type="text"],
+input[type="password"],
+input[type="number"]
+{
     -webkit-appearance: none;
  }
 
