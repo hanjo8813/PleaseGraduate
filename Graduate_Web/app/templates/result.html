@@ -774,6 +774,12 @@
 <script src="{% static 'js/circle-progress.js' %}"></script>
 
 <script>
+    // 결과창에서 뒤로가기 버튼 클릭시 무조건 mypage로
+    history.pushState(null, null, location.href);
+    window.onpopstate = function (event) {
+        location.href = '/mypage/';
+    };
+
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100

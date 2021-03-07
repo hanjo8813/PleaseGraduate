@@ -37,48 +37,12 @@ def r_head(request):
     }
     return render(request, "head.html", context)
 
-
 def r_agree(request):
     return render(request, "agree.html")
-
-# ---------------------------------------------------- ( 로그인 파트 ) ----------------------------------------------------------------
-
-def f_logout(request):
-    request.session.clear()
-    return redirect('/')
 
 def r_login(request):
     request.session.clear()
     return render(request, "login.html")
-
-def f_login(request):
-    # ID PW 넘어옴
-    id = request.POST.get('id')
-    pw = request.POST.get('pw')
-    # 그 값으로 모델에서 행 추출
-    ui_row = TestUserInfo.objects.filter(student_id=id)
-    # 우선 회원가입 되지 않았다면?
-    if not ui_row.exists():
-        messages.error(request, '가입되지 않은 ID 입니다.')
-        return redirect('/login/')
-    # 회원인데 비번이 틀렸다면?
-    elif ui_row[0].password != pw :
-        messages.error(request, '비밀번호를 확인하세요.')
-        return redirect('/login/')
-
-    # 1. 다 통과했다면 세션에 id 담아주고
-    request.session['id'] = id
-    # 2. mypage에 필요한 context를 세션(request)에 담는다
-    mypage_context = f_mypage(id)
-    request.session['mypage_context'] = mypage_context
-    # 3. 검사페이지 context 세션에 담기
-    result_context = f_result(id)
-    request.session['result_context'] = result_context
-    # 4. 공학인증 페이지 context 세션에 담기
-    if mypage_context['is_engine'] == 2:
-        en_result_context = f_en_result(id)
-        request.session['en_result_context'] = en_result_context
-    return r_mypage(request)
 
 def r_mypage(request):
     # 세션에 저장된 mypage용 context를 꺼냄
@@ -95,6 +59,47 @@ def r_en_result(request):
     context = request.session.get('en_result_context')
     return render(request, "en_result.html", context)
 
+# ---------------------------------------------------- ( 로그인 관련 ) ----------------------------------------------------------------
+
+def f_logout(request):
+    request.session.clear()
+    return redirect('/')
+
+def update_session(request, id):
+    # 1. 다 통과했다면 세션에 id 담아주고
+    request.session['id'] = id
+    # 2. mypage에 필요한 context를 세션(request)에 담는다
+    mypage_context = f_mypage(id)
+    request.session['mypage_context'] = mypage_context
+    # 3. 검사페이지 context 세션에 담기
+    result_context = f_result(id)
+    request.session['result_context'] = result_context
+    # 4. 공학인증 페이지 context 세션에 담기
+    if mypage_context['is_engine'] == 2:
+        en_result_context = f_en_result(id)
+        request.session['en_result_context'] = en_result_context
+    return request
+
+def f_login(request):
+    # ID PW 넘어옴
+    id = request.POST.get('id')
+    pw = request.POST.get('pw')
+    # 그 값으로 모델에서 행 추출
+    ui_row = TestUserInfo.objects.filter(student_id=id)
+    # 우선 회원가입 되지 않았다면?
+    if not ui_row.exists():
+        messages.error(request, '가입되지 않은 ID 입니다.')
+        return redirect('/login/')
+    # 회원인데 비번이 틀렸다면?
+    elif ui_row[0].password != pw :
+        messages.error(request, '비밀번호를 확인하세요.')
+        return redirect('/login/')
+    # 세션에 정보 담기
+    request = update_session(request, id)
+    return r_mypage(request)
+
+# ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
+
 def f_mypage(user_id):
     ui_row = TestUserInfo.objects.get(student_id=user_id)
     grade = UserGrade.objects.filter(student_id=user_id)
@@ -105,7 +110,6 @@ def f_mypage(user_id):
         is_engine = 1
     # 공학인증 기준이 있다면
     else: is_engine = 2
-
     # 만약 성적표 업로드 안했다면
     if not grade.exists:
         grade = []
@@ -121,6 +125,42 @@ def f_mypage(user_id):
         'is_engine' : is_engine,
     }
     return mypage_context
+
+# 1. 내정보 수정
+def f_mod_info(request):
+    return redirect('/mypage/') 
+
+# 2. 전공상태 + 영어인증 수정
+def f_mod_ms_eng(request):
+    # 세션id, 입력받은 값 꺼내기
+    user_id = request.session.get('id')
+    major_status = request.POST.get('major_status')
+    eng = request.POST.get('eng')
+    if eng != '해당없음':
+        eng = eng + '/' + str(request.POST.get('eng_score'))
+    # 사용자의 user_info row 부르기
+    u_row = TestUserInfo.objects.get(student_id = user_id)
+    # 수정된 DB 넣고 save
+    u_row.eng = eng
+    u_row.major_status = major_status
+    u_row.save()
+    # 세션 업데이트
+    request = update_session(request, user_id)
+    return r_mypage(request)
+
+# 3. 비밀번호 수정
+def f_mod_pw(request):
+    user_id = request.session.get('id')
+    password = request.POST.get('password')
+    u_row = TestUserInfo.objects.get(student_id = user_id)
+    u_row.password = password
+    u_row.save()
+    return redirect('/mypage/') 
+
+# 4. 기이수과목 수정
+def f_mod_grade(request):
+    return redirect('/mypage/') 
+
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 
@@ -306,7 +346,6 @@ def r_register(request):
     request.session['temp_user_info'] = temp_user_info
     return render(request, "register.html")
 
-
 def r_success(request):
     # 1. 세션에 있는것부터 꺼내자
     temp_user_info = request.session.get('temp_user_info')
@@ -345,8 +384,6 @@ def r_success(request):
     new_ui.save()
 
     return render(request, "success.html")
-
-
 
 # ---------------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
 
@@ -492,9 +529,6 @@ def recom_machine_learning(what, user_id, user_list):
     return zipped, pass_ml
 
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
-
-
-
 
 def f_result(user_id):
     # userinfo 테이블에서 행 추출

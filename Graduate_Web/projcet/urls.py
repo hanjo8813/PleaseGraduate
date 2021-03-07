@@ -35,6 +35,8 @@ urlpatterns = [
     # 다른 함수사용 url 패턴
     path('f_login/', views.f_login),
     path('f_logout/', views.f_logout),
+    path('f_mod_ms_eng/', views.f_mod_ms_eng),
+    path('f_mod_pw/', views.f_mod_pw),
     
     # 테스트용
     path('admin_test/', views.r_admin_test),

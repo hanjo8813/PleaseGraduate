@@ -119,13 +119,13 @@
     <div class="update_modal_content">
         <div id='c1' class="close">&times;</div>
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
-            내 정보 업데이트
             <span class="tooltip">
                 <i class="fas fa-question-circle"></i>
             </span>
             <div class="my_tooltip_text">
                 <p>사용자의 대양휴머니티칼리지 사이트의 비밀번호는 업데이트시에만 사용되며 <span class="caution_info">저장되지 않습니다.</span></p>
             </div>
+            내 정보 업데이트
         </div>
         <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
             대양휴머니티칼리지 사이트에 로그인하여 정보를 가져옵니다. (UIS사이트의 ID/PW와 동일)
@@ -133,6 +133,7 @@
         <hr style="width:80%; margin-top:1.3rem;">
         <!-- 폼 -->
         <form action="" method="post">
+            {% csrf_token %}
             <div class="regi_box">
                 <label style="text-align: center;">아이디</label>
                 <input type="text" name="student_id" placeholder='15011187' style="background-color:rgb(248,249,250);"
@@ -152,26 +153,27 @@
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">전공상태/영어인증 수정</div>
         <hr style="width:80%; margin-top:1.3rem;">
         <!-- 폼 -->
-        <form action="" method="post" name='form2' onsubmit="return check_up2()">
+        <form action="/f_mod_ms_eng/" method="post" name='form2' onsubmit="return check_up2()">
+            {% csrf_token %}
             <div class="regi_box">
                 <label>전공상태</label>
                 <select name="major_status">
-                    <option value="x" selected>해당없음</option>
-                    <option value="link">연계전공</option>
-                    <option value="dual">복수전공</option>
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="연계전공">연계전공</option>
+                    <option value="복수전공">복수전공</option>
                 </select>
                 <label>영어인증</label>
                 <select onclick="pop_score()" id="eng" name="eng">
-                    <option value="x" selected>해당없음</option>
-                    <option value="toeic">TOEIC</option>
-                    <option value="ibt">IBT</option>
-                    <option value="teps">TEPS</option>
-                    <option value="opic">OPIc Intermediate Low</option>
-                    <option value="toeic_sp">TOEIC Speaking</option>
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="TOEIC">TOEIC</option>
+                    <option value="IBT">IBT</option>
+                    <option value="TEPS">TEPS</option>
+                    <option value="OPIc Intermediate Low">OPIc Intermediate Low</option>
+                    <option value="TOEIC Speaking">TOEIC Speaking</option>
                 </select>
                 <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
             </div>
-            <input onclick='' type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
+            <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
         </form>
     </div>
 </div>
@@ -183,14 +185,15 @@
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">비밀번호 변경</div>
         <hr style="width:80%; margin-top:1.3rem;">
         <!-- 폼 -->
-        <form action="" method="post" name='form3' onsubmit="return check_up3()">
+        <form action="/f_mod_pw/" method="post" name='form3' onsubmit="return check_up3()">
+            {% csrf_token %}
             <div class="regi_box">
                 <label>새 비밀번호</label>
                 <input id="pw1" type="password" name="password">
                 <label>비밀번호 재확인</label>
                 <input id="pw2" type="password">
             </div>
-            <input onclick='' type='submit' class='login_btn' value='변경하기' style="margin:2.5rem 0 2rem 0;">
+            <input type='submit' class='login_btn' value='변경하기' style="margin:2.5rem 0 2rem 0;">
         </form>
     </div>
 </div>
@@ -200,7 +203,6 @@
     <div class="update_modal_content">
         <div id='c4' class="close">&times;</div>
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
-            기이수성적 업로드
             <span class="tooltip">
                 <i class="fas fa-question-circle"></i>
             </span>
@@ -209,6 +211,7 @@
                 <p>2. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. </span></p>
                 <p>3. 저장 시 성적 중 학점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
             </div>
+            기이수성적 업로드
         </div>
 
         <hr style="width:80%; margin-top:1.3rem;">
@@ -225,6 +228,7 @@
         </div>
 
         <form action="" method="post" name='form4' onsubmit="return check_up4()">
+            {% csrf_token %}
             <div class="box-file-input">
                 <label>
                     <input id="file_input" type="file" name="" class="file-input" accept=".xls">
@@ -304,7 +308,7 @@
 {% block js_section %}
 
 <script>
-    // 마이페이지에서 뒤로가기 버튼 클릭시 
+    // 마이페이지에서 뒤로가기 버튼 클릭시 무조건 head로
     history.pushState(null, null, location.href);
     window.onpopstate = function (event) {
         location.href = '/';
@@ -333,7 +337,7 @@
     function pop_score() {
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if (eng_box.options[eng_ind].value !== "x") {
+        if (eng_box.options[eng_ind].value !== "해당없음") {
             document.getElementById('eng_score').style.display = "block";
         }
         else {
@@ -345,7 +349,7 @@
     function check_up2() {
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if (eng_box.options[eng_ind].value !== "x") {
+        if (eng_box.options[eng_ind].value !== "해당없음") {
             if (!document.getElementById('eng_score').value) {
                 alert('영어 점수를 입력해주세요.');
                 form2.eng_score.focus();
