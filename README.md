@@ -1,5 +1,5 @@
 <div align='center'>
-    <h3> 사이트 version 1.3으로 리모델링중... </h3>
+    <h3> 사이트 version 1.2로 리모델링중... </h3>
 </div>
 
 <br>
