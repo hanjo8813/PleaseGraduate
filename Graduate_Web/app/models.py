@@ -58,7 +58,6 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
-
 class SuccessTestCount(models.Model):
     index = models.IntegerField(primary_key=True)
     num_count = models.IntegerField()
@@ -66,6 +65,14 @@ class SuccessTestCount(models.Model):
     class Meta:
         managed = False
         db_table = 'success_test_count'
+
+class MajorDepartment(models.Model):
+    major = models.CharField(primary_key=True, max_length=45)
+    department = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'major_department'
 
 
 class AllLecture(models.Model):

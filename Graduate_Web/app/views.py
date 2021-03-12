@@ -66,6 +66,7 @@ def f_logout(request):
     return redirect('/')
 
 def update_session(request, id):
+    request.session.clear()
     # 1. 다 통과했다면 세션에 id 담아주고
     request.session['id'] = id
     # 2. mypage에 필요한 context를 세션(request)에 담는다
@@ -128,7 +129,36 @@ def f_mypage(user_id):
 
 # 1. 내정보 수정
 def f_mod_info(request):
-    return redirect('/mypage/') 
+    user_id = request.session.get('id')
+    pw = request.POST.get('pw')
+    # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
+    temp_user_info = selenium_DHC(user_id, pw)
+    # 예외처리
+    if temp_user_info == 1:
+        messages.error(request, '⚠️ 비밀번호를 다시 확인하세요! (Caps Lock 확인)')
+        return redirect('/mypage/')
+    elif temp_user_info == 2:
+        messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도하세요.')
+        return redirect('/mypage/')
+
+    # 학부로 뜨는 경우(1학년에 해당)
+    if temp_user_info['major'][-2:] == '학부':
+        major_select = []
+        # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
+        md = MajorDepartment.objects.filter(department = temp_user_info['major'])
+        for m in md:
+            major_select.append(m.major)
+    # 아니면 바로 DB 수정
+    else:
+        u_row = TestUserInfo.objects.get(student_id = user_id)
+        #u_row.name = temp_user_info['name']
+        u_row.name = '바보'
+        u_row.major = temp_user_info['major']
+        u_row.book = temp_user_info['book']
+        u_row.save()
+        request = update_session(request, user_id)
+        return r_mypage(request)
+        
 
 # 2. 전공상태 + 영어인증 수정
 def f_mod_ms_eng(request):
@@ -324,14 +354,17 @@ def r_register(request):
 
 # ***********************************************************************************
     
-    #temp_user_info['major'] = '지능기전공학부'
+    # temp_user_info['major'] = '지능기전공학부'
     
 # ***********************************************************************************
 
     # 학부로 뜨는 경우(1학년에 해당)
     major_select = []
-    if temp_user_info['major'] == '지능기전공학부':
-        major_select.extend(['무인이동체공학전공', '스마트기기공학전공'])
+    if temp_user_info['major'][-2:] == '학부':
+        # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
+        md = MajorDepartment.objects.filter(department = temp_user_info['major'])
+        for m in md:
+            major_select.append(m.major)
     
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
     if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):

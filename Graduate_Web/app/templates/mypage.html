@@ -132,7 +132,7 @@
         </div>
         <hr style="width:80%; margin-top:1.3rem;">
         <!-- 폼 -->
-        <form action="" method="post">
+        <form action="/f_mod_info/" method="post" name='form1' onsubmit="return check_up1()">
             {% csrf_token %}
             <div class="regi_box">
                 <label style="text-align: center;">아이디</label>
@@ -141,7 +141,7 @@
                 <label style="text-align: center;">비밀번호</label>
                 <input type="password" name="pw" placeholder="PASSWORD">
             </div>
-            <input onclick='pop_modal5()' type='button' class='login_btn' value='로그인' style="margin:2.5rem 0 2rem 0;">
+            <input onclick='pop_modal5()' type='submit' class='login_btn' value='로그인' style="margin:2.5rem 0 2rem 0;">
         </form>
     </div>
 </div>
@@ -343,6 +343,16 @@
         else {
             document.getElementById('eng_score').style.display = "none";
         }
+    }
+
+    // 비번 안치면 빠꾸
+    function check_up1() {
+        if (!document.getElementById('pw').value) {
+            alert('비밀번호를 입력해주세요.');
+            form1.pw.focus();
+            return false;
+        }
+        return true;
     }
 
     // 영어 선택해놓고 점수 안쓰면 빠꾸
