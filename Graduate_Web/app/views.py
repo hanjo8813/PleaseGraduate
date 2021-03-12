@@ -19,13 +19,14 @@ from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
 from django.db import models
 from django.db.models import Value
 from .models import *
+
 
 
 def r_head(request):
@@ -45,18 +46,19 @@ def r_login(request):
     return render(request, "login.html")
 
 def r_mypage(request):
-    # 세션에 저장된 mypage용 context를 꺼냄
-    context = request.session.get('mypage_context')
+    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    # user_info DB에서 json을 꺼내 contest 딕셔너리에 저장
+    context = json.loads(ui_row.mypage_json)
     return render(request, "mypage.html", context)
 
 def r_result(request):
-    # 세션에 저장된 result용 context를 꺼냄
-    context = request.session.get('result_context')
+    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    context = json.loads(ui_row.result_json)
     return render(request, "result.html", context)
 
 def r_en_result(request):
-    # 세션에 저장된 en_result용 context를 꺼냄
-    context = request.session.get('en_result_context')
+    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    context = json.loads(ui_row.en_result_json)
     return render(request, "en_result.html", context)
 
 # ---------------------------------------------------- ( 로그인 관련 ) ----------------------------------------------------------------
@@ -65,28 +67,12 @@ def f_logout(request):
     request.session.clear()
     return redirect('/')
 
-def update_session(request, id):
-    request.session.clear()
-    # 1. 다 통과했다면 세션에 id 담아주고
-    request.session['id'] = id
-    # 2. mypage에 필요한 context를 세션(request)에 담는다
-    mypage_context = f_mypage(id)
-    request.session['mypage_context'] = mypage_context
-    # 3. 검사페이지 context 세션에 담기
-    result_context = f_result(id)
-    request.session['result_context'] = result_context
-    # 4. 공학인증 페이지 context 세션에 담기
-    if mypage_context['is_engine'] == 2:
-        en_result_context = f_en_result(id)
-        request.session['en_result_context'] = en_result_context
-    return request
-
 def f_login(request):
     # ID PW 넘어옴
-    id = request.POST.get('id')
+    user_id = request.POST.get('id')
     pw = request.POST.get('pw')
     # 그 값으로 모델에서 행 추출
-    ui_row = TestUserInfo.objects.filter(student_id=id)
+    ui_row = TestUserInfo.objects.filter(student_id=user_id)
     # 우선 회원가입 되지 않았다면?
     if not ui_row.exists():
         messages.error(request, '가입되지 않은 ID 입니다.')
@@ -95,9 +81,27 @@ def f_login(request):
     elif ui_row[0].password != pw :
         messages.error(request, '비밀번호를 확인하세요.')
         return redirect('/login/')
-    # 세션에 정보 담기
-    request = update_session(request, id)
-    return r_mypage(request)
+    ui_row = ui_row[0]
+    # 1. mypage 컨텍스트 정보가 없다면 context를 json으로 변환 후 user_info에 저장
+    if ui_row.mypage_json == None :
+        mypage_context = f_mypage(user_id)
+        ui_row.mypage_json = json.dumps(mypage_context) # 결과 json을 저장
+        ui_row.save()
+    # 업로드된 이수표가 있을때만 
+    if UserGrade.objects.filter(student_id=user_id).exists():
+        # 2. result context 정보가 DB에 없다면 검사 실시
+        if ui_row.result_json == None :
+            result_context = f_result(user_id)
+            ui_row.result_json = json.dumps(result_context)
+            ui_row.save()
+        # 3. 만약 공학인증 기준이 있는데 공학인증 context가 비었다면
+        if ui_row.result_json == None and mypage_context['is_engine'] == 2:
+            en_result_context = f_en_result(user_id)
+            ui_row.en_result_json = json.dumps(en_result_context)
+            ui_row.save()
+    # 세션에 ID 저장
+    request.session['id'] = user_id
+    return redirect('/mypage/') 
 
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
 
@@ -127,6 +131,33 @@ def f_mypage(user_id):
     }
     return mypage_context
 
+def update_json(user_id):
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    # mypage json 업데이트
+    mypage_context = f_mypage(user_id)
+    ui_row.mypage_json = json.dumps(mypage_context)
+    # 업로드된 이수표가 있을때만 
+    if UserGrade.objects.filter(student_id=user_id).exists():
+        # result json 업데이트
+        result_context = f_result(user_id)
+        ui_row.result_json = json.dumps(result_context)
+        # en_result json 업데이트
+        if mypage_context['is_engine'] == 2:
+            en_result_context = f_en_result(user_id)
+            ui_row.en_result_json = json.dumps(en_result_context)
+    ui_row.save()
+    return
+
+def f_mod_info_ms(request):
+    user_id = request.session.get('id')
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row.major = request.POST.get('major_select')
+    ui_row.save()
+    update_json(user_id)
+    del request.session['temp_major_select']
+    messages.success(request, '업데이트성공')
+    return redirect('/mypage/') 
+
 # 1. 내정보 수정
 def f_mod_info(request):
     user_id = request.session.get('id')
@@ -141,24 +172,41 @@ def f_mod_info(request):
         messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도하세요.')
         return redirect('/mypage/')
 
-    # 학부로 뜨는 경우(1학년에 해당)
-    if temp_user_info['major'][-2:] == '학부':
+    name = temp_user_info['name']
+    book = temp_user_info['book']
+    major = temp_user_info['major']
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    if ui_row.name != name :
+        ui_row.name = name
+        ui_row.save()
+    
+    #major = '지능기전공학부'
+
+    # 전공이 학부로 뜨는 경우(1학년에 해당)
+    if major[-2:] == '학부':
+        ui_row.book = book
+        ui_row.save()
         major_select = []
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = MajorDepartment.objects.filter(department = temp_user_info['major'])
+        md = MajorDepartment.objects.filter(department = major)
         for m in md:
             major_select.append(m.major)
-    # 아니면 바로 DB 수정
+        # 세션에 전공선택지 넣어주고
+        request.session['temp_major_select'] = major_select
+        # 메시지 mypage에 보내기
+        messages.warning(request, '전공선택 창 띄우기')
+        return redirect('/mypage/')
+    # 아니면 바로 전공수정후 저장
     else:
-        u_row = TestUserInfo.objects.get(student_id = user_id)
-        #u_row.name = temp_user_info['name']
-        u_row.name = '바보'
-        u_row.major = temp_user_info['major']
-        u_row.book = temp_user_info['book']
-        u_row.save()
-        request = update_session(request, user_id)
-        return r_mypage(request)
-        
+        #변경시에만 저장
+        if ui_row.book != book or ui_row.major != major:
+            ui_row.book = book
+            ui_row.major = major
+            ui_row.save()
+            # json DB도 업데이트
+            update_json(user_id)
+        messages.success(request, '업데이트성공')
+        return redirect('/mypage/') 
 
 # 2. 전공상태 + 영어인증 수정
 def f_mod_ms_eng(request):
@@ -169,26 +217,31 @@ def f_mod_ms_eng(request):
     if eng != '해당없음':
         eng = eng + '/' + str(request.POST.get('eng_score'))
     # 사용자의 user_info row 부르기
-    u_row = TestUserInfo.objects.get(student_id = user_id)
-    # 수정된 DB 넣고 save
-    u_row.eng = eng
-    u_row.major_status = major_status
-    u_row.save()
-    # 세션 업데이트
-    request = update_session(request, user_id)
-    return r_mypage(request)
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    # 변경시에만 다시 저장
+    if ui_row.eng != eng or ui_row.major_status != major_status:
+        # 수정된 DB 넣고 save
+        ui_row.eng = eng
+        ui_row.major_status = major_status
+        ui_row.save()
+        # json DB도 업데이트
+        update_json(user_id)
+    messages.success(request, '업데이트성공')
+    return redirect('/mypage/') 
 
 # 3. 비밀번호 수정
 def f_mod_pw(request):
     user_id = request.session.get('id')
     password = request.POST.get('password')
-    u_row = TestUserInfo.objects.get(student_id = user_id)
-    u_row.password = password
-    u_row.save()
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row.password = password
+    ui_row.save()
+    messages.success(request, '업데이트성공')
     return redirect('/mypage/') 
 
 # 4. 기이수과목 수정
 def f_mod_grade(request):
+    messages.success(request, '업데이트성공')
     return redirect('/mypage/') 
 
 
@@ -565,21 +618,21 @@ def recom_machine_learning(what, user_id, user_list):
 
 def f_result(user_id):
     # userinfo 테이블에서 행 추출
-    u_row = UserInfo.objects.get(student_id = user_id)
+    ui_row = UserInfo.objects.get(student_id = user_id)
 
     user_info = {
-        'id' : u_row.student_id,
-        'name' : u_row.name,
-        'major' : u_row.major,
-        'year' : u_row.year,
+        'id' : ui_row.student_id,
+        'name' : ui_row.name,
+        'major' : ui_row.major,
+        'year' : ui_row.year,
     }
    
     # 고전독서 정보 파싱 후 info에 추가하기
     pass_book = 0
-    if u_row.book == '고특통과': 
+    if ui_row.book == '고특통과': 
         pass_book = 2
     else:
-        W, E, EW, S = int(u_row.book[0]), int(u_row.book[1]), int(u_row.book[2]), int(u_row.book[3])
+        W, E, EW, S = int(ui_row.book[0]), int(ui_row.book[1]), int(ui_row.book[2]), int(ui_row.book[3])
         total_book = 0
         if W > 4: total_book += 4
         else : total_book += W
@@ -598,7 +651,7 @@ def f_result(user_id):
         user_info['total'] = total_book
 
     # 파이썬 변수를 가지고 ind로 매핑
-    s_row = Standard.objects.get(user_dep = u_row.major, user_year = u_row.year)
+    s_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
 
     #---------------------------------------------------------
     # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
@@ -706,8 +759,8 @@ def f_result(user_id):
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ug_MR = UserGrade.objects.filter(major = u_row.major, classification = '전필')
-    ug_MC = UserGrade.objects.filter(major = u_row.major, classification = '전선')
+    ug_MR = UserGrade.objects.filter(major = ui_row.major, classification = '전필')
+    ug_MC = UserGrade.objects.filter(major = ui_row.major, classification = '전선')
     ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
     for u in ug_MR:
         mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
@@ -754,7 +807,7 @@ def f_result(user_id):
     if standard_num['cs'] <= my_num['cs'] : pass_n_cs = 1     
     if pass_n_cs==1 and pass_p_cs==1: pass_cs_tot = 1
     if not recom_b: pass_b = 1
-    if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and u_row.eng!=0:
+    if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and ui_row.eng!=0:
         pass_total = 1
     
     pass_obj = {
@@ -770,7 +823,7 @@ def f_result(user_id):
         'p_cs' : pass_p_cs,     # 중선 필수영역 통과여부
         'l_b' : pass_b,         # 기교 필수과목 통과여부
         'book' : pass_book,     # 고전독서 인증여부
-        'eng' : u_row.eng,      # 영어인증여부
+        'eng' : ui_row.eng,      # 영어인증여부
         'ml_me' : pass_ml_me,
         'ml_ms' : pass_ml_ms,
     }
@@ -805,15 +858,15 @@ def f_en_result(user_id):
     
         
     # userinfo 테이블에서 행 추출
-    u_row = UserInfo.objects.get(student_id = user_id)
+    ui_row = UserInfo.objects.get(student_id = user_id)
 
     user_info = {
-        'id' : u_row.student_id,
-        'name' : u_row.name,
+        'id' : ui_row.student_id,
+        'name' : ui_row.name,
     }
 
     # 기준 뽑아내기
-    s_row = Standard.objects.get(user_dep = u_row.major, user_year=u_row.year)
+    s_row = Standard.objects.get(user_dep = ui_row.major, user_year=ui_row.year)
 
     # df 생성
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기

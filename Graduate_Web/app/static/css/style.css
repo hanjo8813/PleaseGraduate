@@ -1045,33 +1045,50 @@ strong {
 .modal-content {
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 5% auto; /* 15% from the top and centered */
     padding: 5rem;
     border: 1px solid #888;
     width: 80%;
     height: auto;
-    /* Could be more or less, depending on screen size */                          
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
 }
 
 .load-modal-content {
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 7% auto;
     padding: 2.2rem;
     border: 1px solid #888;
     width: 40%;
     height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
 }
 
 .update_modal_content{
     text-align: center;
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 5% auto;
     padding: 2.5rem;
     border: 1px solid #888;
     width: 60%;
     height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
 }
 
 .modal_div {

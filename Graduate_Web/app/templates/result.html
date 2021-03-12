@@ -777,7 +777,7 @@
     // 결과창에서 뒤로가기 버튼 클릭시 무조건 mypage로
     history.pushState(null, null, location.href);
     window.onpopstate = function (event) {
-        location.href = '/mypage/';
+        window.location.href = '/mypage/';
     };
 
     // 퍼센트화 함수

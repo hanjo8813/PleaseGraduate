@@ -42,6 +42,9 @@ class TestUserInfo(models.Model):
     name = models.CharField(max_length=45)
     book = models.CharField(max_length=45)
     eng = models.CharField(max_length=45)
+    mypage_json = models.JSONField(blank=True, null=True)
+    result_json = models.JSONField(blank=True, null=True)
+    en_result_json = models.JSONField(blank=True, null=True)
 
     class Meta:
         managed = False

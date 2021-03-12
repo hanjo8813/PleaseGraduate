@@ -31,7 +31,7 @@
                     <input type="password" name="pw" placeholder="PASSWORD">
                 </div>
                 <div id="">
-                    <input type='submit' class='login_btn' value='로그인'>
+                    <input onclick="pop_modal()" type='submit' class='login_btn' value='로그인'>
                 </div>
                 <div class="regi_find_pwd">
                     <a href="/agree/">회원가입</a>
@@ -43,9 +43,47 @@
     </div>
 </div>        
 
+<!-- 로그인시 로딩 모달 창 -->
+<div id='m1' class="modal">
+    <div class="load-modal-content">
+        <div class="modal_loadcontainer">
+            <div class="sk-chase">
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+            </div>
+            <div class="loading">
+                <span>로</span>
+                <span>그</span>
+                <span>인</span>
+                <span>정</span>
+                <span>보</span>
+                <span>확</span>
+                <span>인</span>
+                <span>중</span>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </div>
+            <div class="load_info">
+                창을 이동하지 마세요!
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 
 
 {% block js_section %}
+<script>
+    // 인증하기 클릭시 modal 띄움
+    function pop_modal(){
+        document.getElementById('m1').style.display = "block";
+    }
+</script>
 {% endblock %}

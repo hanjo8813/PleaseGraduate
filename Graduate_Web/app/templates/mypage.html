@@ -11,7 +11,11 @@
     </div>
     <div class="go_result_wrap">
         <div class="go_result_box">
+            {% if grade %}
             <button onclick="location.href='/result/'" class="go_result_btn">졸업요건 검사하기</button>
+            {% else %}
+            <button onclick="alert('기이수과목 엑셀파일을 먼저 업로드 해주세요!')" class="go_result_btn">졸업요건 검사하기</button>
+            {% endif %}
         </div>
         {% if is_engine != 0 %}
         <div class="go_result_box">
@@ -124,6 +128,7 @@
             </span>
             <div class="my_tooltip_text">
                 <p>사용자의 대양휴머니티칼리지 사이트의 비밀번호는 업데이트시에만 사용되며 <span class="caution_info">저장되지 않습니다.</span></p>
+                <p><span class="caution_info">※ 학과/전공이나 고전독서인증 현황이 변경되었을 때에만 업데이트하세요</span></p>
             </div>
             내 정보 업데이트
         </div>
@@ -136,15 +141,43 @@
             {% csrf_token %}
             <div class="regi_box">
                 <label style="text-align: center;">아이디</label>
-                <input type="text" name="student_id" placeholder='15011187' style="background-color:rgb(248,249,250);"
+                <input type="text" name="student_id" placeholder='{{ request.session.id }}' style="background-color:rgb(248,249,250);"
                     disabled>
                 <label style="text-align: center;">비밀번호</label>
-                <input type="password" name="pw" placeholder="PASSWORD">
+                <input type="password" id="pw" name="pw" placeholder="PASSWORD">
             </div>
-            <input onclick='pop_modal5()' type='submit' class='login_btn' value='로그인' style="margin:2.5rem 0 2rem 0;">
+            <input type='submit' class='login_btn' value='로그인' style="margin:2.5rem 0 2rem 0;">
         </form>
     </div>
 </div>
+
+<!-- 학부로 떴을때 전공 선택하기 모달 -->
+{% if messages %}
+{% for m in messages %}
+{% if m.tags == 'warning' %}
+<div id='m7' class="modal" style="display: block;">
+    <div class="update_modal_content">
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">전공 선택</div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_mod_info_ms/" method="post" onsubmit="return check_up5()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label>본인 학부의 전공을 선택하세요</label>
+                <select id="major_select" name="major_select">
+                    <option value="x" selected>-- 선택(필수) --</option>
+                    {% for ms in request.session.temp_major_select %}
+                    <option value="{{ ms }}">{{ ms }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
 
 <!-- 2. 전공/영어 수정 모달 -->
 <div id='m2' class="modal">
@@ -240,39 +273,25 @@
     </div>
 </div>
 
-<!-- 로그인시 로딩 모달 창 -->
-<div id='m5' class="modal">
-    <div class="load-modal-content">
-        <div class="modal_loadcontainer">
-            <div class="sk-chase">
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-            </div>
-            <div class="loading">
-                <span>로</span>
-                <span>그</span>
-                <span>인</span>
-                <span>정</span>
-                <span>보</span>
-                <span>확</span>
-                <span>인</span>
-                <span>중</span>
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-            </div>
-            <div class="load_info">
-                5초 정도 소요됩니다. 창을 이동하지 마세요!
-            </div>
+
+<!-- 업데이트 성공 모달창 -->
+{% if messages %}
+{% for m in messages %}
+{% if m.tags == 'success' %}
+<div id='m5' class="modal" style="display: block;">
+    <div class="update_modal_content" style="width:40%">
+        <div style="color:rgb(124,199,106); font-size:7rem; margin:1rem 0 1rem 0">
+            <i  class="fas fa-check"></i>
         </div>
+        <p style="font-size:2rem; font-weight: bold;">성공적으로 업데이트 되었습니다!</p>
+        <button id="c5" class='login_btn' style="margin:2rem 0 2rem 0;">확인</button>
     </div>
 </div>
+{% endif %}
+{% endfor %}
+{% endif %}
 
-<!-- 엑셀 업로드시 로딩 모달 창 -->
+<!-- 로그인시 로딩 모달 창 -->
 <div id='m6' class="modal">
     <div class="load-modal-content">
         <div class="modal_loadcontainer">
@@ -285,23 +304,24 @@
                 <div class="sk-chase-dot"></div>
             </div>
             <div class="loading">
+                <span>정</span>
+                <span>보</span>
+                <span>업</span>
                 <span>데</span>
                 <span>이</span>
-                <span>터</span>
-                <span>업</span>
-                <span>로</span>
-                <span>드</span>
+                <span>트</span>
                 <span>중</span>
                 <span>.</span>
                 <span>.</span>
                 <span>.</span>
             </div>
             <div class="load_info">
-                5초 정도 소요됩니다. 창을 이동하지 마세요!
+                창을 이동하지 마세요!
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 
@@ -324,12 +344,8 @@
         }
     }
 
-    // 로그인 클릭시 modal 띄움
-    function pop_modal5() {
-        document.getElementById('m5').style.display = "block";
-    }
-    // 업로드 클릭시 modal 띄움
-    function pop_modal6() {
+    // 업데이트 클릭시 로딩 모달 띄우기
+    function pop_modal() {
         document.getElementById('m6').style.display = "block";
     }
 
@@ -345,13 +361,29 @@
         }
     }
 
-    // 비번 안치면 빠꾸
+    // 크롤링할때 비번 안치면 빠꾸
     function check_up1() {
         if (!document.getElementById('pw').value) {
             alert('비밀번호를 입력해주세요.');
             form1.pw.focus();
             return false;
         }
+        pop_modal();
+        return true;
+    }
+
+    // 학부생일경우 학과 선택했는지 확인
+    function check_up5(){
+        if(document.getElementById('major_select'))
+            {
+                var sel_box = document.getElementById('major_select');
+                var sel_ind = document.getElementById('major_select').options.selectedIndex;
+                if(sel_box.options[sel_ind].value === 'x'){
+                    alert('전공을 선택해주세요.') ;
+                    return false;
+                }
+            }
+        pop_modal();
         return true;
     }
 
@@ -366,6 +398,7 @@
                 return false;
             }
         }
+        pop_modal();
         return true;
     }
 
@@ -381,6 +414,7 @@
             form3.pw1.focus();
             return false;
         }
+        pop_modal();
         return true;
     }
 
@@ -390,7 +424,7 @@
             alert("엑셀파일을 첨부해주세요!");
             return false;
         }
-        pop_modal6();
+        pop_modal();
         return true;
     }
 
@@ -424,11 +458,14 @@
     var m2 = document.getElementById('m2');
     var m3 = document.getElementById('m3');
     var m4 = document.getElementById('m4');
+    var m5 = document.getElementById('m5');
     // 모달 끄는 버튼(X) id
     var c1 = document.getElementById("c1");
     var c2 = document.getElementById("c2");
     var c3 = document.getElementById("c3");
     var c4 = document.getElementById("c4");
+    var c5 = document.getElementById("c5");
+
     // 모달 키는 함수 호출
     Btnclick(b1, m1);
     Btnclick(b2, m2);
@@ -439,6 +476,7 @@
     Spanclick(c2, m2);
     Spanclick(c3, m3);
     Spanclick(c4, m4);
+    Spanclick(c5, m5);
     // 모달 밖 화면 누를때 꺼지게하기
     window.onclick = function (event) {
         if (event.target == m1) {
