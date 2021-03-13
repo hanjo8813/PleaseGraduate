@@ -39,6 +39,8 @@ urlpatterns = [
     path('f_mod_info_ms/', views.f_mod_info_ms),
     path('f_mod_ms_eng/', views.f_mod_ms_eng),
     path('f_mod_pw/', views.f_mod_pw),
+    path('f_mod_grade/', views.f_mod_grade),
+
     
     # 테스트용
     path('admin_test/', views.r_admin_test),
@@ -48,6 +50,9 @@ urlpatterns = [
     path('dbcheck/', views.r_dbcheck),
     path('result_test/', views.result_test),
 ]
+
+urlpatterns += static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
+
 
 # 미디어 루트 설정
 if settings.DEBUG:

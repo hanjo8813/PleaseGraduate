@@ -1045,17 +1045,11 @@ strong {
 .modal-content {
     background-color: #fefefe;
     border-radius: 5px;
+    margin: 5% auto;
     padding: 5rem;
     border: 1px solid #888;
     width: 80%;
     height: auto;
-    margin:0;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    -webkit-transform:translate(-50%, -50%);
-    -ms-transform:translate(-50%, -50%);
 }
 
 .load-modal-content {

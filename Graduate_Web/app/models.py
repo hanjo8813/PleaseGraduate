@@ -1,4 +1,8 @@
+
+import os
+from uuid import uuid4
 from django.db import models
+from django.utils import timezone
 
 # DB 테이블의 구조를 파이썬 클래스로 보여주고, 수정가능
 
@@ -51,6 +55,26 @@ class TestUserInfo(models.Model):
         db_table = 'test_user_info'
 
 # ---------------------------------------------------------------------------
+
+'''
+def date_upload_to(instance, filename):
+  # upload_to="%Y/%m/%d" 처럼 날짜로 세분화
+  ymd_path = timezone.now().strftime('%Y/%m/%d') 
+  # 길이 32 인 uuid 값
+  uuid_name = uuid4().hex
+  # 확장자 추출
+  extension = os.path.splitext(filename)[-1].lower()
+  # 결합 후 return
+  return '/'.join([
+    ymd_path,
+    uuid_name + extension,
+  ])
+'''
+
+class MediaUpload(models.Model):
+    #f_name = models.CharField(max_length=100)
+    excel = models.FileField(upload_to='')
+
 
 class DjangoSession(models.Model):
     session_key = models.CharField(primary_key=True, max_length=40)

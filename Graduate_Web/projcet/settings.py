@@ -173,9 +173,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
 STATIC_URL = '/static/'
 
 
-
 # media root 추가
-# app폴더의 하위폴더로 루트 설정.
-# MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
-# MEDIA_URL = '/app/uploaded_media/'
+#app폴더의 하위폴더로 루트 설정.
+MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
+MEDIA_URL = '/uploaded_media/'
 

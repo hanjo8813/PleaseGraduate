@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import platform
 import random
+import xlrd
 from surprise import SVD, accuracy
 from surprise import Reader, Dataset
 from collections import defaultdict
@@ -241,9 +242,59 @@ def f_mod_pw(request):
 
 # 4. 기이수과목 수정
 def f_mod_grade(request):
-    messages.success(request, '업데이트성공')
-    return redirect('/mypage/') 
+    # 넘겨받은 파일 꺼내기
+    excel = request.FILES['excel']
+    # 검사1 : 엑셀파일인지 검사
+    if excel.name[-3:] != 'xls':
+        messages.error(request, '잘못된 파일 형식입니다. 확장자가 xls인 파일을 올려주세요. ')
+        return redirect('/mypage/')
+    # 엑셀을 df로 변환
+    df = pd.read_excel(excel.read(), index_col=None)
+    # 검사2 : 형식에 맞는지 검사
+    if list(df.columns) != ['년도', '학기', '학수번호', '교과목명', '이수구분', '교직영역', '선택영역', '학점', '평가방식', '등급', '평점', '개설학과코드']:
+        messages.error(request, '엑셀 내용이 다릅니다! 수정하지 않은 엑셀파일을 올려주세요.')
+        return redirect('/mypage/')
 
+    # 검사를 통과하면 df를 형식에 맞게 수정
+    df.fillna('', inplace = True)
+    # 논패, F과목 삭제
+    n = df.shape[0]
+    flag = 0    
+    while(True):
+        for i in range(n):
+            if i == n-1 :
+                flag = 1
+            if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
+                df = df.drop(df.index[i])
+                n -= 1
+                df.reset_index(inplace=True, drop=True)
+                break
+        if flag == 1:
+            break
+    # DF에서 불필요 칼럼 삭제 (평점 삭제)
+    df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
+    # 추가 전 user_grade DB에 이미 데이터가 있는지 확인 후 삭제
+    user_id = request.session.get('id')
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ug = UserGrade.objects.filter(student_id = user_id)
+    if ug.exists() : ug.delete()
+    # DF를 테이블에 추가
+    for i, row in df.iterrows():
+        new_ug = UserGrade()
+        new_ug.student_id = user_id
+        new_ug.major = ui_row.major
+        new_ug.year = row['년도']
+        new_ug.semester = row['학기']
+        new_ug.subject_num = str(row['학수번호']).lstrip('0')
+        new_ug.subject_name = row['교과목명']
+        new_ug.classification = row['이수구분']
+        new_ug.selection = row['선택영역']
+        new_ug.grade = row['학점']
+        new_ug.save()
+    # json DB도 업데이트
+    update_json(user_id)
+    messages.success(request, '업데이트성공')
+    return redirect('/mypage/')
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 

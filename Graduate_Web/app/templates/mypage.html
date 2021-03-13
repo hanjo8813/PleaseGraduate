@@ -260,11 +260,11 @@
             <p><span class="caution_info">※ 다운로드받은 파일 그대로 업로드해야합니다.</span></p>
         </div>
 
-        <form action="" method="post" name='form4' onsubmit="return check_up4()">
+        <form action="/f_mod_grade/" method="post" name='form4' onsubmit="return check_up4()" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="box-file-input">
                 <label>
-                    <input id="file_input" type="file" name="" class="file-input" accept=".xls">
+                    <input id="file_input" type="file" name="excel" class="file-input" accept=".xls">
                 </label>
                 <span class="filename">파일을 선택해주세요.</span>
             </div>
@@ -427,7 +427,7 @@
         pop_modal();
         return true;
     }
-
+    
     // 파일 업로드 css - jquery 적용
     $(document).on("change", ".file-input", function () {
         $filename = $('input[type=file]').val().replace(/.*(\/|\\)/, '');
