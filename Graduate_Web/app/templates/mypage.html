@@ -25,6 +25,7 @@
     </div>
 </div>
 
+
 <div class="white_sec">
     <div class="my_box_wrap">
         <div class="my_box">
@@ -78,45 +79,120 @@
             </div>
         </div>
 
+
+
+
+        <style>
+            .show_table {
+                margin-top: 1.5rem;
+                padding: 0.7rem 0 0.7rem 0;
+                height: 1.5rem;
+                font-size: 1.1rem;
+                font-weight: bold;
+                text-align: center;
+                letter-spacing: 3px;
+                border-top: 1.5px solid rgb(216, 216, 216);
+                cursor: pointer;
+            }
+
+            .show_table:hover {
+                background-color: #f3f3f3;
+            }
+
+            body:not(.device-touch) .show_table {
+                transition: background-color .2s linear;
+                -webkit-transition: background-color .2s linear;
+            }
+
+            .my_box_grade2 {
+                display: flex;
+                flex-direction: column;
+                width: 68rem;
+                height: auto;
+                margin: 1rem 1rem 4rem;
+                border: 1px solid rgb(216, 216, 216);
+                background-color: white;
+            }
+
+            .my_box_grade2 hr {
+                width: 100%;
+                border-top: 0.001px solid rgb(216, 216, 216);
+                border-bottom: 0.001px solid white;
+                margin-top: 1rem;
+                margin-bottom: 1.3rem;
+            }
+        </style>
+
         <!-- 기이수과목 -->
-        <div class="my_box_grade">
-            <div class="my_box_title">
-                <div></div>
-                <div style="margin-left:4.5rem;">내 기이수과목</div>
-                <button id='b4' class="my_box_mod_btn">업데이트</button>
+        <div class="my_box_grade2">
+            <div style="padding:2.5rem 2.5rem 0 2.5rem">
+                <div class="my_box_title">
+                    <div></div>
+                    <div style="margin-left:4.5rem;">내 기이수과목</div>
+                    <button id='b4' class="my_box_mod_btn">업데이트</button>
+                </div>
+                <hr>
+
+                {% if grade %}
+                <!-- 우선 10개까지만 보여준다. -->
+                <table id="short_table" class="grade_table" style="margin-top:2rem;">
+                    <tr>
+                        <th class="grade_table_th" style="width:10%">년도</th>
+                        <th class="grade_table_th" style="width:10%">학기</th>
+                        <th class="grade_table_th" style="width:10%">학수번호</th>
+                        <th class="grade_table_th" style="width:40%">과목명</th>
+                        <th class="grade_table_th" style="width:10%">이수구분</th>
+                        <th class="grade_table_th" style="width:14%">선택영역</th>
+                        <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
+                    </tr>
+                    {% for g in grade %}
+                    {% if forloop.counter <= 7 %} <tr>
+                        <td class="grade_table_td">{{ g.year }}</td>
+                        <td class="grade_table_td">{{ g.semester }}</td>
+                        <td class="grade_table_td">{{ g.subject_num }}</td>
+                        <td class="grade_table_td">{{ g.subject_name }}</td>
+                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                </table>
+                <!-- 전체보기 클릭시 모두 보여준다 -->
+                <table id="long_table" class="grade_table" style="display:none; ">
+                    <tr>
+                        <th class="grade_table_th" style="width:10%">년도</th>
+                        <th class="grade_table_th" style="width:10%">학기</th>
+                        <th class="grade_table_th" style="width:10%">학수번호</th>
+                        <th class="grade_table_th" style="width:40%">과목명</th>
+                        <th class="grade_table_th" style="width:10%">이수구분</th>
+                        <th class="grade_table_th" style="width:14%">선택영역</th>
+                        <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
+                    </tr>
+                    {% for g in grade %}
+                    <tr>
+                        <td class="grade_table_td">{{ g.year }}</td>
+                        <td class="grade_table_td">{{ g.semester }}</td>
+                        <td class="grade_table_td">{{ g.subject_num }}</td>
+                        <td class="grade_table_td">{{ g.subject_name }}</td>
+                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
-            <hr>
-            {% if grade %}
-            <table class="grade_table">
-                <tr>
-                    <th class="grade_table_th" style="width:10%">년도</th>
-                    <th class="grade_table_th" style="width:10%">학기</th>
-                    <th class="grade_table_th" style="width:10%">학수번호</th>
-                    <th class="grade_table_th" style="width:40%">과목명</th>
-                    <th class="grade_table_th" style="width:10%">이수구분</th>
-                    <th class="grade_table_th" style="width:14%">선택영역</th>
-                    <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
-                </tr>
-                {% for g in grade %}
-                <tr>
-                    <td class="grade_table_td">{{ g.year }}</td>
-                    <td class="grade_table_td">{{ g.semester }}</td>
-                    <td class="grade_table_td">{{ g.subject_num }}</td>
-                    <td class="grade_table_td">{{ g.subject_name }}</td>
-                    <td class="grade_table_td">{{ g.classification }}</td>
-                    <td class="grade_table_td">{{ g.selection }}</td>
-                    <td class="grade_table_td" style="border-right :0px">{{ g.grade }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+            <div id="show_btn" onclick="show_table()" class="show_table"><i class="fas fa-chevron-down"></i>&nbsp;펼치기
+            </div>
+            <div id="hide_btn" onclick="hide_table()" class="show_table" style="display:none"><i
+                    class="fas fa-chevron-up"></i>&nbsp;접기</div>
             {% else %}
             아직 기이수과목이 업로드되지 않았습니다.
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
-
-
+</div>
 
 <!-- 1. 내정보 업데이트 모달 -->
 <div id='m1' class="modal">
@@ -141,8 +217,8 @@
             {% csrf_token %}
             <div class="regi_box">
                 <label style="text-align: center;">아이디</label>
-                <input type="text" name="student_id" placeholder='{{ request.session.id }}' style="background-color:rgb(248,249,250);"
-                    disabled>
+                <input type="text" name="student_id" placeholder='{{ request.session.id }}'
+                    style="background-color:rgb(248,249,250);" disabled>
                 <label style="text-align: center;">비밀번호</label>
                 <input type="password" id="pw" name="pw" placeholder="PASSWORD">
             </div>
@@ -260,7 +336,8 @@
             <p><span class="caution_info">※ 다운로드받은 파일 그대로 업로드해야합니다.</span></p>
         </div>
 
-        <form action="/f_mod_grade/" method="post" name='form4' onsubmit="return check_up4()" enctype="multipart/form-data">
+        <form action="/f_mod_grade/" method="post" name='form4' onsubmit="return check_up4()"
+            enctype="multipart/form-data">
             {% csrf_token %}
             <div class="box-file-input">
                 <label>
@@ -281,7 +358,7 @@
 <div id='m5' class="modal" style="display: block;">
     <div class="update_modal_content" style="width:40%">
         <div style="color:rgb(124,199,106); font-size:7rem; margin:1rem 0 1rem 0">
-            <i  class="fas fa-check"></i>
+            <i class="fas fa-check"></i>
         </div>
         <p style="font-size:2rem; font-weight: bold;">성공적으로 업데이트 되었습니다!</p>
         <button id="c5" class='login_btn' style="margin:2rem 0 2rem 0;">확인</button>
@@ -373,16 +450,15 @@
     }
 
     // 학부생일경우 학과 선택했는지 확인
-    function check_up5(){
-        if(document.getElementById('major_select'))
-            {
-                var sel_box = document.getElementById('major_select');
-                var sel_ind = document.getElementById('major_select').options.selectedIndex;
-                if(sel_box.options[sel_ind].value === 'x'){
-                    alert('전공을 선택해주세요.') ;
-                    return false;
-                }
+    function check_up5() {
+        if (document.getElementById('major_select')) {
+            var sel_box = document.getElementById('major_select');
+            var sel_ind = document.getElementById('major_select').options.selectedIndex;
+            if (sel_box.options[sel_ind].value === 'x') {
+                alert('전공을 선택해주세요.');
+                return false;
             }
+        }
         pop_modal();
         return true;
     }
@@ -427,7 +503,7 @@
         pop_modal();
         return true;
     }
-    
+
     // 파일 업로드 css - jquery 적용
     $(document).on("change", ".file-input", function () {
         $filename = $('input[type=file]').val().replace(/.*(\/|\\)/, '');
@@ -435,6 +511,25 @@
             $filename = "파일을 선택해주세요.";
         $(".filename").text($filename);
     })
+
+    function show_table() {
+        // 테이블 전환
+        document.getElementById("short_table").style.display = "none";
+        document.getElementById("long_table").style.display = "table";
+        // 버튼 전환
+        document.getElementById("show_btn").style.display = "none";
+        document.getElementById("hide_btn").style.display = "block";
+    }
+
+    function hide_table() {
+        document.getElementById("short_table").style.display = "table";
+        document.getElementById("long_table").style.display = "none";
+        document.getElementById("show_btn").style.display = "block";
+        document.getElementById("hide_btn").style.display = "none";
+    }
+
+
+
 
     // 모달 창 켜기
     var Btnclick = function (x, y) {
