@@ -57,6 +57,11 @@ def r_result(request):
     context = json.loads(ui_row.result_json)
     return render(request, "result.html", context)
 
+def r_multi_result(request):
+    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    context = json.loads(ui_row.result_json)
+    return render(request, "multi_result.html", context)
+
 def r_en_result(request):
     ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
     context = json.loads(ui_row.en_result_json)
@@ -76,11 +81,11 @@ def f_login(request):
     ui_row = TestUserInfo.objects.filter(student_id=user_id)
     # 우선 회원가입 되지 않았다면?
     if not ui_row.exists():
-        messages.error(request, '가입되지 않은 ID 입니다.')
+        messages.error(request, '⚠️ 가입되지 않은 ID 입니다.')
         return redirect('/login/')
     # 회원인데 비번이 틀렸다면?
     elif ui_row[0].password != pw :
-        messages.error(request, '비밀번호를 확인하세요.')
+        messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/login/')
     ui_row = ui_row[0]
     # 1. mypage 컨텍스트 정보가 없다면 context를 json으로 변환 후 user_info에 저장
@@ -92,17 +97,18 @@ def f_login(request):
     if UserGrade.objects.filter(student_id=user_id).exists():
         # 2. result context 정보가 DB에 없다면 검사 실시
         if ui_row.result_json == None :
-            result_context = f_result(user_id)
+            result_context = f_result(user_id, ui_row.major_status)
             ui_row.result_json = json.dumps(result_context)
             ui_row.save()
         # 3. 만약 공학인증 기준이 있는데 공학인증 context가 비었다면
-        if ui_row.result_json == None and mypage_context['is_engine'] == 2:
+        is_engine = Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng
+        if ui_row.en_result_json == None and  is_engine != 0 and is_engine != -1 :
             en_result_context = f_en_result(user_id)
             ui_row.en_result_json = json.dumps(en_result_context)
             ui_row.save()
-    # 세션에 ID 저장
+    # 세션에 ID와 전공상태 저장
     request.session['id'] = user_id
-    return redirect('/mypage/') 
+    return redirect('/mypage/')
 
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
 
@@ -117,8 +123,9 @@ def f_mypage(user_id):
     # 공학인증 기준이 있다면
     else: is_engine = 2
     # 만약 성적표 업로드 안했다면
-    if not grade.exists:
-        grade = []
+    is_grade = 1
+    if not grade.exists():
+        is_grade = 0
     mypage_context ={
         'student_id' : ui_row.student_id,
         'year' : ui_row.year,
@@ -128,6 +135,7 @@ def f_mypage(user_id):
         'book' : ui_row.book,
         'eng' : ui_row.eng,
         'grade' : list(grade.values()),
+        'is_grade' : is_grade,
         'is_engine' : is_engine,
     }
     return mypage_context
@@ -140,7 +148,7 @@ def update_json(user_id):
     # 업로드된 이수표가 있을때만 
     if UserGrade.objects.filter(student_id=user_id).exists():
         # result json 업데이트
-        result_context = f_result(user_id)
+        result_context = f_result(user_id, ui_row.major_status)
         ui_row.result_json = json.dumps(result_context)
         # en_result json 업데이트
         if mypage_context['is_engine'] == 2:
@@ -170,9 +178,8 @@ def f_mod_info(request):
         messages.error(request, '⚠️ 비밀번호를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/mypage/')
     elif temp_user_info == 2:
-        messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/mypage/')
-
     name = temp_user_info['name']
     book = temp_user_info['book']
     major = temp_user_info['major']
@@ -180,9 +187,6 @@ def f_mod_info(request):
     if ui_row.name != name :
         ui_row.name = name
         ui_row.save()
-    
-    #major = '지능기전공학부'
-
     # 전공이 학부로 뜨는 경우(1학년에 해당)
     if major[-2:] == '학부':
         ui_row.book = book
@@ -215,7 +219,9 @@ def f_mod_ms_eng(request):
     user_id = request.session.get('id')
     major_status = request.POST.get('major_status')
     eng = request.POST.get('eng')
-    if eng != '해당없음':
+    if eng == 'OPIc':
+        eng = eng + '/' + request.POST.get('opic')
+    elif eng != '해당없음' and eng != '초과학기면제':
         eng = eng + '/' + str(request.POST.get('eng_score'))
     # 사용자의 user_info row 부르기
     ui_row = TestUserInfo.objects.get(student_id = user_id)
@@ -232,13 +238,20 @@ def f_mod_ms_eng(request):
 
 # 3. 비밀번호 수정
 def f_mod_pw(request):
-    user_id = request.session.get('id')
+    # 수정은 두가지 -> 로그인전과 로그인 후
+    if request.session.get('id') != None:
+        user_id = request.session.get('id')
+    else:
+        user_id = request.POST.get('id')
     password = request.POST.get('password')
     ui_row = TestUserInfo.objects.get(student_id = user_id)
     ui_row.password = password
     ui_row.save()
     messages.success(request, '업데이트성공')
-    return redirect('/mypage/') 
+    if request.session.get('id') != None:
+        return redirect('/mypage/')
+    else:
+        return redirect('/login/')
 
 # 4. 기이수과목 수정
 def f_mod_grade(request):
@@ -246,15 +259,14 @@ def f_mod_grade(request):
     excel = request.FILES['excel']
     # 검사1 : 엑셀파일인지 검사
     if excel.name[-3:] != 'xls':
-        messages.error(request, '잘못된 파일 형식입니다. 확장자가 xls인 파일을 올려주세요. ')
+        messages.error(request, '⚠️ 잘못된 파일 형식입니다. 확장자가 xls인 파일을 올려주세요. ')
         return redirect('/mypage/')
     # 엑셀을 df로 변환
     df = pd.read_excel(excel.read(), index_col=None)
     # 검사2 : 형식에 맞는지 검사
     if list(df.columns) != ['년도', '학기', '학수번호', '교과목명', '이수구분', '교직영역', '선택영역', '학점', '평가방식', '등급', '평점', '개설학과코드']:
-        messages.error(request, '엑셀 내용이 다릅니다! 수정하지 않은 엑셀파일을 올려주세요.')
+        messages.error(request, '⚠️ 엑셀 내용이 다릅니다! 수정하지 않은 엑셀파일을 올려주세요.')
         return redirect('/mypage/')
-
     # 검사를 통과하면 df를 형식에 맞게 수정
     df.fillna('', inplace = True)
     # 논패, F과목 삭제
@@ -295,6 +307,27 @@ def f_mod_grade(request):
     update_json(user_id)
     messages.success(request, '업데이트성공')
     return redirect('/mypage/')
+
+def f_find_pw(request):
+    user_id = request.POST.get('id2')
+    pw = request.POST.get('pw2')
+    ui_row = TestUserInfo.objects.filter(student_id = user_id)
+    # 회원인지 확인
+    if not ui_row.exists() :
+        messages.error(request, '⚠️ 가입되지 않은 학번입니다.')
+        return redirect('/login/')
+    ui_row = ui_row[0]
+    # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
+    temp_user_info = selenium_DHC(user_id, pw)
+    if temp_user_info == 1:
+        messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+        return redirect('/login/')
+    elif temp_user_info == 2:
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        return redirect('/login/')
+    context = {'user_id' : user_id }
+    return render(request, 'changePW.html', context)
+    
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 
@@ -442,7 +475,7 @@ def r_register(request):
 
     # 학번 중복 검사
     if TestUserInfo.objects.filter(student_id=id).exists():
-        messages.error(request, '이미 가입된 학번입니다!')
+        messages.error(request, '⚠️ 이미 가입된 학번입니다!')
         return redirect('/agree/')
 
     # 대휴칼 셀레니움 돌리기
@@ -453,7 +486,7 @@ def r_register(request):
         messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/agree/')
     elif temp_user_info == 2:
-        messages.error(request, '대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/agree/')
 
 # ***********************************************************************************
@@ -472,7 +505,7 @@ def r_register(request):
     
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
     if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
-        messages.error(request, '아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다. 😢')
+        messages.error(request, '😢 아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다.')
         return redirect('/agree/')
     
     # 나머지 데이터도 추가해주기
@@ -502,10 +535,11 @@ def r_success(request):
     else : 
         major = temp_user_info['major']
 
-    # 영어에서 해당없음이면 'x'로 저장
     # 만약 영어 점수 썼다면 ex) 'toeic/550' <- 이런형태로 저장됨.
     eng = request.POST.get('eng')
-    if eng != '해당없음':
+    if eng == 'OPIc':
+        eng = eng + '/' + request.POST.get('opic')
+    elif eng != '해당없음' and eng != '초과학기면제':
         eng = eng + '/' + str(request.POST.get('eng_score'))
 
     # 테스트 user_info 테이블에 데이터 입력
@@ -667,17 +701,15 @@ def recom_machine_learning(what, user_id, user_list):
 
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
-def f_result(user_id):
+def f_result(user_id, major_status):
     # userinfo 테이블에서 행 추출
-    ui_row = UserInfo.objects.get(student_id = user_id)
-
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
     user_info = {
         'id' : ui_row.student_id,
         'name' : ui_row.name,
         'major' : ui_row.major,
         'year' : ui_row.year,
     }
-   
     # 고전독서 정보 파싱 후 info에 추가하기
     pass_book = 0
     if ui_row.book == '고특통과': 
@@ -754,15 +786,18 @@ def f_result(user_id):
     # 내 이수학점 수치
     # df는 int64이므로 -> int 로 변경해준다. (세션에 넣을때 int만 들어감)
     my_num ={
-        'ss' : int(data['학점'].sum()),              # sum_score
-        'me' : int(df_me['학점'].sum() - remain),    # major_essential
-        'ms' : int(df_ms['학점'].sum()),             # major_selection
-        'ce' : int(df_ce['학점'].sum()) ,            # core_essential   
-        'cs' : int(df_cs['학점'].sum()),             # core_selection
-        'b' : int(df_b['학점'].sum()),               # basic
-        'remain' : int(remain),
+        'ss' : data['학점'].sum(),              # sum_score
+        'me' : df_me['학점'].sum() - remain,    # major_essential
+        'ms' : df_ms['학점'].sum(),             # major_selection
+        'ce' : df_ce['학점'].sum() ,            # core_essential   
+        'cs' : df_cs['학점'].sum(),             # core_selection
+        'b' : df_b['학점'].sum(),               # basic
+        'remain' : remain,
     }
-
+    # 소수점 없으면 걍 정수로 변환
+    for k in my_num:
+        if str(my_num[k])[-1] == '0':
+            my_num[k] = int(my_num[k])
     # 사용자가 들은 dic 추출
     my_dic_ce = make_dic(df_ce['학수번호'].tolist())
     my_dic_cs = make_dic(df_cs['학수번호'].tolist())
@@ -849,6 +884,32 @@ def f_result(user_id):
         'cs' : zip_cs,    # 교선
     }
 
+    # 영어합격기준
+    eng_standard_all = {'TOEIC':700,'TOEFL':80,'TEPS':556,'OPIc':'LOW','TOEIC_Speaking':120}       
+    eng_standard_eng = {'TOEIC':800,'TOEFL':91,'TEPS':637,'OPIc':'MID','TOEIC_Speaking':130}   # 영문과 영어합격기준
+    # 나중에 영문과 추가시...
+    eng_standard = eng_standard_all
+    # 영어 인증 여부
+    eng, eng_score = 0, 0
+    eng_category = ui_row.eng
+    # 인텐시브 들었다면 통과
+    if '6844' in data['학수번호'].tolist():
+        eng_category = 'Intensive English 이수'
+        eng = 1
+    else:
+        if eng_category != '해당없음':
+            if eng_category == '초과학기면제': 
+                eng = 1
+            # 영어 점수 기재했을 경우
+            else: 
+                eng_category, eng_score = eng_category.split('/')
+                # OPIc일 경우
+                if eng_category == 'OPIc':
+                    if eng_score in ['AL', 'IH', 'IM', 'IL']:
+                        eng = 1
+                elif int(eng_score) >= eng_standard[eng_category] :
+                    eng = 1
+
     # 과목 통과 여부 
     pass_me, pass_ms, pass_ce, pass_l_cs, pass_n_cs, pass_cs_tot, pass_b, pass_total = 0,0,0,0,0,0,0,0
     if standard_num['me'] <= my_num['me']: pass_me = 1
@@ -874,7 +935,10 @@ def f_result(user_id):
         'p_cs' : pass_p_cs,     # 중선 필수영역 통과여부
         'l_b' : pass_b,         # 기교 필수과목 통과여부
         'book' : pass_book,     # 고전독서 인증여부
-        'eng' : ui_row.eng,      # 영어인증여부
+        'eng' : eng,            # 영어인증여부
+        'eng_standard' : eng_standard,
+        'eng_category' : eng_category,
+        'eng_score' : eng_score,
         'ml_me' : pass_ml_me,
         'ml_ms' : pass_ml_ms,
     }
@@ -883,6 +947,39 @@ def f_result(user_id):
     en_exist = 0
     if s_row.sum_eng != 0:  # 존재한다면
         en_exist = 1
+
+    # 복수/연계 전공시 -> 전필,전선 : 기준 수정 + 복필(연필),복선(연선) : 기준과 내 학점계산 추가
+    if major_status != '해당없음':
+        # 기준 수정, 추가
+        standard_num['me'] = 15
+        standard_num['ms'] = 24
+        standard_num['multi_me'] = 15
+        standard_num['multi_ms'] = 24
+        # 전필 -> 전선 넘기기 연산 다시하기
+        remain = 0
+        if standard_num['me'] < df_me['학점'].sum() :
+            remain = df_me['학점'].sum() - standard_num['me']
+        my_num['remain'] = int(remain)
+        my_num['me'] = int(df_me['학점'].sum() - remain)
+        # 복수전공일때
+        if major_status == '복수전공':
+            my_multi_me = int(data[data['이수구분'].isin(['복필'])]['학점'].sum())
+            my_multi_ms = int(data[data['이수구분'].isin(['복선'])]['학점'].sum())
+        # 연계전공일때
+        elif major_status == '연계전공':
+            my_multi_me = int(data[data['이수구분'].isin(['연필'])]['학점'].sum())
+            my_multi_ms = int(data[data['이수구분'].isin(['연선'])]['학점'].sum())
+        my_num['multi_me'] = my_multi_me
+        my_num['multi_ms'] = my_multi_ms
+        # 패스여부 다시 검사
+        pass_me, pass_ms = 0,0
+        if standard_num['me'] <= my_num['me']: pass_me = 1
+        if standard_num['ms'] <= my_num['ms'] + my_num['remain']: pass_ms = 1
+        pass_obj['n_me'] = pass_me
+        pass_obj['n_ms'] = pass_ms
+        pass_obj['lack_me'] = standard_num['me'] - my_num['me']
+        pass_obj['lack_ms'] = standard_num['ms'] - my_num['ms'] - my_num['remain']
+        user_info['major_status'] = major_status
 
     result_context = {
         'user_info' : user_info,            # 사용자 정보
@@ -895,7 +992,6 @@ def f_result(user_id):
         'pass_obj' : pass_obj,              # 패스 여부
         'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
-
     return result_context
 
 
@@ -907,7 +1003,6 @@ def f_en_result(user_id):
     if test_id != '':
         user_id = test_id
     
-        
     # userinfo 테이블에서 행 추출
     ui_row = UserInfo.objects.get(student_id = user_id)
 

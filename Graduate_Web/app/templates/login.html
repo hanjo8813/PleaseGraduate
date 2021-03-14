@@ -9,7 +9,7 @@
             <i class="fas fa-graduation-cap"></i>
         </div>
         <div style="font-size:2rem; font-weight:bold;">Please Graduate에 오신걸 환영합니다</div>
-        <div style="margin-top:0.5rem; font-size:1rem; color:rgb(199, 199, 199)">(version 1.1 / 02.13 updated)</div>
+        <div style="margin-top:0.5rem; font-size:1rem; color:rgb(199, 199, 199)">(version 2.0 / ???? updated)</div>
     </div>
 </div>
 
@@ -36,12 +36,37 @@
                 <div class="regi_find_pwd">
                     <a href="/agree/">회원가입</a>
                     <span>|</span>
-                    <a href="#">비밀번호찾기</a>
+                    <a id="b2" href="#">비밀번호찾기</a>
                 </div>
             </form>
         </div>
     </div>
 </div>        
+
+<!-- 비밀번호 변경 -->
+<div id='m2' class="modal">
+    <div class="update_modal_content">
+        <div id='c2' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
+            비밀번호 찾기
+        </div>
+        <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+            대양휴머니티칼리지 ID/PW(UIS 사이트와 동일)로 본인인증 후 비밀번호를 변경합니다.
+        </div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_find_pw/" method="post" name='form2' onsubmit="return check_up2()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label style="text-align: center;">아이디</label>
+                <input type="text" id="id2" name="id2" placeholder='ID'>
+                <label style="text-align: center;">비밀번호</label>
+                <input type="password" id="pw2" name="pw2" placeholder="PASSWORD">
+            </div>
+            <input type='submit' class='login_btn' value='인증하기' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
 
 <!-- 로그인시 로딩 모달 창 -->
 <div id='m1' class="modal">
@@ -84,6 +109,38 @@
     // 인증하기 클릭시 modal 띄움
     function pop_modal(){
         document.getElementById('m1').style.display = "block";
+    }
+
+    // ID/비번 안치면 빠꾸
+    function check_up2() {
+        if (!document.getElementById('pw2').value || !document.getElementById('id2').value) {
+            alert('ID/PW를 입력해주세요.');
+            form2.pw2.focus();
+            return false;
+        }
+        pop_modal();
+        return true;
+    }
+
+    var Btnclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "block";
+        }
+    }
+    var Spanclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "none";
+        }
+    }
+    var b2 = document.getElementById("b2");
+    var m2 = document.getElementById('m2');
+    var c2 = document.getElementById("c2");
+    Btnclick(b2, m2);
+    Spanclick(c2, m2);
+    window.onclick = function (event) {
+        if (event.target == m2) {
+            m2.style.display = "none";
+        }
     }
 </script>
 {% endblock %}

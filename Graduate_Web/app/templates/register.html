@@ -48,12 +48,24 @@
                 <select onclick="pop_score()" id="eng" name="eng">
                     <option value="해당없음" selected>해당없음</option>
                     <option value="TOEIC">TOEIC</option>
-                    <option value="IBT">IBT</option>
+                    <option value="TOEFL">TOEFL</option>
                     <option value="TEPS">TEPS</option>
-                    <option value="OPIc Intermediate Low">OPIc Intermediate Low</option>
-                    <option value="TOEIC Speaking">TOEIC Speaking</option>
+                    <option value="OPIc">OPIc</option>
+                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
                 </select>
+
+                <!-- 숨겨져있는 애들 -->
                 <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                <select id="opic" name="opic" style="display:none">
+                    <option value="NL" selected>Novice Low</option>
+                    <option value="NM">Novice Mid</option>
+                    <option value="NH">Novice High</option>
+                    <option value="IL">Intermediate Low</option>
+                    <option value="IM">Intermediate Mid</option>
+                    <option value="IH">Intermediate High</option>
+                    <option value="AL">Advanced Low</option>
+                </select>
 
                 <label>비밀번호</label>
                 <input id="pw1" type="password" name="password">
@@ -76,11 +88,21 @@
     function pop_score(){
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if(eng_box.options[eng_ind].value !== "해당없음")
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제")
         {
-            document.getElementById('eng_score').style.display = "block";
+            if(eng_box.options[eng_ind].value === "OPIc")
+            {
+                document.getElementById('opic').style.display = "block";
+                document.getElementById('eng_score').style.display = "none";
+            }
+            else
+            {
+                document.getElementById('eng_score').style.display = "block";
+                document.getElementById('opic').style.display = "none";
+            }
         }
         else{
+            document.getElementById('opic').style.display = "none";
             document.getElementById('eng_score').style.display = "none";
         }
     }
@@ -95,28 +117,28 @@
             var sel_box = document.getElementById('major_select');
             var sel_ind = document.getElementById('major_select').options.selectedIndex;
             if(sel_box.options[sel_ind].value === 'x'){
-                alert('전공을 선택해주세요.') ;
+                alert('🤔 전공을 선택해주세요.') ;
                 regi_form.major_select.focus();
                 return false;
             }
         }
         // 2. 영어인증 선택시 점수 입력확인
-        if(eng_box.options[eng_ind].value !== "해당없음"){
-            if(!document.getElementById('eng_score').value){
-                alert('영어 점수를 입력해주세요.') ;
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제" && eng_box.options[eng_ind].value !== "OPIc"){
+            if (!document.getElementById('eng_score').value || document.getElementById('eng_score').value == 0) {
+                alert('🤔 영어 점수를 입력해주세요.') ;
                 regi_form.eng_score.focus();
                 return false;
             }
         }
         // 3. 비밀번호 입력 확인
         if(!document.getElementById('pw1').value){
-            alert('비밀번호를 입력해주세요.') ;
+            alert('🤔 비밀번호를 입력해주세요.') ;
             regi_form.pw1.focus();
             return false;
         }
         // 4. 비밀번호 일치 확인
         if(document.getElementById('pw1').value !== document.getElementById('pw2').value){
-            alert('비밀번호가 일치하지 않습니다.') ;
+            alert('🤔 비밀번호가 일치하지 않습니다.') ;
             regi_form.pw1.focus();
             return false;
         }

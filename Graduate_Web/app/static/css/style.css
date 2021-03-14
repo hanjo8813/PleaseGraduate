@@ -600,6 +600,7 @@ body:not(.device-touch) .suc_btn
     outline: 0;
 }
 
+.my_box_grade2 hr,
 .my_box hr,
 .my_box_grade hr{
     width:100%;
@@ -624,6 +625,27 @@ body:not(.device-touch) .suc_btn
 
 /* ---------------------------------( mypage 기이수성적 )---------------------------------------- */
 
+.show_table {
+    margin-top: 1.5rem;
+    padding: 0.7rem 0 0.7rem 0;
+    height: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 3px;
+    border-top: 1.5px solid rgb(216, 216, 216);
+    cursor: pointer;
+}
+
+.show_table:hover {
+    background-color: #f3f3f3;
+}
+
+body:not(.device-touch) .show_table {
+    transition: background-color .2s linear;
+    -webkit-transition: background-color .2s linear;
+}
+
 .my_box_grade{
     display: flex;
     flex-direction: column;
@@ -634,6 +656,17 @@ body:not(.device-touch) .suc_btn
     border:1px solid rgb(216, 216, 216);
     background-color: white;
 }
+
+.my_box_grade2 {
+    display: flex;
+    flex-direction: column;
+    width: 68rem;
+    height: auto;
+    margin: 1rem 1rem 4rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
+}
+
 
 .grade_table {
     width: 90%;

@@ -11,11 +11,7 @@
     </div>
     <div class="go_result_wrap">
         <div class="go_result_box">
-            {% if grade %}
-            <button onclick="location.href='/result/'" class="go_result_btn">졸업요건 검사하기</button>
-            {% else %}
-            <button onclick="alert('기이수과목 엑셀파일을 먼저 업로드 해주세요!')" class="go_result_btn">졸업요건 검사하기</button>
-            {% endif %}
+            <button onclick="go_result()" class="go_result_btn">졸업요건 검사하기</button>
         </div>
         {% if is_engine != 0 %}
         <div class="go_result_box">
@@ -79,50 +75,6 @@
             </div>
         </div>
 
-
-
-
-        <style>
-            .show_table {
-                margin-top: 1.5rem;
-                padding: 0.7rem 0 0.7rem 0;
-                height: 1.5rem;
-                font-size: 1.1rem;
-                font-weight: bold;
-                text-align: center;
-                letter-spacing: 3px;
-                border-top: 1.5px solid rgb(216, 216, 216);
-                cursor: pointer;
-            }
-
-            .show_table:hover {
-                background-color: #f3f3f3;
-            }
-
-            body:not(.device-touch) .show_table {
-                transition: background-color .2s linear;
-                -webkit-transition: background-color .2s linear;
-            }
-
-            .my_box_grade2 {
-                display: flex;
-                flex-direction: column;
-                width: 68rem;
-                height: auto;
-                margin: 1rem 1rem 4rem;
-                border: 1px solid rgb(216, 216, 216);
-                background-color: white;
-            }
-
-            .my_box_grade2 hr {
-                width: 100%;
-                border-top: 0.001px solid rgb(216, 216, 216);
-                border-bottom: 0.001px solid white;
-                margin-top: 1rem;
-                margin-bottom: 1.3rem;
-            }
-        </style>
-
         <!-- 기이수과목 -->
         <div class="my_box_grade2">
             <div style="padding:2.5rem 2.5rem 0 2.5rem">
@@ -133,7 +85,7 @@
                 </div>
                 <hr>
 
-                {% if grade %}
+                {% if is_grade %}
                 <!-- 우선 10개까지만 보여준다. -->
                 <table id="short_table" class="grade_table" style="margin-top:2rem;">
                     <tr>
@@ -153,7 +105,7 @@
                         <td class="grade_table_td">{{ g.subject_name }}</td>
                         <td class="grade_table_td">{{ g.classification }}</td>
                         <td class="grade_table_td">{{ g.selection }}</td>
-                        <td class="grade_table_td" style="border-right :0px">{{ g.grade }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -177,7 +129,7 @@
                         <td class="grade_table_td">{{ g.subject_name }}</td>
                         <td class="grade_table_td">{{ g.classification }}</td>
                         <td class="grade_table_td">{{ g.selection }}</td>
-                        <td class="grade_table_td" style="border-right :0px">{{ g.grade }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
                     </tr>
                     {% endfor %}
                 </table>
@@ -275,12 +227,22 @@
                 <select onclick="pop_score()" id="eng" name="eng">
                     <option value="해당없음" selected>해당없음</option>
                     <option value="TOEIC">TOEIC</option>
-                    <option value="IBT">IBT</option>
+                    <option value="TOEFL">TOEFL</option>
                     <option value="TEPS">TEPS</option>
-                    <option value="OPIc Intermediate Low">OPIc Intermediate Low</option>
-                    <option value="TOEIC Speaking">TOEIC Speaking</option>
+                    <option value="OPIc">OPIc</option>
+                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
                 </select>
                 <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                <select id="opic" name="opic" style="display:none">
+                    <option value="NL" selected>Novice Low</option>
+                    <option value="NM">Novice Mid</option>
+                    <option value="NH">Novice High</option>
+                    <option value="IL">Intermediate Low</option>
+                    <option value="IM">Intermediate Mid</option>
+                    <option value="IH">Intermediate High</option>
+                    <option value="AL">Advanced Low</option>
+                </select>
             </div>
             <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
         </form>
@@ -350,24 +312,6 @@
     </div>
 </div>
 
-
-<!-- 업데이트 성공 모달창 -->
-{% if messages %}
-{% for m in messages %}
-{% if m.tags == 'success' %}
-<div id='m5' class="modal" style="display: block;">
-    <div class="update_modal_content" style="width:40%">
-        <div style="color:rgb(124,199,106); font-size:7rem; margin:1rem 0 1rem 0">
-            <i class="fas fa-check"></i>
-        </div>
-        <p style="font-size:2rem; font-weight: bold;">성공적으로 업데이트 되었습니다!</p>
-        <button id="c5" class='login_btn' style="margin:2rem 0 2rem 0;">확인</button>
-    </div>
-</div>
-{% endif %}
-{% endfor %}
-{% endif %}
-
 <!-- 로그인시 로딩 모달 창 -->
 <div id='m6' class="modal">
     <div class="load-modal-content">
@@ -411,13 +355,28 @@
         location.href = '/';
     };
 
+    // 졸업요건으로 넘어가기
+    function go_result() {
+        if ('{{is_grade}}' == 1) {
+            if('{{major_status}}' == '해당없음'){
+                location.href = '/result/';
+            }
+            else{
+                location.href = '/multi_result/';
+            }
+        }
+        else {
+            alert('🤔 기이수과목 엑셀파일을 먼저 업로드 해주세요!');
+        }
+    }
+
     // 공학인증으로 넘어가기
     function go_en_result() {
         if ('{{is_engine}}' == 2) {
             location.href = '/en_result/';
         }
         else {
-            alert('아직 {{major}}-{{year}}학번의 공학인증 기준이 추가되지 않았습니다. 😢');
+            alert('😢 아직 {{major}}-{{year}}학번의 공학인증 기준이 추가되지 않았습니다.');
         }
     }
 
@@ -427,13 +386,24 @@
     }
 
     // 영어성적 입력 띄우기
-    function pop_score() {
+    function pop_score(){
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if (eng_box.options[eng_ind].value !== "해당없음") {
-            document.getElementById('eng_score').style.display = "block";
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제")
+        {
+            if(eng_box.options[eng_ind].value === "OPIc")
+            {
+                document.getElementById('opic').style.display = "block";
+                document.getElementById('eng_score').style.display = "none";
+            }
+            else
+            {
+                document.getElementById('eng_score').style.display = "block";
+                document.getElementById('opic').style.display = "none";
+            }
         }
-        else {
+        else{
+            document.getElementById('opic').style.display = "none";
             document.getElementById('eng_score').style.display = "none";
         }
     }
@@ -441,7 +411,7 @@
     // 크롤링할때 비번 안치면 빠꾸
     function check_up1() {
         if (!document.getElementById('pw').value) {
-            alert('비밀번호를 입력해주세요.');
+            alert('🤔 비밀번호를 입력해주세요.');
             form1.pw.focus();
             return false;
         }
@@ -455,7 +425,7 @@
             var sel_box = document.getElementById('major_select');
             var sel_ind = document.getElementById('major_select').options.selectedIndex;
             if (sel_box.options[sel_ind].value === 'x') {
-                alert('전공을 선택해주세요.');
+                alert('🤔 전공을 선택해주세요.');
                 return false;
             }
         }
@@ -467,9 +437,9 @@
     function check_up2() {
         var eng_box = document.getElementById('eng');
         var eng_ind = document.getElementById("eng").options.selectedIndex;
-        if (eng_box.options[eng_ind].value !== "해당없음") {
-            if (!document.getElementById('eng_score').value) {
-                alert('영어 점수를 입력해주세요.');
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제" && eng_box.options[eng_ind].value !== "OPIc"){
+            if (!document.getElementById('eng_score').value || document.getElementById('eng_score').value == 0) {
+                alert('🤔 영어 점수를 입력해주세요.');
                 form2.eng_score.focus();
                 return false;
             }
@@ -481,12 +451,12 @@
     // 비번 안쓰거나 일치안하면 빠꾸
     function check_up3() {
         if (!document.getElementById('pw1').value) {
-            alert('비밀번호를 입력해주세요.');
+            alert('🤔 비밀번호를 입력해주세요.');
             form3.pw1.focus();
             return false;
         }
         if (document.getElementById('pw1').value !== document.getElementById('pw2').value) {
-            alert('비밀번호가 일치하지 않습니다.');
+            alert('🤔 비밀번호가 일치하지 않습니다.');
             form3.pw1.focus();
             return false;
         }
@@ -497,7 +467,7 @@
     // 파일 업로드 안하고 버튼 누르면 빠꾸
     function check_up4() {
         if (!document.getElementById("file_input").value) {
-            alert("엑셀파일을 첨부해주세요!");
+            alert("🤔 엑셀파일을 첨부해주세요.");
             return false;
         }
         pop_modal();
@@ -528,9 +498,6 @@
         document.getElementById("hide_btn").style.display = "none";
     }
 
-
-
-
     // 모달 창 켜기
     var Btnclick = function (x, y) {
         x.onclick = function () {
@@ -543,6 +510,7 @@
             y.style.display = "none";
         }
     }
+    
     // 모달 켜는 버튼 id
     var b1 = document.getElementById("b1");     // 1. 내 정보 업데이트
     var b2 = document.getElementById("b2");     // 2. 영어+전공상태 수정
@@ -553,13 +521,11 @@
     var m2 = document.getElementById('m2');
     var m3 = document.getElementById('m3');
     var m4 = document.getElementById('m4');
-    var m5 = document.getElementById('m5');
     // 모달 끄는 버튼(X) id
     var c1 = document.getElementById("c1");
     var c2 = document.getElementById("c2");
     var c3 = document.getElementById("c3");
     var c4 = document.getElementById("c4");
-    var c5 = document.getElementById("c5");
 
     // 모달 키는 함수 호출
     Btnclick(b1, m1);
@@ -571,7 +537,6 @@
     Spanclick(c2, m2);
     Spanclick(c3, m3);
     Spanclick(c4, m4);
-    Spanclick(c5, m5);
     // 모달 밖 화면 누를때 꺼지게하기
     window.onclick = function (event) {
         if (event.target == m1) {

@@ -30,6 +30,7 @@ urlpatterns = [
     path('register/', views.r_register),
     path('success/', views.r_success),
     path('result/', views.r_result),
+    path('multi_result/', views.r_multi_result),
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴
@@ -40,8 +41,8 @@ urlpatterns = [
     path('f_mod_ms_eng/', views.f_mod_ms_eng),
     path('f_mod_pw/', views.f_mod_pw),
     path('f_mod_grade/', views.f_mod_grade),
+    path('f_find_pw/', views.f_find_pw),
 
-    
     # 테스트용
     path('admin_test/', views.r_admin_test),
     path('f_update/', views.f_update),

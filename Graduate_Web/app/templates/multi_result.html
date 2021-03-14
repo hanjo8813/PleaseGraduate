@@ -39,7 +39,6 @@
                             <span class="cap"><i class="fas fa-graduation-cap"></i></span>
 
                             <div class="T" id="cangraduate"> </div>
-
                         </div>
                     </div>
                 </div>
@@ -47,9 +46,58 @@
         </div>
     </div>
 
-    <!-- 8개 영역 검사 -->
     <div class="rcontainer">
+        <!-- 복필/연선 -->
+        <div class="resultbox">
+            <div class="name">
+                {% if user_info.major_status == '복수전공' %}
+                복수전공 필수
+                {% else %}
+                연계전공 필수
+                {% endif %}
+            </div>
+            <div class="box">
+                <div id="chart_multi_me">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox" style="margin-top:-1rem">
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade_multi_me"></span>
+                    </div>
+                    <div class="gbox" style="margin-top:-3rem">
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="my_grade_multi_me"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="resultbox">
+            <div class="name">
+                {% if user_info.major_status == '복수전공' %}
+                복수전공 선택
+                {% else %}
+                연계전공 선택
+                {% endif %}
+            </div>
+            <div class="box">
+                <div id="chart_multi_ms">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox" style="margin-top:-1rem">
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade_multi_ms"></span>
+                    </div>
+                    <div class="gbox" style="margin-top:-3rem">
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="my_grade_multi_ms"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
         <!-- 전필 -->
         <div class="resultbox container1">
             <!-- 타이틀 -->
@@ -796,7 +844,7 @@
     var Grade3 = '{{standard_num.ce}}';         // 교필
     var Grade4 = '{{standard_num.cs}}';         // 교선
     var Grade5 = '{{standard_num.b}}';          // 기교
-
+    
     // 사용자 학점
     var Mytotalgrade = '{{my_num.ss}}';         // 총학점
     var Mygrade1 = '{{my_num.me}}'              // 전필
@@ -806,6 +854,11 @@
     var Mygrade5 = '{{my_num.b}}';              // 기교
     var remain = '{{my_num.remain}}'    // 전필 초과 학점
 
+    var Grade_multi_me = '{{standard_num.multi_me}}'; 
+    var Grade_multi_ms = '{{standard_num.multi_ms}}'; 
+    var Mygrade_multi_me = '{{my_num.multi_me}}';
+    var Mygrade_multi_ms = '{{my_num.multi_ms}}';
+    
     // 인증권수
     var Swbook = 0;
     var Wbook = 0;
@@ -829,8 +882,15 @@
     var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
     var pernum7 = to_percent(Mybook, 10);               // 고전독서
 
-    // pass 여부
+    // 복수/연계 추가하기
+    
+    var pernum_multi_me = to_percent(Mygrade_multi_me, Grade_multi_me);
+    var pernum_multi_ms = to_percent(Mygrade_multi_ms, Grade_multi_ms);
+    
+    
+   
 
+    // pass 여부
     // 영어인증
     if ('{{pass_obj.eng}}' == 1) {
         var Grade8 = "Pass";
@@ -935,6 +995,18 @@
     var span5 = document.getElementsByClassName("close")[4];
     var span8 = document.getElementsByClassName("close")[5];
 
+    
+
+
+
+
+
+
+
+
+
+
+
     document
         .getElementById("name")
         .innerHTML = Name;
@@ -1023,6 +1095,23 @@
     document
         .getElementById("b_p")
         .innerHTML = B_p;
+
+    ///////////////////////////////////////
+    document
+        .getElementById("grade_multi_me")
+        .innerHTML = Grade_multi_me;
+    document
+        .getElementById("grade_multi_ms")
+        .innerHTML = Grade_multi_ms;
+    document
+        .getElementById("my_grade_multi_me")
+        .innerHTML = Mygrade_multi_me;
+    document
+        .getElementById("my_grade_multi_ms")
+        .innerHTML = Mygrade_multi_ms;
+    ///////////////////////////////////////
+
+    
 
     toggleb.addEventListener('click', () => {
         menu
@@ -1121,6 +1210,8 @@
     CircleProgress(pernum5, '#chart5', 150);
     CircleProgress(pernum7, '#chart7', 150);
     CircleProgress(pernum8, '#chart8', 150);
+    CircleProgress(pernum_multi_me, '#chart_multi_me', 150);
+    CircleProgress(pernum_multi_ms, '#chart_multi_ms', 150);
 
     window.onclick = function (event) {
         if (event.target == modal1) {
