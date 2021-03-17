@@ -87,7 +87,7 @@ class AllLecture(models.Model):
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
+    grade = models.FloatField()
 
     class Meta:
         managed = False
@@ -151,7 +151,7 @@ class UserGrade(models.Model):
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
+    grade = models.FloatField()
     index = models.AutoField(primary_key=True)
 
     class Meta:

@@ -1,0 +1,180 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="big_title">기이수과목 커스텀</div>
+    </div>
+</div>
+
+<style>
+    .my_box_wrap {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        margin-top: 1.5rem;
+        padding-left: 12rem;
+        padding-right: 12rem;
+    }
+
+    .custom_title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .custom_box {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        width: 30rem;
+        height: auto;
+        padding: 2.5rem;
+        margin: 1rem 1rem 1rem;
+        border: 1px solid rgb(216, 216, 216);
+        background-color: white;
+        font-size: 1rem;
+    }
+
+    .custom_box input[type="text"] {
+        font-size: 1rem;
+        background: none;
+        border: 0.01px solid rgb(216, 216, 216);
+        padding: 10px 10px 10px 15px;
+        outline: 0;
+        height: 1.5rem;
+        width: 14rem;
+    }
+
+    .custom_box input[type="submit"] {
+        background: rgb(164, 26, 55);
+        width: 10%;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 3px;
+        padding: 0.6rem;
+        cursor: pointer;
+        outline: 0;
+        margin-left:0.3rem;
+    }
+
+    .custom_box_grade {
+        display: flex;
+        flex-direction: column;
+        width: 68rem;
+        height: auto;
+        margin: 1rem 1rem 4rem;
+        border: 1px solid rgb(216, 216, 216);
+        background-color: white;
+    }
+</style>
+
+
+<div class="white_sec">
+
+    <div class="my_box_wrap">
+
+        <div>
+            <div class="custom_title">사용법</div>
+            <div class="custom_box">
+                <div>1. 추가하고 싶은 과목의 학수번호를 검색합니다.</div>
+                <div>2. 검색 후, 해당 과목이 맞는지 확인하고 자신의 과목표에 추가해줍니다. </div>
+                <div>3. 추가된 과목의 이수구분을 반드시 설정해줍니다. (ex. 전선, 전필 등).</div>
+                <div>4. 마지막으로 저장 버튼을 눌러 자신의 정보를 업데이트합니다.</div>
+            </div>
+        </div>
+
+
+
+
+        <div>
+            <div class="custom_title" style="margin-top:1.5rem;">학수번호 검색</div>
+            <div class="custom_box" style="width:45rem;">
+                <form>
+                    <input type="text" name="" placeholder="학수번호">
+                    <input type='submit' class='regi_btn' value='검색'>
+                </form>
+            </div>
+
+        </div>
+
+
+
+        <div class="custom_box_grade">
+            <div style="padding:2.5rem 2.5rem 0 2.5rem">
+                <div class="my_box_title">
+                    <div></div>
+                    <div>내 기이수과목</div>
+                </div>
+                <hr>
+                <table id="long_table" class="grade_table" style="display:none; ">
+                    <tr>
+                        <th class="grade_table_th" style="width:10%">년도</th>
+                        <th class="grade_table_th" style="width:10%">학기</th>
+                        <th class="grade_table_th" style="width:10%">학수번호</th>
+                        <th class="grade_table_th" style="width:40%">과목명</th>
+                        <th class="grade_table_th" style="width:10%">이수구분</th>
+                        <th class="grade_table_th" style="width:14%">선택영역</th>
+                        <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
+                    </tr>
+                    {% for g in grade %}
+                    <tr>
+                        <td class="grade_table_td">{{ g.year }}</td>
+                        <td class="grade_table_td">{{ g.semester }}</td>
+                        <td class="grade_table_td">{{ g.subject_num }}</td>
+                        <td class="grade_table_td">{{ g.subject_name }}</td>
+                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div id='load_madal' class="modal">
+    <div class="load-modal-content">
+        <div class="modal_loadcontainer">
+            <div class="sk-chase">
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+            </div>
+            <div class="loading">
+                <span>정</span>
+                <span>보</span>
+                <span>업</span>
+                <span>데</span>
+                <span>이</span>
+                <span>트</span>
+                <span>중</span>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </div>
+            <div class="load_info">
+                창을 이동하지 마세요!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js_section %}
+{% endblock %}

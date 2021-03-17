@@ -27,6 +27,7 @@ urlpatterns = [
     path('login/', views.r_login),
     path('mypage/', views.r_mypage),
     path('agree/', views.r_agree),
+    path('custom/', views.r_custom),
     path('register/', views.r_register),
     path('success/', views.r_success),
     path('result/', views.r_result),

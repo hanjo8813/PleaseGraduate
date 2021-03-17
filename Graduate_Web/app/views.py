@@ -42,6 +42,9 @@ def r_head(request):
 def r_agree(request):
     return render(request, "agree.html")
 
+def r_custom(request):
+    return render(request, "custom.html")
+
 def r_login(request):
     request.session.clear()
     return render(request, "login.html")
@@ -812,13 +815,11 @@ def f_result(user_id, major_status):
         'cs' : to_zip_list(list_to_query(dic_cs.keys()), check_cs),
         'b' : to_zip_list(list_to_query(dic_b.keys()), check_b),
     }
-
     recommend_ess = {
         'ce' : list_to_query(recom_ce),
         'cs' : list_to_query(recom_cs),
         'b' : list_to_query(recom_b),
     }
-
     # 영역 추출
     cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
     my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
@@ -834,7 +835,6 @@ def f_result(user_id, major_status):
     for i, c in enumerate(cs_part):
         if c not in my_cs_part:
             part_check[i] = '미이수'
-
     cs_part = {
         'check' : part_check,
         'all' : cs_part,
@@ -1093,7 +1093,6 @@ def f_en_result(user_id):
     # 4-4. 요소설계 과목중 안들은 리스트
     dic_build_sel = make_dic([s_num for s_num in s_row.build_sel_list.split('/')])
     recom_build_sel, check_build_sel = make_recommend_list(my_engine_admit2, dic_build_sel)
-
 
     standard_num ={
         'total' : s_row.sum_eng,                # 공학인증 총학점 기준 

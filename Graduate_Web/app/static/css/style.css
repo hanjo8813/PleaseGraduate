@@ -24,7 +24,30 @@ input[type="number"]
     -webkit-appearance: none;
  }
 
+ 
+/* ---------------------------------( 상단 소개/컨테이너 공통 )---------------------------------------- */
 
+.gray_sec{
+    background-color:rgb(248,249,250) ;
+    padding-top:1rem;
+    padding-bottom: 2rem;
+}
+
+.white_sec{
+    background-color: white;
+    padding-bottom: 1rem;
+}
+
+.big_title{
+    font-size:2rem; 
+    font-weight:bold;
+}
+
+.small_title{
+    margin-top:0.5rem; 
+    font-size:1rem; 
+    color:rgb(199, 199, 199)
+}
 
 /* ---------------------------------( ref - 메뉴바 )---------------------------------------- */
 
@@ -53,8 +76,8 @@ input[type="number"]
 }
 
 .navbar_menu li {
-    padding: 8px 20px;
-    margin-right: 0.8rem;
+    font-size: 19px;
+    padding: 8px 16px;
     cursor: pointer;
 }
 
@@ -171,10 +194,6 @@ input[type="number"]
     color:black;
 }
 
-body:not(.device-touch) .bg_btn_style {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .num_visit_test{
     color:rgb(207, 207, 207);
@@ -199,18 +218,6 @@ body:not(.device-touch) .bg_btn_style {
 
 
 /* ---------------------------------( login  )---------------------------------------- */
-
-.gray_sec{
-    background-color:rgb(248,249,250) ;
-    padding-top:1rem;
-    padding-bottom: 2rem;
-}
-
-.white_sec{
-    background-color: white;
-    padding-bottom: 1rem;
-}
-
 
 .container {
     text-align:center;
@@ -304,6 +311,10 @@ body:not(.device-touch) .bg_btn_style {
     font-weight: bold;
 }
 
+body:not(.device-touch) .rbutton,
+body:not(.device-touch) .show_table,
+body:not(.device-touch) .my_box_mod_btn,
+body:not(.device-touch) .bg_btn_style,
 body:not(.device-touch) .login_btn,
 body:not(.device-touch) .regi_btn,
 body:not(.device-touch) .go_result_btn,
@@ -600,9 +611,8 @@ body:not(.device-touch) .suc_btn
     outline: 0;
 }
 
-.my_box_grade2 hr,
-.my_box hr,
-.my_box_grade hr{
+.my_box_grade hr,
+.my_box hr{
     width:100%;
     border-top: 0.001px solid rgb(216, 216, 216);
     border-bottom: 0.001px solid white;
@@ -637,27 +647,13 @@ body:not(.device-touch) .suc_btn
     cursor: pointer;
 }
 
+.my_box_mod_btn:hover,
 .show_table:hover {
     background-color: #f3f3f3;
 }
 
-body:not(.device-touch) .show_table {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
-.my_box_grade{
-    display: flex;
-    flex-direction: column;
-    width: 63rem;
-    height: auto;
-    padding:2.5rem;
-    margin: 1rem 1rem 4rem;
-    border:1px solid rgb(216, 216, 216);
-    background-color: white;
-}
-
-.my_box_grade2 {
+.my_box_grade {
     display: flex;
     flex-direction: column;
     width: 68rem;
@@ -849,10 +845,6 @@ body:not(.device-touch) .show_table {
     color: #272727;
 }
 
-body:not(.device-touch) .rbutton {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .Sbox {
     margin: 0;
