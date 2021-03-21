@@ -34,7 +34,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 def r_custom(request):
     # 그냥 mypage json을 넘겨주고 거기서 성적표 뽑아쓰자. (DB히트 줄이려고) 
-    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
     mypage_context = json.loads(ui_row.mypage_json)
     context = {
         'grade' : mypage_context['grade'],
@@ -64,7 +64,7 @@ def f_add_custom(request):
         return redirect('/mypage/')
     # 아니라면 일단 정보 추출
     user_id = request.session.get('id')
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
     if request.POST['arr_delete']:
         print('삭제완료')
@@ -121,23 +121,23 @@ def r_login(request):
     return render(request, "login.html")
 
 def r_mypage(request):
-    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
     # user_info DB에서 json을 꺼내 contest 딕셔너리에 저장
     context = json.loads(ui_row.mypage_json)
     return render(request, "mypage.html", context)
 
 def r_result(request):
-    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
     context = json.loads(ui_row.result_json)
     return render(request, "result.html", context)
 
 def r_multi_result(request):
-    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
     context = json.loads(ui_row.result_json)
     return render(request, "multi_result.html", context)
 
 def r_en_result(request):
-    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
     context = json.loads(ui_row.en_result_json)
     return render(request, "en_result.html", context)
 
@@ -152,7 +152,7 @@ def f_login(request):
     user_id = request.POST.get('id')
     pw = request.POST.get('pw')
     # 그 값으로 모델에서 행 추출
-    ui_row = TestUserInfo.objects.filter(student_id=user_id)
+    ui_row = NewUserInfo.objects.filter(student_id=user_id)
     # 우선 회원가입 되지 않았다면?
     if not ui_row.exists():
         messages.error(request, '⚠️ 가입되지 않은 ID 입니다.')
@@ -187,7 +187,7 @@ def f_login(request):
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
 
 def f_mypage(user_id):
-    ui_row = TestUserInfo.objects.get(student_id=user_id)
+    ui_row = NewUserInfo.objects.get(student_id=user_id)
     ug = UserGrade.objects.filter(student_id=user_id)
     # 성적표 띄울땐 커스텀과 찐 성적 구분한다
     grade = ug.exclude(year='커스텀')
@@ -219,7 +219,7 @@ def f_mypage(user_id):
     return mypage_context
 
 def update_json(user_id):
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     # mypage json 업데이트
     mypage_context = f_mypage(user_id)
     ui_row.mypage_json = json.dumps(mypage_context)
@@ -237,7 +237,7 @@ def update_json(user_id):
 
 def f_mod_info_ms(request):
     user_id = request.session.get('id')
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     ui_row.major = request.POST.get('major_select')
     ui_row.save()
     update_json(user_id)
@@ -261,7 +261,7 @@ def f_mod_info(request):
     name = temp_user_info['name']
     book = temp_user_info['book']
     major = temp_user_info['major']
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     if ui_row.name != name :
         ui_row.name = name
         ui_row.save()
@@ -303,7 +303,7 @@ def f_mod_ms_eng(request):
     elif eng != '해당없음' and eng != '초과학기면제':
         eng = eng + '/' + str(request.POST.get('eng_score'))
     # 사용자의 user_info row 부르기
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     # 변경시에만 다시 저장
     if ui_row.eng != eng or ui_row.major_status != major_status:
         # 수정된 DB 넣고 save
@@ -327,7 +327,7 @@ def f_mod_pw(request):
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())    
     password = password.decode('utf-8')                                     
     # 저장
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     ui_row.password = password
     ui_row.save()
     messages.success(request, '업데이트성공')
@@ -370,7 +370,7 @@ def f_mod_grade(request):
     df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
     # 추가 전 user_grade DB에 이미 데이터가 있는지 확인 후 삭제
     user_id = request.session.get('id')
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     ug = UserGrade.objects.filter(student_id = user_id)
     if ug.exists() : ug.delete()
     # DF를 테이블에 추가
@@ -394,7 +394,7 @@ def f_mod_grade(request):
 def f_find_pw(request):
     user_id = request.POST.get('id2')
     pw = request.POST.get('pw2')
-    ui_row = TestUserInfo.objects.filter(student_id = user_id)
+    ui_row = NewUserInfo.objects.filter(student_id = user_id)
     # 회원인지 확인
     if not ui_row.exists() :
         messages.error(request, '⚠️ 가입되지 않은 학번입니다.')
@@ -557,7 +557,7 @@ def r_register(request):
     year = id[:2]
 
     # 학번 중복 검사
-    if TestUserInfo.objects.filter(student_id=id).exists():
+    if NewUserInfo.objects.filter(student_id=id).exists():
         messages.error(request, '⚠️ 이미 가입된 학번입니다!')
         return redirect('/agree/')
 
@@ -629,7 +629,7 @@ def r_success(request):
         eng = eng + '/' + str(request.POST.get('eng_score'))
 
     # 테스트 user_info 테이블에 데이터 입력
-    new_ui = TestUserInfo()
+    new_ui = NewUserInfo()
     new_ui.student_id = student_id
     new_ui.password = password
     new_ui.year = year
@@ -789,7 +789,7 @@ def recom_machine_learning(what, user_id, user_list):
 
 def f_result(user_id, major_status):
     # userinfo 테이블에서 행 추출
-    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     user_info = {
         'id' : ui_row.student_id,
         'name' : ui_row.name,

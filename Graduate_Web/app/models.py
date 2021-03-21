@@ -37,7 +37,7 @@ class TestNewLecture(models.Model):
         db_table = 'test_new_lecture'
 
 
-class TestUserInfo(models.Model):
+class NewUserInfo(models.Model):
     student_id = models.CharField(primary_key=True, max_length=10)
     password = models.CharField(max_length=100)
     year = models.IntegerField()
@@ -52,7 +52,7 @@ class TestUserInfo(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'test_user_info'
+        db_table = 'new_user_info'
 
 # ---------------------------------------------------------------------------
 
