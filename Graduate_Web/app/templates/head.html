@@ -15,7 +15,11 @@
             Please Graduate
         </div>
         <div class="bg_btn">
+            {% if request.session.id %}
+            <button class="bg_btn_style" onclick="location.href='/mypage/'">검사하기</button>
+            {% else %}
             <button class="bg_btn_style" onclick="location.href='/login/'">검사하기</button>
+            {% endif %}
         </div>
     </div>
     <!-- 방문자 + 검사횟수 -->

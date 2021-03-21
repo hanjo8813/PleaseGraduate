@@ -1,0 +1,632 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="big_title">마이페이지</div>
+    </div>
+    <div class="go_result_wrap">
+        <div class="go_result_box">
+            <button onclick="go_result()" class="go_result_btn">졸업요건 검사하기</button>
+        </div>
+        {% if is_engine != 0 %}
+        <div class="go_result_box">
+            <button onclick="go_en_result()" class="go_result_btn">공학인증 검사하기</button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="white_sec">
+    <div class="my_box_wrap">
+        <div class="my_box">
+            <!-- 대휴칼 정보 박스 -->
+            <div class="my_box_title">
+                <div><i class="fas fa-user"></i>내 정보</div>
+                <button id='b1' class="my_box_mod_btn">업데이트</button>
+            </div>
+            <hr>
+            <table>
+                <tr>
+                    <td class="my_box_table_1st_td">이름</td>
+                    <td>{{ name }}</td>
+                </tr>
+                <tr>
+                    <td class="my_box_table_1st_td">학과</td>
+                    <td>{{ major }}</td>
+                </tr>
+                <tr>
+                    <td class="my_box_table_1st_td">학번</td>
+                    <td>{{ student_id }}</td>
+                </tr>
+                <tr>
+                    <td class="my_box_table_1st_td">고전독서현황</td>
+                    <td>{{ book }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 비번 / 영어 수정 -->
+        <div class="my_box">
+            <div class="my_box_title">
+                <div><i class="fas fa-book"></i>전공상태 및 영어인증</div>
+                <button id='b2' class="my_box_mod_btn">수정하기</button>
+            </div>
+            <hr>
+            <table>
+                <tr>
+                    <td class="my_box_table_1st_td">전공상태</td>
+                    <td>{{ major_status }}</td>
+                </tr>
+                <tr>
+                    <td class="my_box_table_1st_td">영어인증</td>
+                    <td>{{ eng }}</td>
+                </tr>
+            </table>
+            <hr style="margin-top:2.8rem;">
+            <div class="my_box_title">
+                <div><i class="fas fa-key"></i>비밀번호 변경</div>
+                <button id='b3' class="my_box_mod_btn">변경하기</button>
+            </div>
+        </div>
+
+        <!-- 기이수과목 -->
+        <div class="my_box_grade">
+            <div style="padding:2.5rem 2.5rem 0 2.5rem">
+                <div class="my_box_title">
+                    <div></div>
+                    <div style="margin-left:180px">내 기이수과목</div>
+                    <div>
+                        <button id='b5' class="my_box_mod_btn" style="margin-right:1.3rem">커스텀하기</button>
+                        <button id='b4' class="my_box_mod_btn">업데이트</button>
+                    </div>
+                </div>
+                <hr>
+
+                {% if is_grade %}
+                <!-- 커스텀 + 7개까지만 보여준다. -->
+                <table id="short_table" class="grade_table" style="margin-top:2rem;">
+                    <tr>
+                        <th class="grade_table_th" style="width:10%">년도</th>
+                        <th class="grade_table_th" style="width:10%">학기</th>
+                        <th class="grade_table_th" style="width:10%">학수번호</th>
+                        <th class="grade_table_th" style="width:40%">과목명</th>
+                        <th class="grade_table_th" style="width:10%">이수구분</th>
+                        <th class="grade_table_th" style="width:14%">선택영역</th>
+                        <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
+                    </tr>
+                    <!-- 커스텀과목 먼저 보여주고 -->
+                    {% for cg in custom_grade %}
+                    <tr style='color : rgb(170, 170, 170)'>
+                        <td class="grade_table_td">{{ cg.year }}</td>
+                        <td class="grade_table_td">{{ cg.semester }}</td>
+                        <td class="grade_table_td">{{ cg.subject_num }}</td>
+                        <td class="grade_table_td">{{ cg.subject_name }}</td>
+                        <td class="grade_table_td">{{ cg.classification }}</td>
+                        <td class="grade_table_td">{{ cg.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ cg.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- 그리고 찐 과목 -->
+                    {% for g in grade %}
+                    {% if forloop.counter <= 7 %} 
+                    <tr>
+                        <td class="grade_table_td">{{ g.year }}</td>
+                        <td class="grade_table_td">{{ g.semester }}</td>
+                        <td class="grade_table_td">{{ g.subject_num }}</td>
+                        <td class="grade_table_td">{{ g.subject_name }}</td>
+                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+
+                <!-- 전체보기 클릭시 모두 보여준다 -->
+                <table id="long_table" class="grade_table" style="display:none; ">
+                    <tr>
+                        <th class="grade_table_th" style="width:10%">년도</th>
+                        <th class="grade_table_th" style="width:10%">학기</th>
+                        <th class="grade_table_th" style="width:10%">학수번호</th>
+                        <th class="grade_table_th" style="width:40%">과목명</th>
+                        <th class="grade_table_th" style="width:10%">이수구분</th>
+                        <th class="grade_table_th" style="width:14%">선택영역</th>
+                        <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
+                    </tr>
+                    {% for cg in custom_grade %}
+                    <tr style='color : rgb(170, 170, 170)'>
+                        <td class="grade_table_td">{{ cg.year }}</td>
+                        <td class="grade_table_td">{{ cg.semester }}</td>
+                        <td class="grade_table_td">{{ cg.subject_num }}</td>
+                        <td class="grade_table_td">{{ cg.subject_name }}</td>
+                        <td class="grade_table_td">{{ cg.classification }}</td>
+                        <td class="grade_table_td">{{ cg.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ cg.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for g in grade %}
+                    <tr>
+                        <td class="grade_table_td">{{ g.year }}</td>
+                        <td class="grade_table_td">{{ g.semester }}</td>
+                        <td class="grade_table_td">{{ g.subject_num }}</td>
+                        <td class="grade_table_td">{{ g.subject_name }}</td>
+                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div id="show_btn" onclick="show_table()" class="show_table"><i class="fas fa-chevron-down"></i>&nbsp;펼치기
+            </div>
+            <div id="hide_btn" onclick="hide_table()" class="show_table" style="display:none"><i
+                    class="fas fa-chevron-up"></i>&nbsp;접기</div>
+            {% else %}
+                <div class="caution_div" style='margin:3rem 0 3rem 0'>아직 기이수과목을 업로드하지 않았습니다.</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 1. 내정보 업데이트 모달 -->
+<div id='m1' class="modal">
+    <div class="update_modal_content">
+        <div id='c1' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
+            <span class="tooltip">
+                <i class="fas fa-question-circle"></i>
+            </span>
+            <div class="my_tooltip_text">
+                <p>사용자의 대양휴머니티칼리지 사이트의 비밀번호는 업데이트시에만 사용되며 <span class="caution_info">저장되지 않습니다.</span></p>
+                <p><span class="caution_info">※ 학과/전공/이름이나 고전독서인증 현황이 변경되었을 때에만 업데이트하세요</span></p>
+            </div>
+            내 정보 업데이트
+        </div>
+        <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+            대양휴머니티칼리지(UIS사이트 ID/PW와 동일)에 로그인하여 이름,학과,고전독서현황을 가져와 업데이트합니다.
+        </div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_mod_info/" method="post" name='form1' onsubmit="return check_up1()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label style="text-align: center;">아이디</label>
+                <input type="text" name="student_id" placeholder='{{ request.session.id }}'
+                    style="background-color:rgb(248,249,250);" disabled>
+                <label style="text-align: center;">비밀번호</label>
+                <input type="password" id="pw" name="pw" placeholder="PASSWORD">
+            </div>
+            <input type='submit' class='login_btn' value='로그인' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+
+<!-- 학부로 떴을때 전공 선택하기 모달 -->
+{% if messages %}
+{% for m in messages %}
+{% if m.tags == 'warning' %}
+<div id='m7' class="modal" style="display: block;">
+    <div class="update_modal_content">
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">전공 선택</div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_mod_info_ms/" method="post" onsubmit="return check_up5()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label>본인 학부의 전공을 선택하세요</label>
+                <select id="major_select" name="major_select">
+                    <option value="x" selected>-- 선택(필수) --</option>
+                    {% for ms in request.session.temp_major_select %}
+                    <option value="{{ ms }}">{{ ms }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<!-- 2. 전공/영어 수정 모달 -->
+<div id='m2' class="modal">
+    <div class="update_modal_content">
+        <div id='c2' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">전공상태/영어인증 수정</div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_mod_ms_eng/" method="post" name='form2' onsubmit="return check_up2()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label>전공상태</label>
+                <select name="major_status">
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="연계전공">연계전공</option>
+                    <option value="복수전공">복수전공</option>
+                </select>
+                <label>영어인증</label>
+                <select onclick="pop_score()" id="eng" name="eng">
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="TOEIC">TOEIC</option>
+                    <option value="TOEFL">TOEFL</option>
+                    <option value="TEPS">TEPS</option>
+                    <option value="OPIc">OPIc</option>
+                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
+                </select>
+                <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                <select id="opic" name="opic" style="display:none">
+                    <option value="NL" selected>Novice Low</option>
+                    <option value="NM">Novice Mid</option>
+                    <option value="NH">Novice High</option>
+                    <option value="IL">Intermediate Low</option>
+                    <option value="IM">Intermediate Mid</option>
+                    <option value="IH">Intermediate High</option>
+                    <option value="AL">Advanced Low</option>
+                </select>
+            </div>
+            <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+
+<!-- 3. 비번 변경 모달 -->
+<div id='m3' class="modal">
+    <div class="update_modal_content">
+        <div id='c3' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">비밀번호 변경</div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <!-- 폼 -->
+        <form action="/f_mod_pw/" method="post" name='form3' onsubmit="return check_up3()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label>새 비밀번호</label>
+                <input id="pw1" type="password" name="password">
+                <label>비밀번호 재확인</label>
+                <input id="pw2" type="password">
+            </div>
+            <input type='submit' class='login_btn' value='변경하기' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+
+<!-- 4. 기이수성적 업데이트 모달-->
+<div id='m4' class="modal">
+    <div class="update_modal_content">
+        <div id='c4' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
+            <span class="tooltip">
+                <i class="fas fa-question-circle"></i>
+            </span>
+            <div class="my_tooltip_text">
+                <p>1. 사용자가 업로드하는 기이수성적 엑셀파일은 <span class="caution_info">즉시 삭제됩니다.</span></p>
+                <p>2. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. </span></p>
+                <p>3. 저장 시 성적 중 학점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
+                <p>4. 업로드시 현재 커스텀으로 추가한 과목들은 모두 삭제됩니다.</p>
+            </div>
+            기이수성적 업로드
+        </div>
+
+        <hr style="width:80%; margin-top:1.3rem;">
+        <div style="margin:1.5rem 0 2.5rem 0; ">
+            <p>
+                1. 학사정보시스템(UIS) 사이트에 로그인합니다.
+                (링크 :
+                <a class="link_site" target="_blank"
+                    href="https://portal.sejong.ac.kr/jsp/login/uisloginSSL.jsp?rtUrl=uis.sejong.ac.kr/app/sys.Login.servj?strCommand=SSOLOGIN">UIS</a>)
+            </p>
+            <p>2. 왼쪽 메뉴바에서 수업/성적 -> 성적 및 강의평가 -> 기이수성적조회 로 이동합니다.</p>
+            <p>3. 성적엑셀다운로드 버튼을 클릭해 다운로드한 후, 해당 엑셀파일을 업로드합니다.</p>
+            <p><span class="caution_info">※ 다운로드받은 파일 그대로 업로드해야합니다.</span></p>
+            <p><span class="caution_info">※ 21학번은 현재 기이수성적조회가 되지 않으므로 커스텀 기능을 사용하세요.</span></p>
+
+        </div>
+
+        <form action="/f_mod_grade/" method="post" name='form4' onsubmit="return check_up4()"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box-file-input">
+                <label>
+                    <input id="file_input" type="file" name="excel" class="file-input" accept=".xls">
+                </label>
+                <span class="filename">파일을 선택해주세요.</span>
+            </div>
+            <input type='submit' class='login_btn' value='업로드' style="margin:2.5rem 0 2rem 0;">
+        </form>
+    </div>
+</div>
+
+<!-- 5. 기이수과목 커스텀 모달-->
+<div id='m5' class="modal" style="display:none">
+    <div class="update_modal_content">
+        <div id='c5' class="close">&times;</div>
+        <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
+            기이수과목 커스텀
+        </div>
+        <hr style="width:80%; margin-top:1.3rem;">
+        <div style="margin:1.5rem 0 2.5rem 0;">
+            <p>UIS 사이트에서 다운받는 엑셀파일엔 이번 학기 과목들이 반영되지 않으셨죠? 😭</p>
+            <p>또 다음 학기에 들을 과목을 추가해 검사해보고 싶으신가요? </p>
+            <p style="font-size :1.3rem; margin-top:2rem;">
+                <span style="font-size :1.5 rem; font-weight: bold; color : rgb(164, 26, 55)">'커스텀 기능'</span> 으로 원하는 과목을 추가해서 검사해보세요!
+            </p>
+        </div>
+        <button onclick="location.href='/custom/'" class='login_btn' style="margin:1rem 0 2rem 0;">커스텀 시작</button>
+    </div>
+</div>
+
+<!-- 로그인시 로딩 모달 창 -->
+<div id='load_madal' class="modal">
+    <div class="load-modal-content">
+        <div class="modal_loadcontainer">
+            <div class="sk-chase">
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+            </div>
+            <div class="loading">
+                <span>정</span>
+                <span>보</span>
+                <span>업</span>
+                <span>데</span>
+                <span>이</span>
+                <span>트</span>
+                <span>중</span>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </div>
+            <div class="load_info">
+                창을 이동하지 마세요!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js_section %}
+
+<script>
+    // 마이페이지에서 뒤로가기 버튼 클릭시 무조건 head로
+    history.pushState(null, null, location.href);
+    window.onpopstate = function (event) {
+        location.href = '/';
+    };
+
+    // 졸업요건으로 넘어가기
+    function go_result() {
+        if ('{{is_grade}}' == 1) {
+            if('{{major_status}}' == '해당없음'){
+                location.href = '/result/';
+            }
+            else{
+                location.href = '/multi_result/';
+            }
+        }
+        else {
+            alert('🤔 기이수과목 엑셀파일을 먼저 업로드 해주세요!');
+        }
+    }
+
+    // 공학인증으로 넘어가기
+    function go_en_result() {
+        if ('{{is_engine}}' == 2) {
+            location.href = '/en_result/';
+        }
+        else {
+            alert('😢 아직 {{major}}-{{year}}학번의 공학인증 기준이 추가되지 않았습니다.');
+        }
+    }
+
+    // 업데이트 클릭시 로딩 모달 띄우기
+    function pop_modal() {
+        document.getElementById('load_madal').style.display = "block";
+    }
+
+    // 영어성적 입력 띄우기
+    function pop_score(){
+        var eng_box = document.getElementById('eng');
+        var eng_ind = document.getElementById("eng").options.selectedIndex;
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제")
+        {
+            if(eng_box.options[eng_ind].value === "OPIc")
+            {
+                document.getElementById('opic').style.display = "block";
+                document.getElementById('eng_score').style.display = "none";
+            }
+            else
+            {
+                document.getElementById('eng_score').style.display = "block";
+                document.getElementById('opic').style.display = "none";
+            }
+        }
+        else{
+            document.getElementById('opic').style.display = "none";
+            document.getElementById('eng_score').style.display = "none";
+        }
+    }
+
+    // 크롤링할때 비번 안치면 빠꾸
+    function check_up1() {
+        if (!document.getElementById('pw').value) {
+            alert('🤔 비밀번호를 입력해주세요.');
+            form1.pw.focus();
+            return false;
+        }
+        pop_modal();
+        return true;
+    }
+
+    // 학부생일경우 학과 선택했는지 확인
+    function check_up5() {
+        if (document.getElementById('major_select')) {
+            var sel_box = document.getElementById('major_select');
+            var sel_ind = document.getElementById('major_select').options.selectedIndex;
+            if (sel_box.options[sel_ind].value === 'x') {
+                alert('🤔 전공을 선택해주세요.');
+                return false;
+            }
+        }
+        pop_modal();
+        return true;
+    }
+
+    // 영어 선택해놓고 점수 안쓰면 빠꾸
+    function check_up2() {
+        var eng_box = document.getElementById('eng');
+        var eng_ind = document.getElementById("eng").options.selectedIndex;
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제" && eng_box.options[eng_ind].value !== "OPIc"){
+            if (!document.getElementById('eng_score').value || document.getElementById('eng_score').value == 0) {
+                alert('🤔 영어 점수를 입력해주세요.');
+                form2.eng_score.focus();
+                return false;
+            }
+        }
+        pop_modal();
+        return true;
+    }
+
+    // 비번 안쓰거나 일치안하면 빠꾸
+    function check_up3() {
+        if (!document.getElementById('pw1').value) {
+            alert('🤔 비밀번호를 입력해주세요.');
+            form3.pw1.focus();
+            return false;
+        }
+        if (document.getElementById('pw1').value !== document.getElementById('pw2').value) {
+            alert('🤔 비밀번호가 일치하지 않습니다.');
+            form3.pw1.focus();
+            return false;
+        }
+        pop_modal();
+        return true;
+    }
+
+    // 파일 업로드 안하고 버튼 누르면 빠꾸
+    function check_up4() {
+        if (!document.getElementById("file_input").value) {
+            alert("🤔 엑셀파일을 첨부해주세요.");
+            return false;
+        }
+        pop_modal();
+        return true;
+    }
+
+    // 파일 업로드 css - jquery 적용
+    $(document).on("change", ".file-input", function () {
+        $filename = $('input[type=file]').val().replace(/.*(\/|\\)/, '');
+        if ($filename == "")
+            $filename = "파일을 선택해주세요.";
+        $(".filename").text($filename);
+    })
+
+    function show_table() {
+        // 테이블 전환
+        document.getElementById("short_table").style.display = "none";
+        document.getElementById("long_table").style.display = "table";
+        // 버튼 전환
+        document.getElementById("show_btn").style.display = "none";
+        document.getElementById("hide_btn").style.display = "block";
+    }
+
+    function hide_table() {
+        document.getElementById("short_table").style.display = "table";
+        document.getElementById("long_table").style.display = "none";
+        document.getElementById("show_btn").style.display = "block";
+        document.getElementById("hide_btn").style.display = "none";
+    }
+
+    // 모달 창 켜기
+    var Btnclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "block";
+        }
+    }
+    // 모달 창 끄기
+    var Spanclick = function (x, y) {
+        x.onclick = function () {
+            y.style.display = "none";
+        }
+    }
+    
+    // 모달 켜는 버튼 id
+    var b1 = document.getElementById("b1");     // 1. 내 정보 업데이트
+    var b2 = document.getElementById("b2");     // 2. 영어+전공상태 수정
+    var b3 = document.getElementById("b3");     // 3. 비번 변경
+    var b4 = document.getElementById("b4");     // 4. 기이수성적 업로드
+    var b5 = document.getElementById("b5");     // 5. 커스텀
+
+    // 모달 id
+    var m1 = document.getElementById('m1');
+    var m2 = document.getElementById('m2');
+    var m3 = document.getElementById('m3');
+    var m4 = document.getElementById('m4');
+    var m5 = document.getElementById('m5');
+
+    // 모달 끄는 버튼(X) id
+    var c1 = document.getElementById("c1");
+    var c2 = document.getElementById("c2");
+    var c3 = document.getElementById("c3");
+    var c4 = document.getElementById("c4");
+    var c5 = document.getElementById("c5");
+
+    // 모달 키는 함수 호출
+    Btnclick(b1, m1);
+    Btnclick(b2, m2);
+    Btnclick(b3, m3);
+    Btnclick(b4, m4);
+    Btnclick(b5, m5);
+    // 모달 끄는 함수 호출
+    Spanclick(c1, m1);
+    Spanclick(c2, m2);
+    Spanclick(c3, m3);
+    Spanclick(c4, m4);
+    Spanclick(c5, m5);
+    // 모달 밖 화면 누를때 꺼지게하기
+    window.onclick = function (event) {
+        if (event.target == m1) {
+            m1.style.display = "none";
+        }
+        if (event.target == m2) {
+            m2.style.display = "none";
+        }
+        if (event.target == m3) {
+            m3.style.display = "none";
+        }
+        if (event.target == m4) {
+            m4.style.display = "none";
+        }
+        if (event.target == m5) {
+            m5.style.display = "none";
+        }
+    }
+
+    // 툴팁
+    let tooltipeb = document.querySelectorAll('.tooltip');
+    let text = document.querySelectorAll('.my_tooltip_text');
+    var Tooltipeb = function (x, y) {
+        x.addEventListener('click', () => {
+            y
+                .classList
+                .toggle('active');
+        });
+    }
+    for (i = 0; i < 8; i++) {
+        Tooltipeb(tooltipeb[i], text[i]);
+    }
+
+</script>
+
+{% endblock %}

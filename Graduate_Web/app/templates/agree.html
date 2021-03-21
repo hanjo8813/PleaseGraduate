@@ -1,0 +1,186 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<!-- 처음 타이틀 -->
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="big_title">이용약관 동의</div>
+        <div class="small_title">아래 사항을 모두 읽고 약관에 동의해주세요.</div>
+    </div>
+</div>
+
+<div class="white_sec">
+    <div class="container">
+        <!-- 검사 대상 박스 -->
+        <div class="info_title">검사 관련</div>
+        <div class="info_box">
+            <div class="info_content">
+                <p>1. 현재 검사 가능한 학과-학번은 아래와 같습니다. (아래 표에 해당하지 않으면 검사가 불가합니다.)</p>
+                <table class="possible_com">
+                    <tr class="possible_com_th" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:14.2%">학과-학번</th>
+                        <th style="border-right :1px solid #cccccc; width:14.2%">데이터사이언스<br>17~21</th>
+                        <th style="border-right :1px solid #cccccc; width:14.2%">디콘,소프트웨어<br>15~21</th>
+                        <th style="border-right :1px solid #cccccc; width:14.2%">정보보호<br>15~21</th>
+                        <th style="border-right :1px solid #cccccc; width:14.2%">지능기전<br>17~21</th>
+                        <th style="border-right :1px solid #cccccc; width:14.2%">컴퓨터공학<br>15~21</th>
+                        <th style="width:14.2%">전자정보통신공학<br>15~21</th>
+                    </tr>
+                    <tr class="possible_com_tr">
+                        <td class="possible_com_td" style="background-color: #f8f8f8;">졸업검사</td>
+                        <td class="possible_com_td">O</td>
+                        <td class="possible_com_td">O</td>
+                        <td class="possible_com_td">O</td>
+                        <td class="possible_com_td">O</td>
+                        <td class="possible_com_td">O</td>
+                        <td class="possible_com_td" style="border-right :0px">O</td>
+                    </tr>
+                    <tr class="possible_com_tr">
+                        <td class="possible_com_td" style="background-color: #f8f8f8;">공학인증검사</td>
+                        <td class="possible_com_td">X</td>
+                        <td class="possible_com_td">15제외 가능</td>
+                        <td class="possible_com_td">X</td>
+                        <td class="possible_com_td">X</td>
+                        <td class="possible_com_td">X</td>
+                        <td class="possible_com_td" style="border-right :0px">X</td>
+                    </tr>
+                </table>
+                <p>2. 전과생, 편입생, 연계전공, 복수전공에 해당하는 사용자는 검사 결과가 정확하지 않을 수 있습니다.</p>
+                <p>3. 연필/복필 기준은 15학점, 연선/복선 기준은 24학점으로만 설정되어 있습니다. 특수한 경우는 반영되지 않았습니다. (ex. 법학과, 건축학과 복전)</p>
+                <p>4. 검사 기준은 수강편람 최신버전(2021)을 반영하여 설정되었으며, 수강편람은 매년 개편되므로 자신이 알고 있는 구버전 수강편람과 다를 수 있습니다.</p>
+                <p>5. 강의 정보 또한 최신 기준으로 출력됩니다. (ex. 과거엔 서양철학이 2학점이였다면 현재는 3학점으로 변경됨)</p>
+                <p>6. 세종대학교 교과과정 참고 링크 : &nbsp;&nbsp;
+                    <a class="link_site" target="_blank"
+                        href="http://board.sejong.ac.kr/boardview.do?pkid=135291&currentPage=1&searchField=ALL&siteGubun=19&menuGubun=1&bbsConfigFK=335&searchLowItem=ALL&searchValue">
+                        수강편람</a>
+                    &nbsp;&nbsp;
+                    <a class="link_site" target="_blank"
+                        href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a>
+                </p>
+                <p>* 추후 공학인증 및 타과 검사 기준 업데이트 예정 😇</p>
+            </div>
+        </div>
+
+        <!-- 안내사항 박스 -->
+        <div class="info_title">안내 사항</div>
+        <div class="info_box">
+            <div class="info_content">
+                <P>1. 학생인증 시&nbsp;
+                    <a class="link_site" target="_blank" href="http://classic.sejong.ac.kr/">대양휴머니티칼리지</a>
+                    사이트에서 학생 기본 정보와 고전독서의 영역별 인증 현황을 가져옵니다.
+                </P>
+                <p style="margin-left:1rem; font-size:0.85rem;">- 고전독서인증 : 대양휴머니티칼리지 -> 고전독서인증센터 -> 영역별 인증현황</p>
+                <p>2. 사용자의 대양휴머니티칼리지 사이트의 비밀번호는 인증에만 1회 사용되며 <span class="caution_info">저장되지 않습니다.</span></p>
+                <p>3. 검사 방식이 바뀌어 회원가입시 기이수 엑셀파일을 직접 업로드해야하므로 <span class="caution_info">PC환경</span>에서 진행하는 것을 권장합니다.</p>
+                <p>4. 사용자가 업로드하는 기이수성적 엑셀파일은 <span class="caution_info">저장되지 않습니다.</span></p>
+                <p>5. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. <span class="caution_info">(평점은 저장되지
+                        않습니다.)</span></p>
+                <p>6. 검사 시 성적 중 학점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
+                <p>7. 관리자는 저장된 데이터베이스를 <span class="caution_info">절대 다른 용도로 사용하지 않습니다.</span></p>
+                <p>8. 검사 결과가 정확하지 않을 수 있습니다. 오류발생 시 상단 메뉴바 링크로 피드백 부탁드립니다.</p>
+                <p>* 현재 AI 추천 기능은 데이터가 많이 쌓이지 않아 정확한 결과가 아니므로 참고만 바랍니다. 🥳</p>
+            </div>
+        </div>
+
+        <!-- 동의 체크박스 -->
+        <div class="info_agree">
+            <input type="checkbox" onclick="agree_func()" id="agree">&nbsp;&nbsp;위 검사관련 및 안내사항을 확인하였고 개인정보 수집에
+            동의합니다.
+        </div>
+        <br>
+    </div>
+</div>
+
+<!-- 로그인 박스 -->
+<div class="gray_sec">
+    <div class="container">
+        <div class="login_title" style="font-size:2rem;">학생 인증</div>
+        <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
+            대양휴머니티칼리지 사이트에 로그인하여 인증합니다. (세종대학교 포털 ID/PW와 동일) 
+        </div>
+        <div class="login_box">
+            <!-- 로그인 폼 -->
+            <form action="/register/" method="post">
+                {% csrf_token %}
+                <div class="textbox">
+                    <label>아이디</label>
+                    <input type="text" name="id" placeholder="ID">
+                    <label>비밀번호</label>
+                    <input type="password" name="pw" placeholder="PASSWORD">
+                </div>
+                <div id="login_btn">
+                    <div class='login_btn_default'>위 약관에 동의해야합니다.</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- 로딩 모달 창 -->
+<div id='m1' class="modal">
+    <div class="load-modal-content">
+        <div class="modal_loadcontainer">
+            <div class="sk-chase">
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+            </div>
+            <div class="loading">
+                <span>로</span>
+                <span>그</span>
+                <span>인</span>
+                <span>정</span>
+                <span>보</span>
+                <span>확</span>
+                <span>인</span>
+                <span>중</span>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </div>
+            <div class="load_info">
+                5초 정도 소요됩니다. 창을 이동하지 마세요!
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+{% block js_section %}
+
+<script>
+    // 체크박스 누르면 작동
+    function agree_func(){
+        var chk = document.getElementById('agree');
+        // 체크시
+        if(chk.checked){
+            var tag = "<input onclick='pop_modal()' type='submit' class='login_btn' value='인증하기'>";
+        }
+        // 체크 풀시
+        else{
+            var tag = "<div class='login_btn_default'>위 약관에 동의해야합니다.</div>";
+        }
+        document.getElementById("login_btn").innerHTML = tag;
+    }
+    
+    // 인증하기 클릭시 modal 띄움
+    function pop_modal(){
+        document.getElementById('m1').style.display = "block";
+    }
+
+
+</script>
+
+{% endblock %}

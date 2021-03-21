@@ -58,8 +58,9 @@ ALLOWED_HOSTS = [
 
 
 # 세션 설정
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 종료시 세션 파괴
-SESSION_COOKIE_AGE = 60*30                 # 30분 지나면 세션 파괴
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True      # 브라우저 종료시 세션 파괴
+SESSION_SAVE_EVERY_REQUEST = True           # 사용자가 리퀘 날릴때마다 초기화
+SESSION_COOKIE_AGE = 60*60                  # 60분간 안건들면 세션 파괴
 
 
 # Application definition
@@ -173,9 +174,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
 STATIC_URL = '/static/'
 
 
-
 # media root 추가
-# app폴더의 하위폴더로 루트 설정.
-# MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
-# MEDIA_URL = '/app/uploaded_media/'
+#app폴더의 하위폴더로 루트 설정.
+MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
+MEDIA_URL = '/uploaded_media/'
 

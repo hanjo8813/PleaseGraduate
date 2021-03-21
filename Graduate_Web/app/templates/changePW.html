@@ -1,0 +1,51 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div style="font-size:2rem; font-weight:bold;">비밀번호 변경</div>
+    </div>
+</div>
+
+<!-- 입력란 -->
+<div class="white_sec">
+    <div class="container">
+        <form action="/f_mod_pw/" method="post" name='regi_form' onsubmit="return check_up()">
+            {% csrf_token %}
+            <div class="regi_box">
+                <label>ID</label>
+                <input type="text" name="id" value="{{ user_id }}" style="background-color:rgb(248,249,250);" readonly>
+                <label>비밀번호</label> 
+                <input id="pw1" type="password" name="password">
+                <label>비밀번호 재확인</label>
+                <input id="pw2" type="password">
+            </div>
+            <input type='submit' class='regi_btn' value='변경하기'>
+        </form>
+    </div>
+</div>
+    
+{% endblock %}
+
+
+{% block js_section %}
+<script>
+    function check_up(){
+        if(!document.getElementById('pw1').value){
+            alert('😢 비밀번호를 입력해주세요.') ;
+            regi_form.pw1.focus();
+            return false;
+        }
+        if(document.getElementById('pw1').value !== document.getElementById('pw2').value){
+            alert('😢 비밀번호가 일치하지 않습니다.') ;
+            regi_form.pw1.focus();
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

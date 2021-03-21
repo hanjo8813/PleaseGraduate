@@ -15,6 +15,39 @@ a {
     color: black;
 }
 
+/* 아이폰에서 input css 적용하기 */
+input[type="submit"],
+input[type="text"],
+input[type="password"],
+input[type="number"]
+{
+    -webkit-appearance: none;
+ }
+
+ 
+/* ---------------------------------( 상단 소개/컨테이너 공통 )---------------------------------------- */
+
+.gray_sec{
+    background-color:rgb(248,249,250) ;
+    padding-top:1rem;
+    padding-bottom: 2rem;
+}
+
+.white_sec{
+    background-color: white;
+    padding-bottom: 1rem;
+}
+
+.big_title{
+    font-size:2rem; 
+    font-weight:bold;
+}
+
+.small_title{
+    margin-top:0.5rem; 
+    font-size:1rem; 
+    color:rgb(199, 199, 199)
+}
 
 /* ---------------------------------( ref - 메뉴바 )---------------------------------------- */
 
@@ -43,12 +76,14 @@ a {
 }
 
 .navbar_menu li {
-    padding: 8px 20px;
-    margin-right: 35px;
+    font-size: 19px;
+    padding: 8px 16px;
     cursor: pointer;
 }
 
-.navbar_menu li a:hover {
+.navbar_menu li a:hover,
+.regi_find_pwd a:hover 
+{
     font-weight: bold;
     color : rgb(164, 26, 55);
 }
@@ -159,10 +194,6 @@ a {
     color:black;
 }
 
-body:not(.device-touch) .bg_btn_style {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .num_visit_test{
     color:rgb(207, 207, 207);
@@ -186,91 +217,12 @@ body:not(.device-touch) .bg_btn_style {
 }
 
 
-
-/* ---------------------------------( login 배경 )---------------------------------------- */
-
-.gray_sec{
-    background-color:rgb(248,249,250) ;
-    padding-top:1rem;
-    padding-bottom: 2rem;
-}
-
-.white_sec{
-    background-color: white;
-    padding-bottom: 1rem;
-}
-
+/* ---------------------------------( login  )---------------------------------------- */
 
 .container {
     text-align:center;
     padding-left : 10rem;
     padding-right : 10rem;
-}
-
-.info_title{
-    font-size : 1.8rem;
-    font-weight: bold;
-    padding-top:2.5rem;
-    padding-left:0.5rem;
-}
-
-.info_box{
-    font-weight:normal;
-    font-size:0.9rem;
-    padding:1rem;
-    padding-left:2rem;
-    text-align:left;
-    margin: 0 auto; 
-    width:100%;
-    margin-top:1rem;
-    border:0.001px solid rgb(216, 216, 216);
-    background-color: white; 
-}
-
-/* ---------------------------------( login 검사대상 테이블 )---------------------------------------- */
-
-.possible_com{
-    background-color: white;
-    width: 90%;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.possible_com_th {
-    height: 2rem;
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #3b1b1b;
-}
-
-.possible_com_td {
-    border-right :1px solid #dadada;
-    border-bottom: 1px solid #dadada;
-}
-
-.possible_com_tr {
-    color: black;
-    height: 2rem ;
-    border-bottom: 1px solid #dadada;
-}
-
-/* ---------------------------------( login 링크 / 강조 )---------------------------------------- */
-
-.link_site{
-    font-size:0.8rem;
-    padding:0.1rem 0.3rem 0.1rem 0.3rem;
-    color:white;
-    border-radius: 3px;
-    background-color: rgb(164, 26, 55);
-}
-
-.caution_info{
-    color:#d32f2f; 
-    font-weight:bold;
-}
-
-.info_agree{
-    padding-top:1rem;
-    text-align:right;
 }
 
 .login_title{
@@ -284,10 +236,11 @@ body:not(.device-touch) .bg_btn_style {
     text-align:center;
     margin: 0 auto; 
     width:60%;
-    margin-top:1rem;
+    margin-top:1.5rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
-    padding:2rem;
+    padding:1.5rem;
+    padding-bottom:2.5rem;
     margin-bottom:4rem;
 }
 
@@ -326,11 +279,55 @@ body:not(.device-touch) .bg_btn_style {
     font-size: 1.2rem;
     font-weight: bold;
     border: none;
-    margin-top: 22px;
+    margin-top: 1.5rem;
     border-radius: 3px;
     padding:0.5rem;
     cursor: pointer;
     outline: 0;
+}
+
+.regi_find_pwd{
+    font-size:1rem;
+    margin-top: 1.5rem;
+    color:rgb(204, 204, 204)
+}
+
+.regi_find_pwd a{
+    text-decoration: none;
+    color: #313131;
+}
+
+.regi_find_pwd span{
+    margin-left : 1rem;
+    margin-right : 1rem;
+} 
+
+.ajax_search_btn:hover,
+.add_btn:hover,
+.save_btn:hover,
+.login_btn:hover,
+.regi_btn:hover,
+.go_result_btn:hover,
+.suc_btn:hover 
+{
+    background-color: #FEC034;
+    font-weight: bold;
+}
+
+body:not(.device-touch) .ajax_search_btn,
+body:not(.device-touch) .add_btn,
+body:not(.device-touch) .save_btn,
+body:not(.device-touch) .rbutton,
+body:not(.device-touch) .show_table,
+body:not(.device-touch) .my_box_mod_btn,
+body:not(.device-touch) .bg_btn_style,
+body:not(.device-touch) .login_btn,
+body:not(.device-touch) .regi_btn,
+body:not(.device-touch) .go_result_btn,
+body:not(.device-touch) .suc_btn 
+{
+    transition: background-color .2s linear;
+    -webkit-transition: background-color .2s linear;
 }
 
 .login_btn_default{
@@ -340,33 +337,550 @@ body:not(.device-touch) .bg_btn_style {
     font-size:1.2rem;
 }
 
-.login_btn:hover{
-    background-color: #FEC034;
+/* ---------------------------------( agree )---------------------------------------- */
+
+.info_title{
+    font-size : 1.8rem;
+    font-weight: bold;
+    padding-top:2.5rem;
+    padding-left:0.5rem;
+}
+
+.info_box{
+    margin: 0 auto; 
+    width: 100%;
+    margin-top:1rem;
+    border:0.001px solid rgb(216, 216, 216);
+    background-color: white; 
+}
+
+.info_content{
+    margin-bottom:1.3rem;
+    margin-top:1.3rem;
+    margin-left:2rem;
+    margin:2rem;
+    font-weight:normal;
+    font-size:0.9rem;
+    text-align:left;
+}
+
+.confirm_btn {
+    background: rgb(164, 26, 55);
+    width:15%;  
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    margin-top: 1.5rem;
+    border-radius: 3px;
+    padding:0.5rem;
+    float:right;
+    cursor: pointer;
+    outline: 0;
+}
+
+/* ---------------------------------( agree 검사대상 테이블 )---------------------------------------- */
+
+
+.possible_com{
+    margin:0 auto;
+    background-color: white;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.possible_com_th {
+    height: 3.5rem;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #3b1b1b;
+}
+
+.possible_com_td {
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.possible_com_tr {
+    color: black;
+    height: 2rem ;
+    border-bottom: 1px solid #dadada;
+}
+
+/* ---------------------------------( agree 링크 / 강조 )---------------------------------------- */
+
+
+.link_site{
+    font-size:0.8rem;
+    padding:0.1rem 0.3rem 0.1rem 0.3rem;
+    color:white;
+    border-radius: 3px;
+    background-color: rgb(164, 26, 55);
+}
+
+.caution_info{
+    color:#d32f2f; 
+    font-weight:bold;
+}
+
+.info_agree{
+    padding-top:1rem;
+    text-align:right;
+}
+
+
+/* ---------------------------------( register )---------------------------------------- */
+
+.regi_box {
+    margin: 0 auto; 
+    width: 38%;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     font-weight: bold;
 }
 
-body:not(.device-touch) .login_btn {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
+.regi_box label{
+    text-align: left;
+    font-size:1.1rem;
+    margin-top: 2rem;
+}
+
+.regi_box input {
+    font-size: 1rem;
+    background: none;
+    border:0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    margin-top:0.5rem;
+    outline: 0;
+    height:1.5rem;
+}
+
+.regi_box input::placeholder {
+    color:rgb(143, 143, 143);
+}
+
+.regi_box select{
+    font-size: 1rem;
+    background: none;
+    border:0.01px solid rgb(216, 216, 216);
+    padding: 0px 10px 0px 10px;
+    margin-top:0.5rem;
+    outline: 0;
+    height:2.8rem;
+}
+
+.regi_btn{
+    background: rgb(164, 26, 55);
+    width:15%;  
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    margin-top: 1.5rem;
+    border-radius: 3px;
+    padding:0.7rem;
+    cursor: pointer;
+    outline: 0;
+    margin-top:2.5rem;
+    margin-bottom: 3rem;
+}
+
+/* ---------------------------------( success )---------------------------------------- */
+
+.suc_container{
+    padding-top:8rem;
+    padding-bottom:10rem;
+    width: 100%;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(248,249,250);
+}
+
+.suc_container i{
+    color:rgb(124,199,106);
+    font-size:7rem;
+}
+
+.suc_container span{
+    color:rgb(164, 26, 55);
+}
+
+.suc_content1{
+    margin-top:4rem;
+    letter-spacing:1px;
+    font-size:2.5rem;
+}
+
+.suc_content2{
+    font-weight: lighter;
+    margin-top:0.8rem;
+    font-size:1.5rem; 
+    color:rgb(199, 199, 199)
+}
+
+.suc_btn{
+    background: rgb(164, 26, 55);
+    width:15%;  
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    margin-top: 1.5rem;
+    border-radius: 3px;
+    padding:0.7rem;
+    cursor: pointer;
+    outline: 0;
+    margin-top:4rem;
+}
+
+/* ---------------------------------( mypage 이동 버튼)---------------------------------------- */
+
+.go_result_wrap{
+    margin-top:1.5rem;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.go_result_box{
+    text-align: center;
+    width:13%;
+}
+
+.go_result_text{
+    font-size:4rem;
+}
+
+.go_result_btn{
+    background: rgb(164, 26, 55);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding:0.7rem 1rem 0.7rem 1rem;
+    cursor: pointer;
+    outline: 0;
+}
+
+/* ---------------------------------( mypage 박스 )---------------------------------------- */
+
+.my_box_wrap{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    margin-top:1.5rem;
+    padding-left : 12rem;
+    padding-right : 12rem;
+}
+
+.my_box{
+    display: flex;
+    flex-direction: column;
+    width: 28rem;
+    height: 17rem;
+    padding:2.5rem;
+    margin: 1rem 1rem 1rem;
+    border:1px solid rgb(216, 216, 216);
+    background-color: white;
+    font-size:1rem;
+}
+
+.my_box_title{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items: center;
+    font-size:1.4rem;
+    font-weight: bold;
+}
+
+.my_box_title i{
+    margin-right:1rem;
+    color:rgb(136, 136, 136);
+}
+
+.my_box_mod_btn{
+    float:left;
+    background: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: 0.001px solid rgb(160, 160, 160);
+    padding:0.5rem;
+    cursor: pointer;
+    outline: 0;
+}
+
+.my_box_grade hr,
+.my_box hr{
+    width:100%;
+    border-top: 0.001px solid rgb(216, 216, 216);
+    border-bottom: 0.001px solid white;
+    margin-top:1rem;
+    margin-bottom:1.3rem;
+}
+
+.my_box table{
+    font-size:1.05rem;
+}
+
+.my_box tr{
+    height:2.7rem;
+}
+
+.my_box_table_1st_td{
+    width:35%;
+    font-weight: bold;
+}
+
+/* ---------------------------------( mypage 기이수성적 )---------------------------------------- */
+
+.show_table {
+    margin-top: 1.5rem;
+    padding: 0.7rem 0 0.7rem 0;
+    height: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 3px;
+    border-top: 1.5px solid rgb(216, 216, 216);
+    cursor: pointer;
+}
+
+.my_box_mod_btn:hover,
+.show_table:hover {
+    background-color: #f3f3f3;
 }
 
 
-
-@media screen and (max-width: 900px) {
-    .navbar_logo {
-        padding: 10px;
-    }
-    .navbar_menu li:hover {
-        background-color: white;
-    }
-    .txtcontainer {
-        order: 2;
-    }
-    .signup {
-        margin-left: 180px;
-        margin-top: -20px;
-    }
+.my_box_grade {
+    display: flex;
+    flex-direction: column;
+    width: 68rem;
+    height: auto;
+    margin: 1rem 1rem 4rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
 }
+
+
+.grade_table {
+    width: 90%;
+    text-align: center;
+    margin:0 auto;
+    margin-top:1rem;
+    margin-bottom:1rem;
+}
+
+.grade_table_th {
+    font-size: 1rem;
+    height: 2.5rem;
+    background-color: #f8f8f8;
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.grade_table_td {
+    font-size: 0.9rem;
+    height: 2rem;
+    border-right :1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+
+/* https://ingijjung.tistory.com/11 파일 업로드 css */
+
+.box-file-input {
+    background-color: rgb(248,249,250);
+    padding:1rem ;
+    margin:0 auto;
+    width:60%;
+    border:1px solid rgb(216, 216, 216);
+}
+
+.box-file-input span{
+    font-size:1.1rem;
+    font-weight: bold;
+}
+
+.box-file-input label{
+    display:inline-block;
+    background:#424242;
+    border-radius: 3px;
+    color:white;
+    padding:0px 15px;
+    line-height:35px;
+    cursor:pointer;
+}
+  
+.box-file-input label:after{
+    content:"파일선택";
+}
+  
+.box-file-input .file-input{
+    display:none;
+}
+  
+.box-file-input .filename{
+    display:inline-block;
+    padding-left:10px;
+}
+
+/* ---------------------------------( custom )---------------------------------------- */
+
+.caution_div {
+    color: #d32f2f;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    margin-top: 1.5rem;
+    padding-left: 12rem;
+    padding-right: 12rem;
+}
+
+.custom_title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.custom_subtitle {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box {
+    text-align: left;
+    width: 50em;
+    height: auto;
+    padding: 1rem 2.5rem 1rem 2.5rem;
+    margin: 1rem 1rem 2rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
+    font-size: 0.9rem;
+}
+
+.custom_form {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.custom_form input[type="text"] {
+    font-size: 1rem;
+    background: none;
+    border: 0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    outline: 0;
+    height: 1.5rem;
+    width: 14rem;
+}
+
+.custom_box hr {
+    width: 100%;
+}
+
+.result_zone {
+    display: block;
+    text-align: center;
+    border: 1px solid rgb(153, 153, 153);
+    margin-bottom: -1rem;
+}
+
+.new_td {
+    height: 2rem;
+    border-right: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+}
+
+.new_td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+    color: #1ac06d;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.ajax_search_btn {
+    background: rgb(164, 26, 55);
+    width: 8%;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-left: 0.3rem;
+}
+
+.add_btn {
+    background: rgb(164, 26, 55);
+    width: 14%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.6rem 0.5rem 0.6rem 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.del_btn {
+    background: white;
+    border: 0.001px solid rgb(160, 160, 160);
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem;
+}
+
+.save_btn {
+    background: rgb(164, 26, 55);
+    width: 9%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+}
+
 
 /* ---------------------------------( result )---------------------------------------- */
 
@@ -387,7 +901,6 @@ body:not(.device-touch) .login_btn {
     max-width: 100%;
     height: 100%;
     background-color: rgb(248,249,250);
-
 }
 
 .rcontainer {
@@ -398,7 +911,6 @@ body:not(.device-touch) .login_btn {
     width: 100%;
     height: 100%;
     background-color: rgb(248,249,250);
-
 }
 
 .resultbox {
@@ -489,10 +1001,6 @@ body:not(.device-touch) .login_btn {
     color: #272727;
 }
 
-body:not(.device-touch) .rbutton {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .Sbox {
     margin: 0;
@@ -556,29 +1064,6 @@ strong {
     font-size: 18px;
 }
 
-.tooltip {
-    cursor: pointer;
-}
-
-.tooltip_text{
-    background-color: #FAFAFA;
-    bottom: 2.5rem;
-    left: -150px;
-    width: 400px;
-    height: auto;
-    box-shadow: 3px 3px 5px black;
-    padding: 17px;
-    color: black;
-    border-color: lightgrey;
-    border-style: solid;
-    border-width: 1.5px;
-    display: none;
-    letter-spacing: 0.7px;
-    border-radius: 30px;
-    font-size: 0.9rem;
-    position: absolute;
-}
-
 .r {
     width: 50px;
 }
@@ -632,61 +1117,8 @@ strong {
 
 }
 
-.tooltip_text.active {
-    display: block;
-}
 .name title {
     font-size: 50px;
-}
-
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    border-radius: 5px;
-    margin: 5% auto; /* 15% from the top and centered */
-    padding: 5rem;
-    border: 1px solid #888;
-    width: 80%;
-    height: auto;
-    /* Could be more or less, depending on screen size */                          
-}
-
-.login-content {
-    margin: 2% auto;
-    width: 30%;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:focus,
-.close:hover {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
 }
 
 .Gbox {
@@ -715,15 +1147,7 @@ strong {
     width: 100%;
 }
 
-.modal_div {
-    padding: 1rem; 
-    display : flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
-    justify-content: flex-start;
-    text-align: center;
-}
+
 
 .mytd {
     border-right :1px solid #dadada;
@@ -783,8 +1207,160 @@ strong {
  }
 
 
+ 
+/* ---------------------------------( 모달 )---------------------------------------- */
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+    margin: 5% auto;
+    padding: 5rem;
+    border: 1px solid #888;
+    width: 80%;
+    height: auto;
+}
+
+.load-modal-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+    padding: 2.2rem;
+    border: 1px solid #888;
+    width: 40%;
+    height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
+}
+
+.update_modal_content{
+    text-align: center;
+    background-color: #fefefe;
+    border-radius: 5px;
+    padding: 2.5rem;
+    border: 1px solid #888;
+    width: 60%;
+    height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
+}
+
+.modal_div {
+    padding: 1rem;
+    display : flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+.login-content {
+    margin: 2% auto;
+    width: 30%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.close:focus,
+.close:hover {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ---------------------------------( 툴팁 )---------------------------------------- */
+
+
+.tooltip {
+    cursor: pointer;
+}
+
+.tooltip_text{
+    background-color: #FAFAFA;
+    bottom: 2.5rem;
+    left: -150px;
+    width: 400px;
+    height: auto;
+    box-shadow: 3px 3px 5px black;
+    padding: 17px;
+    color: black;
+    border-color: lightgrey;
+    border-style: solid;
+    border-width: 1.5px;
+    display: none;
+    letter-spacing: 0.7px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    position: absolute;
+}
+
+.my_tooltip_text.active,
+.tooltip_text.active {
+    display: block;
+}
+
+.my_tooltip_text{
+    background-color: white;
+    margin:0 auto;
+    z-index: 2;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    color: black;
+    border:1px solid rgb(163, 163, 163);
+    border-radius: 20px;
+    display: none;
+    font-size: 0.9rem;
+    position: fixed;
+}
+
+
 /* ---------------------------------( loading )---------------------------------------- */
 
+.modal_loadcontainer{
+    padding-top:3rem;
+    padding-bottom:3rem;
+    width: 100%;
+    font-weight: 700;
+    font-size: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .loadcontainer{
     height: 100vh;
@@ -797,6 +1373,14 @@ strong {
     align-items: center;
     background-color: rgb(248,249,250);
 }
+
+.load_info{
+    letter-spacing:1px; 
+    margin-top:0.8rem; 
+    font-size:1rem; 
+    color:rgb(199, 199, 199)
+}
+
 .loading span {
     display: inline-block;
     margin: 0 -.075em;

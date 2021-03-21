@@ -1,0 +1,151 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="big_title">회원가입</div>
+    </div>
+</div>
+
+<!-- 입력란 -->
+<div class="white_sec">
+    <div class="container">
+        <form action="/success/" method="post" name='regi_form' onsubmit="return check_up()">
+            {% csrf_token %}
+            <div class="regi_box">
+
+                <label>이름</label>
+                <input type="text" name="name" placeholder="{{ request.session.temp_user_info.name }}" style="background-color:rgb(248,249,250);" disabled>
+
+                <label>학과</label>
+                <input type="text" name="major" placeholder='{{ request.session.temp_user_info.major }}' style="background-color:rgb(248,249,250);" disabled>
+
+                <!-- 학부일 경우엔 선택지 주기 (1학년 학부생에게만 해당함. )-->
+                {% if request.session.temp_user_info.major_select %}
+                <select id="major_select" name="major_select">
+                    <option value="x" selected>-- 선택(필수) --</option>
+                    {% for ms in request.session.temp_user_info.major_select %}
+                    <option value="{{ ms }}">{{ ms }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+
+                <label>학번</label>
+                <input type="text" name="student_id" placeholder='{{ request.session.temp_user_info.id }}' style="background-color:rgb(248,249,250);" disabled>
+
+                <label>전공상태</label>
+                <select name="major_status">
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="연계전공">연계전공</option>
+                    <option value="복수전공">복수전공</option>
+                </select>
+
+                <label>영어인증</label>
+                <select onclick="pop_score()" id="eng" name="eng">
+                    <option value="해당없음" selected>해당없음</option>
+                    <option value="TOEIC">TOEIC</option>
+                    <option value="TOEFL">TOEFL</option>
+                    <option value="TEPS">TEPS</option>
+                    <option value="OPIc">OPIc</option>
+                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
+                </select>
+
+                <!-- 숨겨져있는 애들 -->
+                <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                <select id="opic" name="opic" style="display:none">
+                    <option value="NL" selected>Novice Low</option>
+                    <option value="NM">Novice Mid</option>
+                    <option value="NH">Novice High</option>
+                    <option value="IL">Intermediate Low</option>
+                    <option value="IM">Intermediate Mid</option>
+                    <option value="IH">Intermediate High</option>
+                    <option value="AL">Advanced Low</option>
+                </select>
+
+                <label>비밀번호</label>
+                <input id="pw1" type="password" name="password">
+                <div style="text-align: left; color:#d32f2f; font-size:0.9rem; font-weight: lighter;">* Please Graduate 사이트의 고유 비밀번호를 설정해주세요</div>
+
+                <label>비밀번호 재확인</label>
+                <input id="pw2" type="password">
+            </div>
+            <input type='submit' class='regi_btn' value='가입하기'>
+        </form>
+    </div>
+</div>
+    
+{% endblock %}
+
+
+{% block js_section %}
+
+<script>
+    // 영어성적 입력 띄우기
+    function pop_score(){
+        var eng_box = document.getElementById('eng');
+        var eng_ind = document.getElementById("eng").options.selectedIndex;
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제")
+        {
+            if(eng_box.options[eng_ind].value === "OPIc")
+            {
+                document.getElementById('opic').style.display = "block";
+                document.getElementById('eng_score').style.display = "none";
+            }
+            else
+            {
+                document.getElementById('eng_score').style.display = "block";
+                document.getElementById('opic').style.display = "none";
+            }
+        }
+        else{
+            document.getElementById('opic').style.display = "none";
+            document.getElementById('eng_score').style.display = "none";
+        }
+    }
+
+    // 가입하기 버튼 눌렀을 때 검사하기
+    function check_up(){
+        var eng_box = document.getElementById('eng');
+        var eng_ind = document.getElementById("eng").options.selectedIndex;
+        // 1. 학부생일경우 학과 선택했는지 확인
+        if(document.getElementById('major_select'))
+        {
+            var sel_box = document.getElementById('major_select');
+            var sel_ind = document.getElementById('major_select').options.selectedIndex;
+            if(sel_box.options[sel_ind].value === 'x'){
+                alert('🤔 전공을 선택해주세요.') ;
+                regi_form.major_select.focus();
+                return false;
+            }
+        }
+        // 2. 영어인증 선택시 점수 입력확인
+        if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제" && eng_box.options[eng_ind].value !== "OPIc"){
+            if (!document.getElementById('eng_score').value || document.getElementById('eng_score').value == 0) {
+                alert('🤔 영어 점수를 입력해주세요.') ;
+                regi_form.eng_score.focus();
+                return false;
+            }
+        }
+        // 3. 비밀번호 입력 확인
+        if(!document.getElementById('pw1').value){
+            alert('🤔 비밀번호를 입력해주세요.') ;
+            regi_form.pw1.focus();
+            return false;
+        }
+        // 4. 비밀번호 일치 확인
+        if(document.getElementById('pw1').value !== document.getElementById('pw2').value){
+            alert('🤔 비밀번호가 일치하지 않습니다.') ;
+            regi_form.pw1.focus();
+            return false;
+        }
+        return true;
+    }
+    
+</script>
+
+{% endblock %}

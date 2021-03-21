@@ -1,4 +1,8 @@
+
+import os
+from uuid import uuid4
 from django.db import models
+from django.utils import timezone
 
 # DB 테이블의 구조를 파이썬 클래스로 보여주고, 수정가능
 
@@ -32,6 +36,24 @@ class TestNewLecture(models.Model):
         managed = False
         db_table = 'test_new_lecture'
 
+
+class NewUserInfo(models.Model):
+    student_id = models.CharField(primary_key=True, max_length=10)
+    password = models.CharField(max_length=100)
+    year = models.IntegerField()
+    major = models.CharField(max_length=45)
+    major_status = models.CharField(max_length=10)
+    name = models.CharField(max_length=45)
+    book = models.CharField(max_length=45)
+    eng = models.CharField(max_length=45)
+    mypage_json = models.JSONField(blank=True, null=True)
+    result_json = models.JSONField(blank=True, null=True)
+    en_result_json = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'new_user_info'
+
 # ---------------------------------------------------------------------------
 
 class DjangoSession(models.Model):
@@ -43,7 +65,6 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
-
 class SuccessTestCount(models.Model):
     index = models.IntegerField(primary_key=True)
     num_count = models.IntegerField()
@@ -52,13 +73,21 @@ class SuccessTestCount(models.Model):
         managed = False
         db_table = 'success_test_count'
 
+class MajorDepartment(models.Model):
+    major = models.CharField(primary_key=True, max_length=45)
+    department = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'major_department'
+
 
 class AllLecture(models.Model):
     subject_num = models.CharField(primary_key=True, max_length=10)
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
+    grade = models.FloatField()
 
     class Meta:
         managed = False
@@ -122,7 +151,7 @@ class UserGrade(models.Model):
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.IntegerField()
+    grade = models.FloatField()
     index = models.AutoField(primary_key=True)
 
     class Meta:
