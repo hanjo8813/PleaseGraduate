@@ -477,33 +477,30 @@ def selenium_DHC(id, pw):
     # 서버 - 배포용 -------------------------------------------------------------------------------
     else:
         try:
-            try:
-                driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
-                driver.get(url)
-                # 가상 디스플레이를 활용해 실행속도 단축
-                display = Display(visible=0, size=(1024, 768))
-                display.start()
-                # 크롤링시작
-                checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-                if checked:
-                    driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                    alert = driver.switch_to_alert()
-                    alert.dismiss()
-                # id , pw 입력할 곳 찾기
-                tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-                tag_pw = driver.find_element_by_id("password")
-                tag_id.clear()
-                # id , pw 보내기
-                tag_id.send_keys(id)
-                tag_pw.send_keys(pw)
-                time.sleep(0.5)
-                # 로그인버튼 클릭
-                login_btn = driver.find_element_by_id('loginBtn')
-                login_btn.click()
-            except:
-                driver.quit()
-                display.stop()
-                return 3
+            driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
+            driver.get(url)
+            # 가상 디스플레이를 활용해 실행속도 단축
+            display = Display(visible=0, size=(1024, 768))
+            display.start()
+            # 크롤링시작
+            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+            if checked:
+                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+                alert = driver.switch_to_alert()
+                alert.dismiss()
+            # id , pw 입력할 곳 찾기
+            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+            tag_pw = driver.find_element_by_id("password")
+            tag_id.clear()
+            # id , pw 보내기
+            tag_id.send_keys(id)
+            tag_pw.send_keys(pw)
+            time.sleep(0.5)
+            # 로그인버튼 클릭
+            login_btn = driver.find_element_by_id('loginBtn')
+            login_btn.click()
+            driver.quit()
+            display.stop()
             # ID/PW 틀렸을 때 예외처리 ***
             try:
                 driver.switch_to.frame(0)
@@ -511,31 +508,37 @@ def selenium_DHC(id, pw):
                 driver.quit()
                 display.stop()
                 return 1
-            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
-            html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
-            # 독서 권수 리스트에 저장
-            soup = BeautifulSoup(html, 'html.parser')
-             # 유저 학과/학부 저장
-            soup_major = soup.select_one("li > dl > dd")
-            major = soup_major.string
-            # 유저 이름 저장
-            soup_name = soup.select("li > dl > dd")
-            name = soup_name[2].string
-            # 인증 여부
-            soup_cert = soup.select("li > dl > dd")
-            cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
-            # 고특으로 대체이수 하지 않았을 때
-            if cert[-4:] == '대체이수':
-                book = '고특통과'
-            else :
-                book=[]
-                soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
-                  # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
-                for td in soup1:
-                    if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
-                        continue
-                    book.append(td.string.strip().strip().replace('권', ''))
-                book = ''.join(book[:4]).replace(' ','')
+            
+            try:
+                driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+                html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
+                # 독서 권수 리스트에 저장
+                soup = BeautifulSoup(html, 'html.parser')
+                 # 유저 학과/학부 저장
+                soup_major = soup.select_one("li > dl > dd")
+                major = soup_major.string
+                # 유저 이름 저장
+                soup_name = soup.select("li > dl > dd")
+                name = soup_name[2].string
+                # 인증 여부
+                soup_cert = soup.select("li > dl > dd")
+                cert = soup_cert[7].string.strip().replace('\n','').replace('\t','')
+                # 고특으로 대체이수 하지 않았을 때
+                if cert[-4:] == '대체이수':
+                    book = '고특통과'
+                else :
+                    book=[]
+                    soup1 = soup.select_one("tbody > tr")  # tbody -> tr 태그 접근
+                      # 0 : 서양 , 1 : 동양 , 2: 동서양 ,3 : 과학 , 4 : 전체
+                    for td in soup1:
+                        if td.string.strip() == '' or td.string.strip()[0].isalpha():  # 공백제거 및 필요없는 문자 지우기
+                            continue
+                        book.append(td.string.strip().strip().replace('권', ''))
+                    book = ''.join(book[:4]).replace(' ','')
+            except:
+                driver.quit()
+                display.stop()
+                return 3
             driver.quit()
             display.stop()
         # 어디든 오류 발생시
@@ -579,7 +582,7 @@ def r_register(request):
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/agree/')
     elif temp_user_info == 3:
-        messages.error(request, '테스트-상단')
+        messages.error(request, '테스트')
         return redirect('/agree/')
 
 # ***********************************************************************************
