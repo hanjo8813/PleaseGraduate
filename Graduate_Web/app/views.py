@@ -508,9 +508,9 @@ def selenium_DHC(id, pw):
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
             # 독서 권수 리스트에 저장
             soup = BeautifulSoup(html, 'html.parser')
-             # 유저 학과 저장
+             # 유저 학과/학부 저장
             soup_major = soup.select_one("li > dl > dd")
-            major = soup_major.string[:-2]
+            major = soup_major.string
             # 유저 이름 저장
             soup_name = soup.select("li > dl > dd")
             name = soup_name[2].string
