@@ -8,6 +8,7 @@ import numpy as np
 import platform
 import random
 import xlrd
+import bcrypt
 from surprise import SVD, accuracy
 from surprise import Reader, Dataset
 from collections import defaultdict
@@ -20,14 +21,86 @@ from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
 from django.db import models
 from django.db.models import Value
 from .models import *
+# AJAX 통신관련 참조
+from django.views.decorators.csrf import csrf_exempt
 
+
+def r_custom(request):
+    # 그냥 mypage json을 넘겨주고 거기서 성적표 뽑아쓰자. (DB히트 줄이려고) 
+    ui_row = TestUserInfo.objects.get(student_id = request.session.get('id'))
+    mypage_context = json.loads(ui_row.mypage_json)
+    context = {
+        'grade' : mypage_context['grade'],
+        'custom_grade' : mypage_context['custom_grade'],
+    }
+    return render(request, "custom.html", context)
+
+@csrf_exempt
+def a_search(request):
+    # AJAX 통신으로 넘어온 학수번호를 받는다
+    s_num = int(request.POST['back_s_num'])
+    # 학수번호를 all_lecture 테이블에서 검색
+    al = AllLecture.objects.filter(subject_num=s_num)
+    # 존재한다면 
+    if al.exists():
+        result = al.values_list()[0]
+    else:
+        result = "검색실패"
+    context = {
+        'result' : result
+    }
+    return JsonResponse(context)
+
+def f_add_custom(request):
+    # 만약 삭제+추가 둘다 없다면 걍 종료
+    if (not request.POST['arr_delete']) and (not request.POST['arr_year']):
+        return redirect('/mypage/')
+    # 아니라면 일단 정보 추출
+    user_id = request.session.get('id')
+    ui_row = TestUserInfo.objects.get(student_id = user_id)
+    # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
+    if request.POST['arr_delete']:
+        print('삭제완료')
+        del_ug = UserGrade.objects.none()
+        for s_num in request.POST['arr_delete'].split(','):
+            temp = UserGrade.objects.filter(subject_num = s_num)
+            del_ug = temp | del_ug
+        del_ug.delete()
+    # 2. 추가된게 있을 경우
+    if request.POST['arr_year']:
+        print('추가완료')
+        # POST로 싹다 받아옴
+        year = request.POST['arr_year'].split(',')
+        semester = request.POST['arr_semester'].split(',')
+        subject_num = request.POST['arr_subject_num'].split(',')
+        subject_name = request.POST['arr_subject_name'].split(',')
+        classification = request.POST['arr_classification'].split(',')
+        selection = request.POST['arr_selection'].split(',')
+        grade = request.POST['arr_grade'].split(',')
+        # 커스텀 과목을 한행씩 UserGrade 테이블에 추가
+        for row in zip(year, semester, subject_num, subject_name, classification, selection, grade):
+            new_ug = UserGrade()
+            new_ug.student_id = user_id
+            new_ug.major = ui_row.major
+            new_ug.year = row[0]
+            new_ug.semester = row[1]
+            new_ug.subject_num = row[2]
+            new_ug.subject_name = row[3]
+            new_ug.classification = row[4]
+            new_ug.selection = row[5]
+            new_ug.grade = row[6]
+            new_ug.save()
+    # 3. 모든 변경 후 정보변경 + 재검사
+    update_json(user_id)
+    messages.success(request, '업데이트성공')
+    return redirect('/mypage/')
 
 
 def r_head(request):
@@ -42,8 +115,6 @@ def r_head(request):
 def r_agree(request):
     return render(request, "agree.html")
 
-def r_custom(request):
-    return render(request, "custom.html")
 
 def r_login(request):
     request.session.clear()
@@ -86,8 +157,8 @@ def f_login(request):
     if not ui_row.exists():
         messages.error(request, '⚠️ 가입되지 않은 ID 입니다.')
         return redirect('/login/')
-    # 회원인데 비번이 틀렸다면?
-    elif ui_row[0].password != pw :
+    # 회원인데 비번이 틀렸다면? 입력받은 비번을 암호화하고 DB의 비번과 비교한다.
+    if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
         messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/login/')
     ui_row = ui_row[0]
@@ -117,7 +188,10 @@ def f_login(request):
 
 def f_mypage(user_id):
     ui_row = TestUserInfo.objects.get(student_id=user_id)
-    grade = UserGrade.objects.filter(student_id=user_id)
+    ug = UserGrade.objects.filter(student_id=user_id)
+    # 성적표 띄울땐 커스텀과 찐 성적 구분한다
+    grade = ug.exclude(year='커스텀')
+    custom_grade = ug.filter(year='커스텀')
     # 공학인증 없는학과 
     is_engine = 0
     # 공학인증은 있는데 기준 아직 없다면
@@ -127,7 +201,7 @@ def f_mypage(user_id):
     else: is_engine = 2
     # 만약 성적표 업로드 안했다면
     is_grade = 1
-    if not grade.exists():
+    if not ug.exists():
         is_grade = 0
     mypage_context ={
         'student_id' : ui_row.student_id,
@@ -138,6 +212,7 @@ def f_mypage(user_id):
         'book' : ui_row.book,
         'eng' : ui_row.eng,
         'grade' : list(grade.values()),
+        'custom_grade' : list(custom_grade.values()),
         'is_grade' : is_grade,
         'is_engine' : is_engine,
     }
@@ -190,6 +265,7 @@ def f_mod_info(request):
     if ui_row.name != name :
         ui_row.name = name
         ui_row.save()
+
     # 전공이 학부로 뜨는 경우(1학년에 해당)
     if major[-2:] == '학부':
         ui_row.book = book
@@ -207,7 +283,7 @@ def f_mod_info(request):
     # 아니면 바로 전공수정후 저장
     else:
         #변경시에만 저장
-        if ui_row.book != book or ui_row.major != major:
+        if not(ui_row.book == book and ui_row.major == major):
             ui_row.book = book
             ui_row.major = major
             ui_row.save()
@@ -246,7 +322,11 @@ def f_mod_pw(request):
         user_id = request.session.get('id')
     else:
         user_id = request.POST.get('id')
+    # 암호화
     password = request.POST.get('password')
+    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())    
+    password = password.decode('utf-8')                                     
+    # 저장
     ui_row = TestUserInfo.objects.get(student_id = user_id)
     ui_row.password = password
     ui_row.save()
@@ -494,7 +574,8 @@ def r_register(request):
 
 # ***********************************************************************************
     
-    # temp_user_info['major'] = '지능기전공학부'
+    #temp_user_info['major'] = '지능기전공학부'
+    #year = 17
     
 # ***********************************************************************************
 
@@ -528,9 +609,11 @@ def r_success(request):
     book = temp_user_info['book']
     
     # 2. post로 받은것 꺼내기
-    password = request.POST.get('password')
     major_status = request.POST.get('major_status')
-
+    # 비밀번호를 DB에 저장하기 전 암호화(해싱)
+    password = request.POST.get('password')
+    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())    # 인코딩 + 솔팅 + 해싱 -> 암호화
+    password = password.decode('utf-8')                                     # 저장전 디코딩
     # 만약 학부생일 경우 전공을 선택한것으로 저장
     if request.POST.get('major_select') : 
         major = request.POST.get('major_select')

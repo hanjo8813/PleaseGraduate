@@ -85,12 +85,11 @@
                         <button id='b5' class="my_box_mod_btn" style="margin-right:1.3rem">커스텀하기</button>
                         <button id='b4' class="my_box_mod_btn">업데이트</button>
                     </div>
-                    
                 </div>
                 <hr>
 
                 {% if is_grade %}
-                <!-- 우선 10개까지만 보여준다. -->
+                <!-- 커스텀 + 7개까지만 보여준다. -->
                 <table id="short_table" class="grade_table" style="margin-top:2rem;">
                     <tr>
                         <th class="grade_table_th" style="width:10%">년도</th>
@@ -101,8 +100,22 @@
                         <th class="grade_table_th" style="width:14%">선택영역</th>
                         <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
                     </tr>
+                    <!-- 커스텀과목 먼저 보여주고 -->
+                    {% for cg in custom_grade %}
+                    <tr style='color : rgb(170, 170, 170)'>
+                        <td class="grade_table_td">{{ cg.year }}</td>
+                        <td class="grade_table_td">{{ cg.semester }}</td>
+                        <td class="grade_table_td">{{ cg.subject_num }}</td>
+                        <td class="grade_table_td">{{ cg.subject_name }}</td>
+                        <td class="grade_table_td">{{ cg.classification }}</td>
+                        <td class="grade_table_td">{{ cg.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ cg.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- 그리고 찐 과목 -->
                     {% for g in grade %}
-                    {% if forloop.counter <= 7 %} <tr>
+                    {% if forloop.counter <= 7 %} 
+                    <tr>
                         <td class="grade_table_td">{{ g.year }}</td>
                         <td class="grade_table_td">{{ g.semester }}</td>
                         <td class="grade_table_td">{{ g.subject_num }}</td>
@@ -110,10 +123,11 @@
                         <td class="grade_table_td">{{ g.classification }}</td>
                         <td class="grade_table_td">{{ g.selection }}</td>
                         <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
-                        </tr>
-                        {% endif %}
-                        {% endfor %}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
                 </table>
+
                 <!-- 전체보기 클릭시 모두 보여준다 -->
                 <table id="long_table" class="grade_table" style="display:none; ">
                     <tr>
@@ -125,6 +139,17 @@
                         <th class="grade_table_th" style="width:14%">선택영역</th>
                         <th class="grade_table_th" style="width:6%; border-right :0px">학점</th>
                     </tr>
+                    {% for cg in custom_grade %}
+                    <tr style='color : rgb(170, 170, 170)'>
+                        <td class="grade_table_td">{{ cg.year }}</td>
+                        <td class="grade_table_td">{{ cg.semester }}</td>
+                        <td class="grade_table_td">{{ cg.subject_num }}</td>
+                        <td class="grade_table_td">{{ cg.subject_name }}</td>
+                        <td class="grade_table_td">{{ cg.classification }}</td>
+                        <td class="grade_table_td">{{ cg.selection }}</td>
+                        <td class="grade_table_td" style="border-right :0px">{{ cg.grade | floatformat }}</td>
+                    </tr>
+                    {% endfor %}
                     {% for g in grade %}
                     <tr>
                         <td class="grade_table_td">{{ g.year }}</td>
@@ -143,11 +168,11 @@
             <div id="hide_btn" onclick="hide_table()" class="show_table" style="display:none"><i
                     class="fas fa-chevron-up"></i>&nbsp;접기</div>
             {% else %}
-            아직 기이수과목이 업로드되지 않았습니다.
+                <div class="caution_div" style='margin:3rem 0 3rem 0'>아직 기이수과목을 업로드하지 않았습니다.</div>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
 </div>
 
 <!-- 1. 내정보 업데이트 모달 -->
@@ -285,6 +310,7 @@
                 <p>1. 사용자가 업로드하는 기이수성적 엑셀파일은 <span class="caution_info">즉시 삭제됩니다.</span></p>
                 <p>2. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. </span></p>
                 <p>3. 저장 시 성적 중 학점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
+                <p>4. 업로드시 현재 커스텀으로 추가한 과목들은 모두 삭제됩니다.</p>
             </div>
             기이수성적 업로드
         </div>
@@ -300,6 +326,8 @@
             <p>2. 왼쪽 메뉴바에서 수업/성적 -> 성적 및 강의평가 -> 기이수성적조회 로 이동합니다.</p>
             <p>3. 성적엑셀다운로드 버튼을 클릭해 다운로드한 후, 해당 엑셀파일을 업로드합니다.</p>
             <p><span class="caution_info">※ 다운로드받은 파일 그대로 업로드해야합니다.</span></p>
+            <p><span class="caution_info">※ 21학번은 현재 기이수성적조회가 되지 않으므로 커스텀 기능을 사용하세요.</span></p>
+
         </div>
 
         <form action="/f_mod_grade/" method="post" name='form4' onsubmit="return check_up4()"
@@ -324,13 +352,14 @@
             기이수과목 커스텀
         </div>
         <hr style="width:80%; margin-top:1.3rem;">
-        <div style="margin:1.5rem 0 2.5rem 0; ">
-            <p>UIS 사이트의 기이수성적엔 이번 학기 과목들이 반영되지 않으셨죠?</p>
+        <div style="margin:1.5rem 0 2.5rem 0;">
+            <p>UIS 사이트에서 다운받는 엑셀파일엔 이번 학기 과목들이 반영되지 않으셨죠? 😭</p>
             <p>또 다음 학기에 들을 과목을 추가해 검사해보고 싶으신가요? </p>
-            <p>커스텀 기능을 통해 자신의 기이수과목 표에 해당 과목을 추가해서 검사해보세요!</p>
-            <p>※ 연계전공의 경우 과목 검색이 안될 수 있습니다.</p>
+            <p style="font-size :1.3rem; margin-top:2rem;">
+                <span style="font-size :1.5 rem; font-weight: bold; color : rgb(164, 26, 55)">'커스텀 기능'</span> 으로 원하는 과목을 추가해서 검사해보세요!
+            </p>
         </div>
-        <button onclick="location.href='/custom/'" class='login_btn' style="margin:2.5rem 0 2rem 0;">커스텀 시작</button>
+        <button onclick="location.href='/custom/'" class='login_btn' style="margin:1rem 0 2rem 0;">커스텀 시작</button>
     </div>
 </div>
 

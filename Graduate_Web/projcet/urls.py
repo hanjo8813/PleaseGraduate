@@ -43,6 +43,11 @@ urlpatterns = [
     path('f_mod_pw/', views.f_mod_pw),
     path('f_mod_grade/', views.f_mod_grade),
     path('f_find_pw/', views.f_find_pw),
+    path('f_add_custom/', views.f_add_custom),
+
+    # AJAX 통신
+    path('a_search/', views.a_search),
+
 
     # 테스트용
     path('admin_test/', views.r_admin_test),

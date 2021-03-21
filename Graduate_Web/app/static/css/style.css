@@ -302,15 +302,21 @@ input[type="number"]
     margin-right : 1rem;
 } 
 
+.ajax_search_btn:hover,
+.add_btn:hover,
+.save_btn:hover,
 .login_btn:hover,
 .regi_btn:hover,
 .go_result_btn:hover,
-.suc_btn:hover
+.suc_btn:hover 
 {
     background-color: #FEC034;
     font-weight: bold;
 }
 
+body:not(.device-touch) .ajax_search_btn,
+body:not(.device-touch) .add_btn,
+body:not(.device-touch) .save_btn,
 body:not(.device-touch) .rbutton,
 body:not(.device-touch) .show_table,
 body:not(.device-touch) .my_box_mod_btn,
@@ -318,7 +324,7 @@ body:not(.device-touch) .bg_btn_style,
 body:not(.device-touch) .login_btn,
 body:not(.device-touch) .regi_btn,
 body:not(.device-touch) .go_result_btn,
-body:not(.device-touch) .suc_btn
+body:not(.device-touch) .suc_btn 
 {
     transition: background-color .2s linear;
     -webkit-transition: background-color .2s linear;
@@ -725,6 +731,156 @@ body:not(.device-touch) .suc_btn
     display:inline-block;
     padding-left:10px;
 }
+
+/* ---------------------------------( custom )---------------------------------------- */
+
+.caution_div {
+    color: #d32f2f;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    margin-top: 1.5rem;
+    padding-left: 12rem;
+    padding-right: 12rem;
+}
+
+.custom_title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.custom_subtitle {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box {
+    text-align: left;
+    width: 50em;
+    height: auto;
+    padding: 1rem 2.5rem 1rem 2.5rem;
+    margin: 1rem 1rem 2rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
+    font-size: 0.9rem;
+}
+
+.custom_form {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.custom_form input[type="text"] {
+    font-size: 1rem;
+    background: none;
+    border: 0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    outline: 0;
+    height: 1.5rem;
+    width: 14rem;
+}
+
+.custom_box hr {
+    width: 100%;
+}
+
+.result_zone {
+    display: block;
+    text-align: center;
+    border: 1px solid rgb(153, 153, 153);
+    margin-bottom: -1rem;
+}
+
+.new_td {
+    height: 2rem;
+    border-right: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+}
+
+.new_td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+    color: #1ac06d;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.ajax_search_btn {
+    background: rgb(164, 26, 55);
+    width: 8%;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-left: 0.3rem;
+}
+
+.add_btn {
+    background: rgb(164, 26, 55);
+    width: 14%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.6rem 0.5rem 0.6rem 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.del_btn {
+    background: white;
+    border: 0.001px solid rgb(160, 160, 160);
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem;
+}
+
+.save_btn {
+    background: rgb(164, 26, 55);
+    width: 9%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+}
+
 
 /* ---------------------------------( result )---------------------------------------- */
 
