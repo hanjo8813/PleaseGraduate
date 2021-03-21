@@ -477,27 +477,33 @@ def selenium_DHC(id, pw):
     # 서버 - 배포용 -------------------------------------------------------------------------------
     else:
         try:
-            driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
-            driver.get(url)
-            # 가상 디스플레이를 활용해 실행속도 단축
-            display = Display(visible=0, size=(1024, 768))
-            display.start()
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
-            # id , pw 입력할 곳 찾기
-            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
-            tag_id.clear()
-            # id , pw 보내기
-            tag_id.send_keys(id)
-            tag_pw.send_keys(pw)
-            time.sleep(0.5)
-            # 로그인버튼 클릭
-            login_btn = driver.find_element_by_id('loginBtn')
-            login_btn.click()
+            try:
+                driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
+                driver.get(url)
+                # 가상 디스플레이를 활용해 실행속도 단축
+                display = Display(visible=0, size=(1024, 768))
+                display.start()
+                # 크롤링시작
+                checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+                if checked:
+                    driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
+                    alert = driver.switch_to_alert()
+                    alert.dismiss()
+                # id , pw 입력할 곳 찾기
+                tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
+                tag_pw = driver.find_element_by_id("password")
+                tag_id.clear()
+                # id , pw 보내기
+                tag_id.send_keys(id)
+                tag_pw.send_keys(pw)
+                time.sleep(0.5)
+                # 로그인버튼 클릭
+                login_btn = driver.find_element_by_id('loginBtn')
+                login_btn.click()
+            except:
+                driver.quit()
+                display.stop()
+                return 3
             # ID/PW 틀렸을 때 예외처리 ***
             try:
                 driver.switch_to.frame(0)
@@ -541,7 +547,6 @@ def selenium_DHC(id, pw):
                 display.stop()
             return 2
 
-
     # 크롤링으로 받아온 값 리턴
     context = {
         'name' : name,
@@ -572,6 +577,9 @@ def r_register(request):
         return redirect('/agree/')
     elif temp_user_info == 2:
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        return redirect('/agree/')
+    elif temp_user_info == 3:
+        messages.error(request, '테스트-상단')
         return redirect('/agree/')
 
 # ***********************************************************************************
