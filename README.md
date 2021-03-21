@@ -1,5 +1,5 @@
 <div align='center'>
-    <h3> Issue에 피드백해주시는 것 환영입니다! </h3>
+    <h3> 사이트 version 2.0으로 리모델링중... </h3>
 </div>
 
 <br>
@@ -7,7 +7,7 @@
 # < Sejong Graduate Helper >
 
 ### 세종대학교 졸업요건 검사 사이트 'Sejong Please Graduate'
-> #### version : 1.1
+> #### version : 1.2
 
 <br>
 

@@ -540,6 +540,7 @@ def selenium_DHC(id, pw):
                 display.stop()
             return 2
 
+
     # 크롤링으로 받아온 값 리턴
     context = {
         'name' : name,
@@ -1116,6 +1117,8 @@ def f_en_result(user_id):
     recom_bsm_ess, check_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
     mynum_bsm_ess = data[data['학수번호'].isin(dic_bsm_ess.keys())]['학점'].sum()
 
+    print(dic_bsm_ess.keys())
+
     # 3. bsm 선택 (16학번일때만 해당)
     if s_row.bsm_sel_list:
         dic_bsm_sel = make_dic([s_num for s_num in s_row.bsm_sel_list.split('/')])
@@ -1254,8 +1257,6 @@ def f_en_result(user_id):
     return en_result_context
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 
@@ -1591,6 +1592,10 @@ def f_test_update(request):
     return HttpResponse('업데이트 완료, MySQL test_all_lecture / test_new_lecture 테이블 확인')
 
 def f_update(request):
+    # 로컬에서만 접근 가능하도록 하기
+    if platform.system() != 'Windows':
+        return HttpResponse('업데이트는 로컬에서만!')
+
     df_merge, s_num_list = make_merge_df()
 
     # 1. new_lecture 업데이트
@@ -1621,10 +1626,68 @@ def f_update(request):
  
     return HttpResponse('업데이트 완료, MySQL all_lecture / new_lecture 테이블 확인')
 
+#  -------------------------------------------- (학과-학번 기준 엑셀 DB에 넣기) ---------------------------------------------------------
+
+def f_input_st(request):
+    # 로컬에서만 접근 가능하도록 하기
+    if platform.system() != 'Windows':
+        return HttpResponse('업데이트는 로컬에서만!')
+
+    # 엑셀 불러오기
+    file_path = './app/update_lecture/input_standard/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.fillna(0, inplace = True)
+    
+    # 테이블 데이터 삭제
+    Standard.objects.all().delete()
+    time.sleep(5)   # 삭제하는 시간 기다리기
+
+    for i, row in df.iterrows():        
+        new_st = Standard()
+        new_st.index = i
+        new_st.user_year = row['user_year']
+        new_st.user_dep = row['user_dep']
+        new_st.sum_score = int(row['sum_score'])
+        new_st.major_essential = int(row['major_essential'])
+        new_st.major_selection = int(row['major_selection'])
+        new_st.core_essential = int(row['core_essential'])
+        new_st.core_selection = int(row['core_selection'])
+        new_st.basic = int(row['basic'])
+        new_st.ce_list = str(row['ce_list'])
+        new_st.cs_list = str(row['cs_list'])
+        new_st.b_list = str(row['b_list'])
+        new_st.sum_eng = int(row['sum_eng'])
+        new_st.pro = int(row['pro'])
+        new_st.bsm = int(row['bsm'])
+        new_st.eng_major = int(row['eng_major'])
+        new_st.build_sel_num = int(row['build_sel_num'])
+        new_st.pro_ess_list = str(row['pro_ess_list'])
+        new_st.bsm_ess_list = str(row['bsm_ess_list'])
+        new_st.bsm_sel_list = str(row['bsm_sel_list'])
+        new_st.build_start = str(int(row['build_start']))
+        new_st.build_sel_list = str(row['build_sel_list'])
+        new_st.build_end = str(int(row['build_end']))
+        new_st.eng_major_list = str(row['eng_major_list'])
+        new_st.save()
+
+    return HttpResponse('삽입완료 standard 테이블 확인')
+    
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 def f_test(request):
+    # 로컬에서만 접근 가능하도록 하기
+    if platform.system() != 'Windows':
+        return HttpResponse('업데이트는 로컬에서만!')
+    '''
+    ui = UserInfo.objects.all()
+    for ui_row in ui: 
+        if ui_row.major == '지능기전공':
+            ui_row.major = ui_row.major + '학부'
+        else:
+            ui_row.major = ui_row.major + '학과'
+        ui_row.save()
     
     ui = UserInfo.objects.all()
     for ui_row in ui:
@@ -1632,6 +1695,6 @@ def f_test(request):
         for ug_row in ug:
             ug_row.major = ui_row.major
             ug_row.save()
-
+    '''
     return HttpResponse('테스트 완료, 터미널 확인')
 

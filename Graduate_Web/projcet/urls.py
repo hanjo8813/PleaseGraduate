@@ -56,6 +56,7 @@ urlpatterns = [
     path('f_test/', views.f_test),
     path('dbcheck/', views.r_dbcheck),
     path('result_test/', views.result_test),
+    path('f_input_st/', views.f_input_st),
 ]
 
 urlpatterns += static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
