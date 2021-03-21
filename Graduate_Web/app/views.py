@@ -102,7 +102,6 @@ def f_add_custom(request):
     messages.success(request, '업데이트성공')
     return redirect('/mypage/')
 
-
 def r_head(request):
     context = {
         # 세션 테이블의 행의 개수 (방문자 수)를 센다
@@ -114,7 +113,6 @@ def r_head(request):
 
 def r_agree(request):
     return render(request, "agree.html")
-
 
 def r_login(request):
     request.session.clear()

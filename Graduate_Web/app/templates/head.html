@@ -29,22 +29,27 @@
     </div>
 </header>
 
-<!-- 업데이트 공지 
+<!-- 업데이트 공지 -->
 <div id='myModal' class="modal" style ="display: block;">
     <div class="modal-content">
         <span class="close" style="font-size:3rem;">&times;</span>
         <div class="modal_div">
             <br>
-            <div style="font-size:1.8rem; font-weight:bold;">
-                <p style="font-size:2.2rem; font-weight:bold; color : #d32f2f">※ 수강신청 기간(2.15 ~ 2.18)에는 새로운 사용자는 검사하실 수 없습니다.</p>
-                <p>( 한번이라도 검사했던 사용자는 재검사가 가능합니다. )</p>
+            <div style="font-size:2.5rem; font-weight:bold; color : #d32f2f">
+                ※ version 2.0 베타 테스트 ※
+            </div>
+            <div style="font-size:1.3rem; margin-top:3rem;">
+                <p style="font-size:2rem; font-weight:bold;">2.0 업데이트 내용</p>
+                <p>1. 더 이상 UIS에 우회 로그인하여 자동으로 성적표를 가져오지 않습니다.</p>
+                <p>2. 따라서 자신의 기이수성적 엑셀을 직접 업로드 해야합니다.</p>
+                <p>3. 회원가입 절차를 추가하여 자신의 졸업정보에 대한 체계적인 관리기능을 제공합니다.</p>
             </div>
         </div>
     </div>
 </div>
--->
 
-<!-- 웹 권장 모달 (모바일에서만 뜸) -->
+
+<!-- 웹 권장 모달 (모바일에서만 뜸) 
 <div id='myModal' class="modal" style ="display: none;">
     <div class="modal-content">
         <span class="close" style="font-size:5rem;">&times;</span>
@@ -57,7 +62,7 @@
         </div>
     </div>
 </div>
-
+-->
 
 {% endblock %}
 
@@ -66,6 +71,7 @@
 {% block js_section %}
 <!-- js 파트 -->
 <script>
+    /*
     // 기기 검사
     var filter = "win16|win32|win64|mac|macintel"; 
     if ( navigator.platform ) { 
@@ -74,8 +80,8 @@
             document.getElementById('myModal').style.display="block";
         } 
     }
-   
-    
+    */
+
     // 모달 창
     var Spanclick = function (x, y) {
         x.onclick = function () {
