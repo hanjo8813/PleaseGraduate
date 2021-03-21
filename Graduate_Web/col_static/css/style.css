@@ -24,7 +24,30 @@ input[type="number"]
     -webkit-appearance: none;
  }
 
+ 
+/* ---------------------------------( 상단 소개/컨테이너 공통 )---------------------------------------- */
 
+.gray_sec{
+    background-color:rgb(248,249,250) ;
+    padding-top:1rem;
+    padding-bottom: 2rem;
+}
+
+.white_sec{
+    background-color: white;
+    padding-bottom: 1rem;
+}
+
+.big_title{
+    font-size:2rem; 
+    font-weight:bold;
+}
+
+.small_title{
+    margin-top:0.5rem; 
+    font-size:1rem; 
+    color:rgb(199, 199, 199)
+}
 
 /* ---------------------------------( ref - 메뉴바 )---------------------------------------- */
 
@@ -53,8 +76,8 @@ input[type="number"]
 }
 
 .navbar_menu li {
-    padding: 8px 20px;
-    margin-right: 0.8rem;
+    font-size: 19px;
+    padding: 8px 16px;
     cursor: pointer;
 }
 
@@ -171,10 +194,6 @@ input[type="number"]
     color:black;
 }
 
-body:not(.device-touch) .bg_btn_style {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .num_visit_test{
     color:rgb(207, 207, 207);
@@ -199,18 +218,6 @@ body:not(.device-touch) .bg_btn_style {
 
 
 /* ---------------------------------( login  )---------------------------------------- */
-
-.gray_sec{
-    background-color:rgb(248,249,250) ;
-    padding-top:1rem;
-    padding-bottom: 2rem;
-}
-
-.white_sec{
-    background-color: white;
-    padding-bottom: 1rem;
-}
-
 
 .container {
     text-align:center;
@@ -295,19 +302,29 @@ body:not(.device-touch) .bg_btn_style {
     margin-right : 1rem;
 } 
 
+.ajax_search_btn:hover,
+.add_btn:hover,
+.save_btn:hover,
 .login_btn:hover,
 .regi_btn:hover,
 .go_result_btn:hover,
-.suc_btn:hover
+.suc_btn:hover 
 {
     background-color: #FEC034;
     font-weight: bold;
 }
 
+body:not(.device-touch) .ajax_search_btn,
+body:not(.device-touch) .add_btn,
+body:not(.device-touch) .save_btn,
+body:not(.device-touch) .rbutton,
+body:not(.device-touch) .show_table,
+body:not(.device-touch) .my_box_mod_btn,
+body:not(.device-touch) .bg_btn_style,
 body:not(.device-touch) .login_btn,
 body:not(.device-touch) .regi_btn,
 body:not(.device-touch) .go_result_btn,
-body:not(.device-touch) .suc_btn
+body:not(.device-touch) .suc_btn 
 {
     transition: background-color .2s linear;
     -webkit-transition: background-color .2s linear;
@@ -600,8 +617,8 @@ body:not(.device-touch) .suc_btn
     outline: 0;
 }
 
-.my_box hr,
-.my_box_grade hr{
+.my_box_grade hr,
+.my_box hr{
     width:100%;
     border-top: 0.001px solid rgb(216, 216, 216);
     border-bottom: 0.001px solid white;
@@ -624,16 +641,34 @@ body:not(.device-touch) .suc_btn
 
 /* ---------------------------------( mypage 기이수성적 )---------------------------------------- */
 
-.my_box_grade{
+.show_table {
+    margin-top: 1.5rem;
+    padding: 0.7rem 0 0.7rem 0;
+    height: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 3px;
+    border-top: 1.5px solid rgb(216, 216, 216);
+    cursor: pointer;
+}
+
+.my_box_mod_btn:hover,
+.show_table:hover {
+    background-color: #f3f3f3;
+}
+
+
+.my_box_grade {
     display: flex;
     flex-direction: column;
-    width: 63rem;
+    width: 68rem;
     height: auto;
-    padding:2.5rem;
     margin: 1rem 1rem 4rem;
-    border:1px solid rgb(216, 216, 216);
+    border: 1px solid rgb(216, 216, 216);
     background-color: white;
 }
+
 
 .grade_table {
     width: 90%;
@@ -696,6 +731,156 @@ body:not(.device-touch) .suc_btn
     display:inline-block;
     padding-left:10px;
 }
+
+/* ---------------------------------( custom )---------------------------------------- */
+
+.caution_div {
+    color: #d32f2f;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    margin-top: 1.5rem;
+    padding-left: 12rem;
+    padding-right: 12rem;
+}
+
+.custom_title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.custom_subtitle {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.custom_box {
+    text-align: left;
+    width: 50em;
+    height: auto;
+    padding: 1rem 2.5rem 1rem 2.5rem;
+    margin: 1rem 1rem 2rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
+    font-size: 0.9rem;
+}
+
+.custom_form {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.custom_form input[type="text"] {
+    font-size: 1rem;
+    background: none;
+    border: 0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    outline: 0;
+    height: 1.5rem;
+    width: 14rem;
+}
+
+.custom_box hr {
+    width: 100%;
+}
+
+.result_zone {
+    display: block;
+    text-align: center;
+    border: 1px solid rgb(153, 153, 153);
+    margin-bottom: -1rem;
+}
+
+.new_td {
+    height: 2rem;
+    border-right: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+}
+
+.new_td_input {
+    height: 100%;
+    width: 90%;
+    border: 0;
+    outline: none;
+    text-align: center;
+    color: #1ac06d;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.ajax_search_btn {
+    background: rgb(164, 26, 55);
+    width: 8%;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-left: 0.3rem;
+}
+
+.add_btn {
+    background: rgb(164, 26, 55);
+    width: 14%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.6rem 0.5rem 0.6rem 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.del_btn {
+    background: white;
+    border: 0.001px solid rgb(160, 160, 160);
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem;
+}
+
+.save_btn {
+    background: rgb(164, 26, 55);
+    width: 9%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+}
+
 
 /* ---------------------------------( result )---------------------------------------- */
 
@@ -816,10 +1001,6 @@ body:not(.device-touch) .suc_btn
     color: #272727;
 }
 
-body:not(.device-touch) .rbutton {
-    transition: background-color .2s linear;
-    -webkit-transition: background-color .2s linear;
-}
 
 .Sbox {
     margin: 0;
@@ -1045,33 +1226,44 @@ strong {
 .modal-content {
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 5% auto; /* 15% from the top and centered */
+    margin: 5% auto;
     padding: 5rem;
     border: 1px solid #888;
     width: 80%;
     height: auto;
-    /* Could be more or less, depending on screen size */                          
 }
 
 .load-modal-content {
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 7% auto;
     padding: 2.2rem;
     border: 1px solid #888;
     width: 40%;
     height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
 }
 
 .update_modal_content{
     text-align: center;
     background-color: #fefefe;
     border-radius: 5px;
-    margin: 5% auto;
     padding: 2.5rem;
     border: 1px solid #888;
     width: 60%;
     height: auto;
+    margin:0;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
 }
 
 .modal_div {
