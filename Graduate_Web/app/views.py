@@ -418,11 +418,12 @@ def selenium_DHC(id, pw):
     # 옵션 넣고 드라이버 생성
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome('./chromedriver.exe', options=options)
-    driver.get(url)
+    
 
     # 로컬 - 개발용 -------------------------------------------------------------------------------
     if platform.system() == 'Windows':
+        driver = webdriver.Chrome('./chromedriver.exe', options=options)
+        driver.get(url)
         # 크롤링시작
         checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
         if checked:
@@ -476,6 +477,8 @@ def selenium_DHC(id, pw):
     # 서버 - 배포용 -------------------------------------------------------------------------------
     else:
         try:
+            driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
+            driver.get(url)
             # 가상 디스플레이를 활용해 실행속도 단축
             display = Display(visible=0, size=(1024, 768))
             display.start()
