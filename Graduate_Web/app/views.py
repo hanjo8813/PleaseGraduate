@@ -67,7 +67,6 @@ def f_add_custom(request):
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
     if request.POST['arr_delete']:
-        print('삭제완료')
         del_ug = UserGrade.objects.none()
         for s_num in request.POST['arr_delete'].split(','):
             temp = UserGrade.objects.filter(subject_num = s_num)
@@ -75,7 +74,6 @@ def f_add_custom(request):
         del_ug.delete()
     # 2. 추가된게 있을 경우
     if request.POST['arr_year']:
-        print('추가완료')
         # POST로 싹다 받아옴
         year = request.POST['arr_year'].split(',')
         semester = request.POST['arr_semester'].split(',')
@@ -929,6 +927,7 @@ def f_result(user_id, major_status):
     }
 
     #------------------------------------------------------------------------------------
+    
     # 머신러닝 할 데이터프레임 생성
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
@@ -971,6 +970,13 @@ def f_result(user_id, major_status):
         'ms' : zip_ms,    # 전선
         'cs' : zip_cs,    # 교선
     }
+
+    
+    '''
+    pass_ml_me = 0
+    pass_ml_ms = 0
+    recommend_sel = []
+    '''
 
     # 영어합격기준
     eng_standard_all = {'TOEIC':700,'TOEFL':80,'TEPS':556,'OPIc':'LOW','TOEIC_Speaking':120}       
@@ -1086,11 +1092,6 @@ def f_result(user_id, major_status):
 # ---------------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
 def f_en_result(user_id):
-    # 테스트용
-    global test_id
-    if test_id != '':
-        user_id = test_id
-    
     # userinfo 테이블에서 행 추출
     ui_row = UserInfo.objects.get(student_id = user_id)
 
@@ -1120,8 +1121,6 @@ def f_en_result(user_id):
     dic_bsm_ess = make_dic([s_num for s_num in s_row.bsm_ess_list.split('/')])
     recom_bsm_ess, check_bsm_ess = make_recommend_list(my_engine_admit, dic_bsm_ess)
     mynum_bsm_ess = data[data['학수번호'].isin(dic_bsm_ess.keys())]['학점'].sum()
-
-    print(dic_bsm_ess.keys())
 
     # 3. bsm 선택 (16학번일때만 해당)
     if s_row.bsm_sel_list:
@@ -1268,239 +1267,11 @@ def f_en_result(user_id):
 
 
 
-# ------------------------------------------------------ (웹 연동 테스트) --------------------------------------------------------------------
 
-# 테스트용 ID
-test_id = ''
 
-# result 페이지 테스트용.
-def result_test(request):
-    # 테스트용
-    global test_id
-    user_id = test_id
 
-    # userinfo 테이블에서 행 추출
-    u_row = UserInfo.objects.get(student_id = user_id)
 
-    user_info = {
-        'id' : u_row.student_id,
-        'name' : u_row.name,
-        'major' : u_row.major,
-        'year' : u_row.year,
-    }
-   
-    # 고전독서 정보 파싱 후 info에 추가하기
-    pass_book = 0
-    if u_row.book == '고특통과': 
-        pass_book = 2
-    else:
-        W, E, EW, S = int(u_row.book[0]), int(u_row.book[1]), int(u_row.book[2]), int(u_row.book[3])
-        total_book = 0
-        if W > 4: total_book += 4
-        else : total_book += W
-        if E > 2: total_book += 2
-        else : total_book += E
-        if EW > 3: total_book += 3
-        else : total_book += EW
-        if S > 1: total_book += 1
-        else : total_book += S
-        if total_book == 10:
-            pass_book = 1
-        user_info['W'] = W
-        user_info['E'] = E
-        user_info['EW'] = EW
-        user_info['S'] = S
-        user_info['total'] = total_book
 
-    # 파이썬 변수를 가지고 ind로 매핑
-    s_row = Standard.objects.get(user_dep = u_row.major, user_year = u_row.year)
-
-    #---------------------------------------------------------
-    # db에서 ind 를 가지고 모든 비교 기준 뽑아내기
-    # 1. 이수학점 수치 기준
-    standard_num ={
-        'ss' : s_row.sum_score,          # sum_score
-        'me' : s_row.major_essential,    # major_essential
-        'ms' : s_row.major_selection,    # major_selection
-        'ce' : s_row.core_essential,     # core_essential   
-        'cs' : s_row.core_selection,     # core_selection
-        'b' : s_row.basic,               # basic
-    }
-    
-    # 2. 중필(교필) 필수과목. { 학수번호 : 그룹번호 } 딕셔너리로 매핑
-    # ind로 필수과목 추출후 딕셔너리 만들기
-    dic_ce = make_dic([s_num for s_num in s_row.ce_list.split('/')])
-    # 3. 중선(교선1) 필수과목
-    dic_cs = make_dic([s_num for s_num in s_row.cs_list.split('/')])
-    # 4. 기교 필수과목 
-    dic_b = make_dic([s_num for s_num in s_row.b_list.split('/')]) 
-
-    #------------------------------------------------------------------------------
-    # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    user_qs = UserGrade.objects.filter(student_id = user_id)
-    data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
-    data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
-
-    # 이수 구분마다 df 생성
-    # 전필
-    df_me = data[data['이수구분'].isin(['전필'])]
-    df_me.reset_index(inplace=True,drop=True)
-    # 전선
-    df_ms = data[data['이수구분'].isin(['전선'])]
-    df_ms.reset_index(inplace=True,drop=True)
-    # 중필(교필)
-    df_ce = data[data['이수구분'].isin(['교필', '중필'])]
-    df_ce.reset_index(inplace=True,drop=True)
-    # 중선(교선)
-    df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
-    df_cs.reset_index(inplace=True,drop=True)
-    # 기교
-    df_b = data[data['이수구분'].isin(['기교'])]
-    df_b.reset_index(inplace=True,drop=True)
-
-    # 전필 초과시 
-    remain = 0
-    if standard_num['me'] < df_me['학점'].sum() :
-        remain = df_me['학점'].sum() - standard_num['me']
-    # 내 이수학점 수치
-    my_num ={
-        'ss' : data['학점'].sum(),              # sum_score
-        'me' : df_me['학점'].sum() - remain,    # major_essential
-        'ms' : df_ms['학점'].sum(),             # major_selection
-        'ce' : df_ce['학점'].sum() ,            # core_essential   
-        'cs' : df_cs['학점'].sum(),             # core_selection
-        'b' : df_b['학점'].sum(),               # basic
-        'remain' : remain,
-    }
-
-    # 사용자가 들은 dic 추출
-    my_dic_ce = make_dic(df_ce['학수번호'].tolist())
-    my_dic_cs = make_dic(df_cs['학수번호'].tolist())
-    my_dic_b = make_dic(df_b['학수번호'].tolist())
-    #-------------------------------------------------------------------------------------
-    # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
-    recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
-    recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
-    recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
-    standard_list = {
-        'ce' : zip(list_to_query(dic_ce.keys()), check_ce),
-        'cs' : zip(list_to_query(dic_cs.keys()), check_cs),
-        'b' : zip(list_to_query(dic_b.keys()), check_b),
-    }
-
-    recommend_ess = {
-        'ce' : list_to_query(recom_ce),
-        'cs' : list_to_query(recom_cs),
-        'b' : list_to_query(recom_b),
-    }
-
-    # 영역 추출
-    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
-    my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
-    # 영역 통과 여부
-    pass_p_cs = 1
-    # 사용자가 안들은 영역 추출
-    recom_cs_part = []
-    if len(my_cs_part) < 3:
-        pass_p_cs = 0
-        recom_cs_part = list(set(cs_part) - set(my_cs_part))
-    # 사용자의 부족 영역 체크
-    part_check = ['이수' for _ in range(5)]
-    for i, c in enumerate(cs_part):
-        if c not in my_cs_part:
-            part_check[i] = '미이수'
-
-    cs_part = {
-        'check' : part_check,
-        'all' : cs_part,
-    }
-
-    #------------------------------------------------------------------------------------
-    # 머신러닝 할 데이터프레임 생성
-    mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ug_MR = UserGrade.objects.filter(major = u_row.major, classification = '전필')
-    ug_MC = UserGrade.objects.filter(major = u_row.major, classification = '전선')
-    ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
-    for u in ug_MR:
-        mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    for u in ug_MC:
-        mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    for u in ug_EC:
-        ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    # 만약 사용자가 전필을 아예 안들었다면?
-    if user_id not in mr_train['학번'].tolist() :
-        new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}
-        mr_train = mr_train.append(new_data,ignore_index=True)
-    # 만약 사용자가 전선을 아예 안들었다면?
-    if user_id not in mc_train['학번'].tolist():
-        new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}
-        mc_train = mc_train.append(new_data,ignore_index=True)
-    # 중선 안들은 영역만 추천하기
-    if recom_cs_part:
-        store = []
-        for i in recom_cs_part:
-            is_in = ec_train['선택영역'] == i
-            store.append(ec_train[is_in])
-        ec_train = pd.concat(store).sort_values(by=['학번'], axis=0)
-        ec_train = ec_train.reset_index(drop = True)
-        new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
-        ec_train = ec_train.append(new_data,ignore_index=True)
-    # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
-    user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
-    zip_me, pass_ml_me = recom_machine_learning(mr_train, user_id, user_major_lec)
-    zip_ms, pass_ml_ms = recom_machine_learning(mc_train, user_id, user_major_lec)
-    zip_cs, pass_ml_cs = recom_machine_learning(ec_train, user_id, [])
-
-    recommend_sel = {
-        'me' : zip_me,    # 전필 zip(학수번호, 추천지수)    
-        'ms' : zip_ms,    # 전선
-        'cs' : zip_cs,    # 교선
-    }
-
-    # 과목 통과 여부 
-    pass_me, pass_ms, pass_ce, pass_l_cs, pass_n_cs, pass_cs_tot, pass_b, pass_total = 0,0,0,0,0,0,0,0
-    if standard_num['me'] <= my_num['me']: pass_me = 1
-    if standard_num['ms'] <= my_num['ms'] + my_num['remain']: pass_ms = 1
-    if not recom_ce: pass_ce = 1
-    if not recom_cs: pass_l_cs = 1
-    if standard_num['cs'] <= my_num['cs'] : pass_n_cs = 1     
-    if pass_n_cs==1 and pass_p_cs==1: pass_cs_tot = 1
-    if not recom_b: pass_b = 1
-    if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and u_row.eng!=0:
-        pass_total = 1
-    
-    pass_obj = {
-        'total' : pass_total,
-        'n_me' : pass_me,
-        'lack_me' : standard_num['me'] - my_num['me'],
-        'lack_ms' : standard_num['ms'] - my_num['ms'] - my_num['remain'],
-        'n_ms' : pass_ms,
-        'l_ce' : pass_ce,       # 중필 필수과목 통과여부
-        't_cs' : pass_cs_tot,   # 중선 기준 학점+필수영역 통과여부
-        'n_cs' : pass_n_cs,     # 중선 기준 학점 통과여부
-        'l_cs' : pass_l_cs,     # 중선 필수과목 통과여부
-        'p_cs' : pass_p_cs,     # 중선 필수영역 통과여부
-        'l_b' : pass_b,         # 기교 필수과목 통과여부
-        'book' : pass_book,     # 고전독서 인증여부
-        'eng' : u_row.eng,      # 영어인증여부
-        'ml_me' : pass_ml_me,
-        'ml_ms' : pass_ml_ms,
-    }
-
-    context = {
-        'user_info' : user_info,            # 사용자 정보
-        'my_num' : my_num,                  # 사용자 이수학점들
-        'standard_num' : standard_num,      # 기준 수치 
-        'standard_list' : standard_list,    # 기준 필수과목 리스트
-        'recommend_ess' : recommend_ess,    # 필수과목 추천리스트
-        'recommend_sel' : recommend_sel,    # 선택과목 추천리스트
-        'cs_part' : cs_part,                # 중선 영역
-        'pass_obj' : pass_obj,              # 패스 여부
-    }
-    
-    return render(request, "result.html", context)
 
 
 
@@ -1510,15 +1281,22 @@ def r_admin_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
-    return render(request, "admin_test.html")
+    request.session.clear()
+    uid = []
+    for row in NewUserInfo.objects.all():
+        uid.append(row.student_id)
+    context={
+        'uid' : uid
+    }
+    return render(request, "admin_test.html", context)
 
-#  -------------------------------------------- (DB 감지 테스트) ---------------------------------------------------------
+#  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
 
-def r_dbcheck(request):
-    # model의 test_table 테이블을 변수에 저장
-    tt = TestTable.objects.all()
-    # 그리고 함수가 불려서 페이지를 렌더링할때 그 변수를 해당 페이지에 넘김
-    return render(request, "dbcheck.html", {"t_h":tt})
+def f_user_test(request):
+    if platform.system() != 'Windows':
+        return HttpResponse('업데이트는 로컬에서만!')
+    request.session['id'] = request.POST['user_id']
+    return redirect('/mypage/')
 
 #  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
 

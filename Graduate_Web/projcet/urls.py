@@ -51,11 +51,10 @@ urlpatterns = [
 
     # 테스트용
     path('admin_test/', views.r_admin_test),
+    path('f_user_test/', views.f_user_test),
+    path('f_test/', views.f_test),
     path('f_update/', views.f_update),
     path('f_test_update/', views.f_test_update),
-    path('f_test/', views.f_test),
-    path('dbcheck/', views.r_dbcheck),
-    path('result_test/', views.result_test),
     path('f_input_st/', views.f_input_st),
 ]
 
