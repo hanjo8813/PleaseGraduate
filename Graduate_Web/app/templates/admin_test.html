@@ -85,13 +85,15 @@
         <table class = 'ut_table'>
             <tr>
                 <th>id</th>
+                <th>이름</th>
                 <th>테스트</th>
             </tr>
-            {% for id in uid %}
+            {% for id, name in uid %}
             <tr>
                 <form action='/f_user_test/' method='post'>
                 {% csrf_token %}
                     <td><input type='text' name='user_id' value='{{ id }}' readonly></td>
+                    <td>{{ name }}</td>
                     <td><input type='submit' value='테스트하기'></td>
                 </form>
             </tr>

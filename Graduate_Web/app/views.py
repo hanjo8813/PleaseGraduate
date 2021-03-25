@@ -199,13 +199,18 @@ def f_mypage(user_id):
     is_grade = 1
     if not ug.exists():
         is_grade = 0
+    # 고전독서인증 변환하기
+    W, E, EW, S = ui_row.book[0], ui_row.book[1], ui_row.book[2], ui_row.book[3]
     mypage_context ={
         'student_id' : ui_row.student_id,
         'year' : ui_row.year,
         'major' : ui_row.major,
         'major_status' : ui_row.major_status,
         'name' : ui_row.name,
-        'book' : ui_row.book,
+        'W' : W,
+        'E' : E,
+        'EW' : EW,
+        'S' : S,
         'eng' : ui_row.eng,
         'grade' : list(grade.values()),
         'custom_grade' : list(custom_grade.values()),
@@ -613,10 +618,12 @@ def r_success(request):
     
     # 2. post로 받은것 꺼내기
     major_status = request.POST.get('major_status')
-    # 비밀번호를 DB에 저장하기 전 암호화(해싱)
+
+    # 비밀번호를 DB에 저장하기 전 암호화
     password = request.POST.get('password')
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())    # 인코딩 + 솔팅 + 해싱 -> 암호화
     password = password.decode('utf-8')                                     # 저장전 디코딩
+    
     # 만약 학부생일 경우 전공을 선택한것으로 저장
     if request.POST.get('major_select') : 
         major = request.POST.get('major_select')
@@ -1284,7 +1291,7 @@ def r_admin_test(request):
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
-        uid.append(row.student_id)
+        uid.append([row.student_id,row.name])
     context={
         'uid' : uid
     }
