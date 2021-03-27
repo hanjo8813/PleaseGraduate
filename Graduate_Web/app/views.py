@@ -189,12 +189,15 @@ def f_mypage(user_id):
     grade = ug.exclude(year='커스텀')
     custom_grade = ug.filter(year='커스텀')
     # 공학인증 없는학과 
-    is_engine = 0
+    user_en = Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng
+    # 공학인증 해당학과 아니라면
+    if user_en == -1:
+        is_engine = 0
     # 공학인증은 있는데 기준 아직 없다면
-    if Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng == 0:
+    elif user_en == 0:
         is_engine = 1
-    # 공학인증 기준이 있다면
-    else: is_engine = 2
+    else:
+        is_engine = 2
     # 만약 성적표 업로드 안했다면
     is_grade = 1
     if not ug.exists():
