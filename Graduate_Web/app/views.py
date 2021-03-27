@@ -753,6 +753,7 @@ def recom_machine_learning(what, user_id, user_list):
     train = data.build_full_trainset()
     test = train.build_testset()
     #모델학습
+    # 에폭스???
     model = SVD(n_factors=100, n_epochs=20,random_state=123)
     model.fit(train) # 모델 학습 하는 코드
     actual_rating = 0
@@ -1100,7 +1101,7 @@ def f_result(user_id, major_status):
 
 def f_en_result(user_id):
     # userinfo 테이블에서 행 추출
-    ui_row = UserInfo.objects.get(student_id = user_id)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
 
     user_info = {
         'id' : ui_row.student_id,
