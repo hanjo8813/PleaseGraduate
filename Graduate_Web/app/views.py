@@ -9,6 +9,7 @@ import platform
 import random
 import xlrd
 import bcrypt
+from collections import Counter
 from surprise import SVD, accuracy
 from surprise import Reader, Dataset
 from collections import defaultdict
@@ -26,7 +27,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
 from django.db import models
-from django.db.models import Value
+from django.db.models import Value, Count
 from .models import *
 # AJAX 통신관련 참조
 from django.views.decorators.csrf import csrf_exempt
@@ -664,12 +665,8 @@ def to_zip_list(list_1, list_2):
     return zip_list
 
 def list_to_query(list_):
-    al = AllLecture.objects.none()
-    for s_num in list_:
-        temp = AllLecture.objects.filter(subject_num = s_num)
-        al = temp | al
-    al = list(al.values())
-    return al
+    al = AllLecture.objects.filter(subject_num__in=list_)
+    return list(al.values())
 
 def make_dic(my_list):
     my_list.sort()
@@ -756,8 +753,8 @@ def recom_machine_learning(what, user_id, user_list):
     train = data.build_full_trainset()
     test = train.build_testset()
     #모델학습
-    # 에폭스???
-    model = SVD(n_factors=100, n_epochs=20,random_state=123)
+    # n_epochs -> 학습시킬 횟수.
+    model = SVD(n_factors=100, n_epochs=1,random_state=123)
     model.fit(train) # 모델 학습 하는 코드
     actual_rating = 0
     #학습결과 데이터프레임화
@@ -938,7 +935,10 @@ def f_result(user_id, major_status):
     }
 
     #------------------------------------------------------------------------------------
+
     
+    # 머신러닝 정확도와 시간이 너무 오래걸리므로 변경
+    '''
     # 머신러닝 할 데이터프레임 생성
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
@@ -970,11 +970,17 @@ def f_result(user_id, major_status):
         ec_train = ec_train.reset_index(drop = True)
         new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
         ec_train = ec_train.append(new_data,ignore_index=True)
+        
     # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
     user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
     zip_me, pass_ml_me = recom_machine_learning(mr_train, user_id, user_major_lec)
     zip_ms, pass_ml_ms = recom_machine_learning(mc_train, user_id, user_major_lec)
     zip_cs, pass_ml_cs = recom_machine_learning(ec_train, user_id, [])
+    '''
+
+
+    
+
 
     recommend_sel = {
         'me' : zip_me,    # 전필 zip(학수번호, 추천지수)    
@@ -1469,25 +1475,116 @@ def f_input_st(request):
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
+
+def make_recommend_list_other(other_, user_lec_list):
+    # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
+    other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
+    print(other_)
+    # 7개만 추천하기 + 내가 들었던 과목은 제외하기
+    recom = []
+    rank = 0
+    for s_num, num in other_:
+        if len(recom) >= 7:
+            break
+        # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
+        if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
+            rank += 1
+            row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
+            recom.append( [row_dic, rank] )
+    # 학수번호 -> 쿼리셋 -> 모든 정보 리스트로 변환 후 리턴
+    return recom
+
+
 def f_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
-    '''
-    ui = UserInfo.objects.all()
-    for ui_row in ui: 
-        if ui_row.major == '지능기전공':
-            ui_row.major = ui_row.major + '학부'
-        else:
-            ui_row.major = ui_row.major + '학과'
-        ui_row.save()
+
+    user_id = '15011187'
+    ui_row = UserInfo.objects.get(student_id=user_id)
+
+    user_qs = UserGrade.objects.filter(student_id = user_id)
+    data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
+    data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+
+    # 전필
+    df_me = data[data['이수구분'].isin(['전필'])]
+    df_me.reset_index(inplace=True,drop=True)
+    #my_me_list = df_me['학수번호'].tolist()
+    # 전선
+    df_ms = data[data['이수구분'].isin(['전선'])]
+    df_ms.reset_index(inplace=True,drop=True)
+    # 중선(교선)
+    df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
+    df_cs.reset_index(inplace=True,drop=True)
+
+    s_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
     
-    ui = UserInfo.objects.all()
-    for ui_row in ui:
-        ug = UserGrade.objects.filter(student_id = ui_row.student_id)
-        for ug_row in ug:
-            ug_row.major = ui_row.major
-            ug_row.save()
+    # 영역 추출
+    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
+    my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
+    # 사용자가 안들은 영역 추출
+    recom_cs_part = []
+    if len(my_cs_part) < 3:
+        pass_p_cs = 0
+        recom_cs_part = list(set(cs_part) - set(my_cs_part))
+
+
+    # ---------------------------------------------------------------------------------
+
+
+    # 내가들은 전필 + 전선의 동일과목 학수번호 추가한 리스트
+    user_major_lec = add_same_lecture(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())
+    # 내가들은 교선 + 내 학과의 교선 필수과목 추가 리스트
+    user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in s_row.cs_list.split('/')]
+
+
+    # 1차 - 유저의 학과 + 영역 + 학수번호 + 등장횟수를 담은 쿼리셋 추출
+    other_me = UserGrade.objects.filter(major = ui_row.major, classification = '전필').values_list('subject_num').annotate(count=Count('subject_num'))
+    other_ms = UserGrade.objects.filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
+    # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
+    # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목 제외 
+    recom_cs_part = []
+    part_candidate = recom_cs_part
+    if not part_candidate :
+        part_candidate = cs_part
+    other_cs = UserGrade.objects.filter(classification__in = ['교선1', '중선'], grade__gte = 2, selection__in=part_candidate)
+    other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
+
+
+
+    
+    print('-------- 전필 -------- ')
+
+    for row in make_recommend_list_other(other_me, user_major_lec):
+        print(row)
+
+    print('-------- 전선 --------')
+    for row in make_recommend_list_other(other_ms, user_major_lec):
+        print(row)
+
+    print('-------- 교선 -------- ')
+    for row in make_recommend_list_other(other_cs, user_cs_lec):
+        print(row)
+    
+
+
+
     '''
+    print(ug_MR)
+    print('------------')
+    
+    recom_me = []
+    for s_num, num in ug_MR:
+        if len(recom_me) >= 7:
+            break
+        # 뉴렉쳐에 있는 학수번호 + 내가 안들은것만 담기
+        nl = NewLecture.objects.filter(subject_num=s_num)
+        if nl.exists() and (s_num not in user_major_lec):
+            recom_me.append(s_num)
+        
+    print(list_to_query(recom_me))
+    '''
+
     return HttpResponse('테스트 완료, 터미널 확인')
 
