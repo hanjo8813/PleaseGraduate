@@ -1303,7 +1303,8 @@ def r_admin_test(request):
     for row in NewUserInfo.objects.all():
         uid.append([row.student_id,row.name])
     context={
-        'uid' : uid
+        'uid' : uid,
+        'uid_num' : len(uid),
     }
     return render(request, "admin_test.html", context)
 
