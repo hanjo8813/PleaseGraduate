@@ -22,16 +22,16 @@
         </div>
         <div class="login_box">
             <!-- 로그인 폼 -->
-            <form action="/f_login/" method="post">
+            <form action="/f_login/" method="post" onsubmit="return check_up1()">
                 {% csrf_token %}
                 <div class="textbox">
                     <label>아이디</label>
-                    <input type="text" name="id" placeholder="ID">
+                    <input type="text" id="id" name="id" placeholder="ID">
                     <label>비밀번호</label>
-                    <input type="password" name="pw" placeholder="PASSWORD">
+                    <input type="password" id="pw" name="pw" placeholder="PASSWORD">
                 </div>
                 <div id="">
-                    <input onclick="pop_modal()" type='submit' class='login_btn' value='로그인'>
+                    <input type='submit' class='login_btn' value='로그인'>
                 </div>
                 <div class="regi_find_pwd">
                     <a href="/agree/">회원가입</a>
@@ -112,6 +112,14 @@
     }
 
     // ID/비번 안치면 빠꾸
+    function check_up1() {
+        if (!document.getElementById('pw').value || !document.getElementById('id').value) {
+            alert('ID/PW를 입력해주세요.');
+            return false;
+        }
+        pop_modal();
+        return true;
+    }
     function check_up2() {
         if (!document.getElementById('pw2').value || !document.getElementById('id2').value) {
             alert('ID/PW를 입력해주세요.');
