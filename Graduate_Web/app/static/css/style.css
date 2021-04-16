@@ -317,6 +317,7 @@ input[type="number"]
 body:not(.device-touch) .ajax_search_btn,
 body:not(.device-touch) .add_btn,
 body:not(.device-touch) .save_btn,
+body:not(.device-touch) .tooltip,
 body:not(.device-touch) .rbutton,
 body:not(.device-touch) .show_table,
 body:not(.device-touch) .my_box_mod_btn,
@@ -996,6 +997,7 @@ body:not(.device-touch) .suc_btn
     cursor: pointer;
 }
 
+.tooltip:hover,
 .rbutton:hover {
     background-color: white;
     color: #272727;

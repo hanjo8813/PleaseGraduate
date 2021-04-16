@@ -1550,7 +1550,7 @@ def f_test(request):
     part_candidate = recom_cs_part
     if not part_candidate :
         part_candidate = cs_part
-    other_cs = UserGrade.objects.filter(classification__in = ['교선1', '중선'], grade__gte = 2, selection__in=part_candidate)
+    other_cs = UserGrade.objects.filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
 
