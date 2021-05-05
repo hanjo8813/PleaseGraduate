@@ -1,6 +1,5 @@
 <div align='center'>
     <h3> 사이트 version 2.0 베타 테스트 중... </h3>
-    <h3> 현재 과금 문제로 사용 불가 </h3>
 </div>
 
 <br>
