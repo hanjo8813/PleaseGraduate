@@ -226,11 +226,12 @@
         html += "<td class='grade_table_td'>";
         html += "<select id='classification' class='td_input'>";
         html += "<option value='x' selected>-- 선택 --</option>"
-        html += "<option value='전선'>전선</option>"
         html += "<option value='전필'>전필</option>"
-        html += "<option value='기교'>기교</option>"
+        html += "<option value='전선'>전선</option>"
+        html += "<option value='교필'>교필</option>"
         html += "<option value='교선1'>교선1</option>"
         html += "<option value='교선2'>교선2</option>"
+        html += "<option value='기교'>기교</option>"
         html += "<option value='연필'>연필</option>"
         html += "<option value='연선'>연선</option>"
         html += "<option value='복필'>복필</option>"
@@ -264,11 +265,15 @@
         var grade = document.getElementById('grade').value;
         //  만약 기이수과목표에 있는 학수번호를 추가하려 한다면?
         var now_s_num_list = []
-        $('#mytable tr').each(function(){
-            now_s_num_list.push($(this).find('td').eq(2).text())
-        });
-
-        console.log(now_s_num_list);
+        $('#mytable tr').each(
+            function(){
+                var inner_s_num = $(this).find('td').eq(2).text();
+                if(inner_s_num === ""){
+                    inner_s_num = $(this).find('td').eq(2).find('*').val();
+                }
+                now_s_num_list.push(inner_s_num)
+            }
+        );
         if(now_s_num_list.includes(subject_num)){
             // 전체 리스트에 들어있으면
             return alert('🥵 이미 기이수과목표에 해당 학수번호가 존재합니다!');
@@ -304,6 +309,8 @@
         newCell6.innerHTML = "<input class='new_td_input' type='text' name='grade' value='" + grade + "' readonly>";
         newCell7.innerHTML = "<button class='del_btn' onclick='del_row_new(this)'>삭제</button>";
         // 검색 결과창은 지워준다. 
+        var s_num = document.querySelector('#s_num');
+        s_num.value = '';
         var result_div = document.querySelector('#result_div');
         result_div.innerHTML = "";
     }

@@ -3,6 +3,7 @@ import os
 import json
 import time
 import shutil
+import openpyxl
 import pandas as pd
 import numpy as np
 import platform
@@ -159,6 +160,7 @@ def f_login(request):
         messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/login/')
     ui_row = ui_row[0]
+
     # 1. mypage 컨텍스트 정보가 없다면 context를 json으로 변환 후 user_info에 저장
     if ui_row.mypage_json == None :
         mypage_context = f_mypage(user_id)
@@ -345,23 +347,40 @@ def f_mod_pw(request):
 def f_mod_grade(request):
     # 넘겨받은 파일 꺼내기
     excel = request.FILES['excel']
+
     # 검사1 : 엑셀파일인지 검사
-    if excel.name[-3:] != 'xls':
-        messages.error(request, '⚠️ 잘못된 파일 형식입니다. 확장자가 xls인 파일을 올려주세요. ')
+    if excel.name[-4:] != 'xlsx':
+        messages.error(request, '⚠️ 잘못된 파일 형식입니다. 확장자가 xlsx인 파일을 올려주세요. ')
         return redirect('/mypage/')
-    # 엑셀을 df로 변환
-    df = pd.read_excel(excel.read(), index_col=None)
+    try:
+        # 엑셀 파일을 수정해줘야함
+        wb = openpyxl.load_workbook(excel)
+        ws = wb.active
+        # 1~4 행에서 컬럼명 행 빼고 삭제
+        ws.delete_rows(1,2)
+        ws.delete_rows(2)
+        # 엑셀을 df로 변환
+        df = pd.DataFrame(ws.values)
+        # 첫 행을 컬럼으로 지정
+        df.columns = df.iloc[0, :]
+        df = df.iloc[1:, :]
+        df = df.drop(['순번'], axis=1)
+    except:
+        messages.error(request, '⚠️ 엑셀 내용이 다릅니다! 수정하지 않은 엑셀파일을 올려주세요.')
+        return redirect('/mypage/')
+
     # 검사2 : 형식에 맞는지 검사
     if list(df.columns) != ['년도', '학기', '학수번호', '교과목명', '이수구분', '교직영역', '선택영역', '학점', '평가방식', '등급', '평점', '개설학과코드']:
         messages.error(request, '⚠️ 엑셀 내용이 다릅니다! 수정하지 않은 엑셀파일을 올려주세요.')
         return redirect('/mypage/')
     # 검사를 통과하면 df를 형식에 맞게 수정
     df.fillna('', inplace = True)
+
     # 논패, F과목 삭제
     n = df.shape[0]
     flag = 0    
     while(True):
-        for i in range(n):
+        for i in range(1, n, 1):
             if i == n-1 :
                 flag = 1
             if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
@@ -394,6 +413,7 @@ def f_mod_grade(request):
     # json DB도 업데이트
     update_json(user_id)
     messages.success(request, '업데이트성공')
+    
     return redirect('/mypage/')
 
 def f_find_pw(request):
@@ -938,7 +958,7 @@ def f_result(user_id, major_status):
 
     
     # 머신러닝 정확도와 시간이 너무 오래걸리므로 변경
-    '''
+    
     # 머신러닝 할 데이터프레임 생성
     mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
     mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
@@ -976,7 +996,7 @@ def f_result(user_id, major_status):
     zip_me, pass_ml_me = recom_machine_learning(mr_train, user_id, user_major_lec)
     zip_ms, pass_ml_ms = recom_machine_learning(mc_train, user_id, user_major_lec)
     zip_cs, pass_ml_cs = recom_machine_learning(ec_train, user_id, [])
-    '''
+    
 
 
     
@@ -1301,7 +1321,7 @@ def r_admin_test(request):
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
-        uid.append([row.student_id, row.major, row.name])
+        uid.append([row.major, row.student_id, row.name])
     
     context={
         'uid' : uid,
@@ -1481,12 +1501,12 @@ def f_input_st(request):
 def make_recommend_list_other(other_, user_lec_list):
     # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
     other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
-    print(other_)
+    #print(other_)
     # 7개만 추천하기 + 내가 들었던 과목은 제외하기
     recom = []
     rank = 0
     for s_num, num in other_:
-        if len(recom) >= 7:
+        if len(recom) >= 10:
             break
         # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
         if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
@@ -1541,18 +1561,22 @@ def f_test(request):
     user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in s_row.cs_list.split('/')]
 
 
-    # 1차 - 유저의 학과 + 영역 + 학수번호 + 등장횟수를 담은 쿼리셋 추출
-    other_me = UserGrade.objects.filter(major = ui_row.major, classification = '전필').values_list('subject_num').annotate(count=Count('subject_num'))
-    other_ms = UserGrade.objects.filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
+    # 1차 - 유저의 학과 + 영역 + 학수번호 + 등장횟수를 담은 쿼리셋 추출 / 커스텀은 제외함
+    other_me = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전필').values_list('subject_num').annotate(count=Count('subject_num'))
+    other_ms = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
     # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
-    # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목 제외 
+    # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목+커스텀 제외 
     recom_cs_part = []
     part_candidate = recom_cs_part
     if not part_candidate :
         part_candidate = cs_part
-    other_cs = UserGrade.objects.filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
+    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
+
+    # other_cs = other_cs.values_list('subject_name').annotate(count=Count('subject_num'))
+    # for row in sorted(list(other_cs), key = lambda x : x[1], reverse=True):
+    #     print(row)
 
 
     
@@ -1569,7 +1593,7 @@ def f_test(request):
     for row in make_recommend_list_other(other_cs, user_cs_lec):
         print(row)
     
-
+    
 
 
     '''
