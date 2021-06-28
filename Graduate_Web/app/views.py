@@ -474,6 +474,12 @@ def selenium_DHC(id, pw):
         except:
             driver.quit()
             return 1
+        # 팝업창 있을 경우 모두 닫아준다
+        while 1:
+            try:
+                driver.find_element_by_class_name("close").click()
+            except:
+                break
         driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
         # 독서 권수 리스트에 저장
@@ -534,6 +540,12 @@ def selenium_DHC(id, pw):
                 driver.quit()
                 display.stop()
                 return 1
+            # 팝업창 있을 경우 모두 닫아준다
+            while 1:
+                try:
+                    driver.find_element_by_class_name("close").click()
+                except:
+                    break
             driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
             # 독서 권수 리스트에 저장
@@ -756,65 +768,24 @@ def add_same_lecture(list_):
                     list_.append(r.subject_num)
     return list_
 
-def recom_machine_learning(what, user_id, user_list):
-    # 해당 이수구분에 맞게 데이터 merge
-    del what['선택영역']
-    rec = what
-    #학생, 과목, 평점 하나의 데이터 프레임으로 묶기(User가 듣지 않은 과목 뭔지 찾기)
-    tab = pd.crosstab(rec['학번'],rec['학수번호']) #사용자가 어떤 과목을 듣지 않았는지 확인하기 위하여 데이터프레임 shape 변경
-    tab_t = tab.transpose().reset_index()
-    item_ids =[] #유저가 듣지 않은 과목
-    for i in range(tab_t.shape[0]):
-        if tab_t[user_id][i] == 0:
-            item_ids.append(tab_t['학수번호'][i])
-    #학습준비
-    reader = Reader(rating_scale=(0,2))
-    data = Dataset.load_from_df(df=rec, reader=reader)
-    train = data.build_full_trainset()
-    test = train.build_testset()
-    #모델학습
-    # n_epochs -> 학습시킬 횟수.
-    model = SVD(n_factors=100, n_epochs=1,random_state=123)
-    model.fit(train) # 모델 학습 하는 코드
-    actual_rating = 0
-    #학습결과 데이터프레임화
-    item = [] #과목명
-    score = [] #유사도점수
-    for item_id in item_ids :
-        a = model.predict(user_id, item_id, actual_rating)
-        item.append(a[1])
-        score.append(a[3])
-    df = pd.DataFrame({'item':item,'score':score})
-    result = df.sort_values(by=['score'],axis=0,ascending=False).reset_index(drop=True) #결과 데이터프레임
+def make_recommend_list_other(other_, user_lec_list):
+    # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
+    other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
+    #print(other_)
+    # 7개만 추천하기 + 내가 들었던 과목은 제외하기
+    recom = []
+    rank = 0
+    for s_num, num in other_:
+        if len(recom) >= 10:
+            break
+        # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
+        if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
+            rank += 1
+            row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
+            recom.append( [row_dic[0], rank] )
+    # 학수번호 -> 쿼리셋 -> 모든 정보 리스트로 변환 후 리턴
+    return recom
 
-    # 추천지수를 백분율로 바꾸기
-    score = {}
-    for r in result['score'].tolist():
-        score[r] = round(r/2*100, 3)
-    result = result.replace({'score':score})
-
-    # 1. 추천 과목이 최신 과목이 아니라면 삭제
-    # 2. 전공case:추천 과목이 전필+전선에서 내가 이미 들은것이면 삭제.
-    for i, row in result.iterrows():
-        nl = NewLecture.objects.filter(subject_num=row['item'])
-        if not nl.exists():
-            result = result.drop([i])
-            continue
-        if row['item'] in user_list:
-            result = result.drop([i])
-    # 만약 학습시킬게 없어서 추천리스트가 비었을경우
-    pass_ml = 0
-    if result['item'].tolist():
-        pass_ml = 1
-
-    # 추천 과목 쿼리 + 추천지수를 7개까지 묶어서 리턴하기
-    zipped = []
-    for s_num, score in zip(result['item'].tolist()[:7], result['score'].tolist()[:7]):
-        temp = AllLecture.objects.filter(subject_num = s_num)
-        if temp.exists():
-            zipped.append([list(temp.values())[0], score])
-        
-    return zipped, pass_ml
 
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
@@ -956,64 +927,41 @@ def f_result(user_id, major_status):
 
     #------------------------------------------------------------------------------------
 
-    
-    # 머신러닝 정확도와 시간이 너무 오래걸리므로 변경
-    
-    # 머신러닝 할 데이터프레임 생성
-    mr_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    mc_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ec_train = pd.DataFrame(columns=['학번', '학수번호', '선택영역', '평점'])
-    ug_MR = UserGrade.objects.filter(major = ui_row.major, classification = '전필')
-    ug_MC = UserGrade.objects.filter(major = ui_row.major, classification = '전선')
-    ug_EC = UserGrade.objects.filter(classification = '교선1') | UserGrade.objects.filter(classification = '중선')
-    for u in ug_MR:
-        mr_train.loc[len(mr_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    for u in ug_MC:
-        mc_train.loc[len(mc_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    for u in ug_EC:
-        ec_train.loc[len(ec_train)] = [u.student_id, u.subject_num, u.selection, 1]
-    # 만약 사용자가 전필을 아예 안들었다면?
-    if user_id not in mr_train['학번'].tolist() :
-        new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}
-        mr_train = mr_train.append(new_data,ignore_index=True)
-    # 만약 사용자가 전선을 아예 안들었다면?
-    if user_id not in mc_train['학번'].tolist():
-        new_data = {'학번': user_id, '학수번호': 0, '선택영역':0,'평점':0}
-        mc_train = mc_train.append(new_data,ignore_index=True)
-    # 중선 안들은 영역만 추천하기
-    if recom_cs_part:
-        store = []
-        for i in recom_cs_part:
-            is_in = ec_train['선택영역'] == i
-            store.append(ec_train[is_in])
-        ec_train = pd.concat(store).sort_values(by=['학번'], axis=0)
-        ec_train = ec_train.reset_index(drop = True)
-        new_data = {'학번': user_id, '학수번호': ec_train['학수번호'][0], '선택영역':0,'평점':0}
-        ec_train = ec_train.append(new_data,ignore_index=True)
-        
-    # 사용자가 들은 전공 과목 리스트 (동일과목의 학수번호까지 포함)
-    user_major_lec = add_same_lecture(list(set(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())))
-    zip_me, pass_ml_me = recom_machine_learning(mr_train, user_id, user_major_lec)
-    zip_ms, pass_ml_ms = recom_machine_learning(mc_train, user_id, user_major_lec)
-    zip_cs, pass_ml_cs = recom_machine_learning(ec_train, user_id, [])
-    
+    # 추천 알고리즘
 
+    # 내가들은 전필 + 전선의 동일과목 학수번호 추가한 리스트
+    user_major_lec = add_same_lecture(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())
+    # 내가들은 교선 + 내 학과의 교선 필수과목 추가 리스트
+    user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in s_row.cs_list.split('/')]
 
-    
+    # 1차 - 유저의 학과 + 영역 + 학수번호 + 등장횟수를 담은 쿼리셋 추출 / 커스텀은 제외함
+    other_me = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전필').values_list('subject_num').annotate(count=Count('subject_num'))
+    other_ms = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
+    # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
+    # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목+커스텀 제외 
+    recom_cs_part = []
+    part_candidate = recom_cs_part
+    if not part_candidate :
+        part_candidate = cs_part
+    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
+    other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
+    # context에 넘겨줄 변수 저장
+    recom_me = make_recommend_list_other(other_me, user_major_lec)
+    recom_ms = make_recommend_list_other(other_ms, user_major_lec)
+    recom_cs = make_recommend_list_other(other_cs, user_cs_lec)
+    pass_ml_me = 1
+    pass_ml_ms = 1
+    if not recom_me:
+        pass_ml_me = 0
+    if not recom_ms:
+        pass_ml_ms = 1
 
     recommend_sel = {
-        'me' : zip_me,    # 전필 zip(학수번호, 추천지수)    
-        'ms' : zip_ms,    # 전선
-        'cs' : zip_cs,    # 교선
+        'me' : recom_me,    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_ms,    # 전선
+        'cs' : recom_cs,    # 교선
     }
-
-    
-    '''
-    pass_ml_me = 0
-    pass_ml_ms = 0
-    recommend_sel = []
-    '''
 
     # 영어합격기준
     eng_standard_all = {'TOEIC':700,'TOEFL':80,'TEPS':556,'OPIc':'LOW','TOEIC_Speaking':120}       
@@ -1498,23 +1446,6 @@ def f_input_st(request):
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 
-def make_recommend_list_other(other_, user_lec_list):
-    # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
-    other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
-    #print(other_)
-    # 7개만 추천하기 + 내가 들었던 과목은 제외하기
-    recom = []
-    rank = 0
-    for s_num, num in other_:
-        if len(recom) >= 10:
-            break
-        # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
-        if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
-            rank += 1
-            row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
-            recom.append( [row_dic, rank] )
-    # 학수번호 -> 쿼리셋 -> 모든 정보 리스트로 변환 후 리턴
-    return recom
 
 
 def f_test(request):
@@ -1582,7 +1513,7 @@ def f_test(request):
     
     print('-------- 전필 -------- ')
 
-    for row in make_recommend_list_other(other_me, user_major_lec):
+    for row in make_recommend_list_other([], user_major_lec):
         print(row)
 
     print('-------- 전선 --------')

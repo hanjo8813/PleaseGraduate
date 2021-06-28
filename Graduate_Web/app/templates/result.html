@@ -325,9 +325,9 @@
         <br>
         <div style="padding: 1rem; text-align: center;">
             <!-- 추천과목 -->
-            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> AI 추천과목
+            <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
             </div>
-            <div class="mydiv">빅데이터를 기반으로 머신러닝을 통해 추천합니다.</div>
+            <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
             <hr>
             {% if not pass_obj.n_me %}
                 {% if pass_obj.ml_me %}
@@ -338,7 +338,7 @@
                         <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                         <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">추천지수</th>
+                        <th style="width:12%">추천순위</th>
                     </tr>
                     {% for a,b in recommend_sel.me %}
                     <tr class="mytr">
@@ -376,9 +376,9 @@
         <div class="modal_div">
             <div class="p_div">
                 <!-- 추천과목 -->
-                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> AI 추천과목
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i>추천과목
                 </div>
-                <div class="mydiv">빅데이터를 기반으로 머신러닝을 통해 추천합니다.</div>
+                <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전선과목 순으로 추천합니다.</div>
                 <hr>
                 {% if not pass_obj.n_ms %}
                     {% if pass_obj.ml_ms %}
@@ -389,7 +389,7 @@
                             <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                             <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                             <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                            <th style="width:12%">추천지수</th>
+                            <th style="width:12%">추천순위</th>
                         </tr>
                         {% for a,b in recommend_sel.ms %}
                         <tr class="mytr">
@@ -601,10 +601,10 @@
             <!-- 추천과목 -->
             {% if not pass_obj.t_cs %}
             <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> AI 추천과목
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i>추천과목
                 </div>
                 <div class="mydiv">
-                    빅데이터를 기반으로 머신러닝을 통해 추천합니다. (내가 부족한 영역의 과목을 추천합니다.)
+                    전체 사용자들이 가장 많이 수강했던 교양과목 순으로 추천합니다. (부족한 필수영역을 우선으로 보여줍니다)
                 </div>
                 <hr>
                 <table class="mytable">
@@ -614,7 +614,7 @@
                         <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                         <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">추천지수</th>
+                        <th style="width:12%">추천순위</th>
                     </tr>
                     {% for a,b in recommend_sel.cs %}
                     <tr class="mytr">
