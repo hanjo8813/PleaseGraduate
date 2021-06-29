@@ -585,7 +585,7 @@ body:not(.device-touch) .suc_btn
     display: flex;
     flex-direction: column;
     width: 28rem;
-    height: 17rem;
+    height: 18rem;
     padding:2.5rem;
     margin: 1rem 1rem 1rem;
     border:1px solid rgb(216, 216, 216);

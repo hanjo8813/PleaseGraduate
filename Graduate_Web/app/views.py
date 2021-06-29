@@ -2,6 +2,7 @@
 import os
 import json
 import time
+import datetime
 import shutil
 import openpyxl
 import pandas as pd
@@ -435,6 +436,26 @@ def f_find_pw(request):
         return redirect('/login/')
     context = {'user_id' : user_id }
     return render(request, 'changePW.html', context)
+
+def f_delete_account(request):
+    user_id = request.session.get('id')
+    pw = request.POST.get('pw')
+
+    # 해당 사용자의 DB 쿼리셋
+    ui_row = NewUserInfo.objects.filter(student_id=user_id)
+    ug = UserGrade.objects.filter(student_id = user_id)
+
+    # 비밀번호 일치 검사
+    if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
+        messages.error(request, '⚠️ 비밀번호를 확인하세요.')
+        return redirect('/mypage/')
+
+    # 데이터베이스 삭제
+    ui_row.delete()
+    ug.delete()
+    request.session.clear()
+    
+    return render(request, 'success_delete.html')
     
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
@@ -674,8 +695,12 @@ def r_success(request):
     elif eng != '해당없음' and eng != '초과학기면제':
         eng = eng + '/' + str(request.POST.get('eng_score'))
 
+    # 가입시간을 저장
+    register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     # 테스트 user_info 테이블에 데이터 입력
     new_ui = NewUserInfo()
+    new_ui.register_time = register_time
     new_ui.student_id = student_id
     new_ui.password = password
     new_ui.year = year
@@ -772,7 +797,7 @@ def make_recommend_list_other(other_, user_lec_list):
     # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
     other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
     #print(other_)
-    # 7개만 추천하기 + 내가 들었던 과목은 제외하기
+    # 10개만 추천하기 + 내가 들었던 과목은 제외하기
     recom = []
     rank = 0
     for s_num, num in other_:
