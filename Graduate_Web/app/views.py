@@ -104,13 +104,25 @@ def f_add_custom(request):
     return redirect('/mypage/')
 
 def r_head(request):
+    vc = VisitorCount.objects.get(index=0)
+    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
+
     context = {
         # 세션 테이블의 행의 개수 (방문자 수)를 센다
-        'visit_num' : DjangoSession.objects.count(),
+        'visit_num' : vc.visit_count,
         # success_test_count 테이블의 검사횟수 누적값을 가져옴
-        'test_num' : SuccessTestCount.objects.get(index=0).num_count,   
+        'user_num' : user_num
     }
-    return render(request, "head.html", context)
+    res = render(request, "head.html", context)
+
+    # 해당 사용자의 브라우저가 첫 방문일 경우 +1
+    if request.COOKIES.get('is_visit') is None:
+        # 쿠키는 1주동안 유지
+        res.set_cookie('is_visit', 'visited', 7*24*60*60)
+        vc.visit_count += + 1
+        vc.save()
+    
+    return res
 
 def r_agree(request):
     return render(request, "agree.html")
@@ -654,7 +666,7 @@ def r_register(request):
     
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
     if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
-        messages.error(request, '😢 아직 데이터베이스에 해당 학과-학번의 수강편람 기준이 없어 검사가 불가합니다.')
+        messages.error(request, '😢 아직 PleaseGraduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
         return redirect('/agree/')
     
     # 나머지 데이터도 추가해주기

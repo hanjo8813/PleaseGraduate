@@ -353,7 +353,7 @@
                 </table>
                 {% else %}
                 <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
-                    😱 죄송합니다... 아직 머신러닝할 '{{user_info.major}}'의 데이터가 부족합니다...
+                    😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
                     </div>
                 {% endif %}
             {% endif %}
@@ -376,7 +376,7 @@
         <div class="modal_div">
             <div class="p_div">
                 <!-- 추천과목 -->
-                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i>추천과목
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
                 </div>
                 <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전선과목 순으로 추천합니다.</div>
                 <hr>
@@ -404,7 +404,7 @@
                     </table>
                     {% else %}
                         <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
-                            😱 죄송합니다... 아직 머신러닝할 '{{user_info.major}}'의 데이터가 부족합니다...
+                            😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
                         </div>
                     {% endif %}
                 {% endif %}
@@ -601,7 +601,7 @@
             <!-- 추천과목 -->
             {% if not pass_obj.t_cs %}
             <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i>추천과목
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
                 </div>
                 <div class="mydiv">
                     전체 사용자들이 가장 많이 수강했던 교양과목 순으로 추천합니다. (부족한 필수영역을 우선으로 보여줍니다)

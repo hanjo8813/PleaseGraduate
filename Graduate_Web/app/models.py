@@ -66,13 +66,13 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
-class SuccessTestCount(models.Model):
+class VisitorCount(models.Model):
+    visit_count = models.IntegerField()
     index = models.IntegerField(primary_key=True)
-    num_count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'success_test_count'
+        db_table = 'visitor_count'
 
 class MajorDepartment(models.Model):
     major = models.CharField(primary_key=True, max_length=45)
