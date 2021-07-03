@@ -1,12 +1,26 @@
 # 개발일지
 
-## SejongGraduateHellper 프로젝트를 AWS 서버에 배포하기.
-
-- [협업때 쓰던 commit 규칙](/commit_rule.md)
+## Please Graduate의 개발 과정을 기록합니다
 
 <br>
 
 ## 개발/업데이트 기록
+
+### 6/29
+> 총 방문자 수 : `1070` / 실사용자 수 : `421`
+- **version 2.0 Beta 2 배포**
+- 추천 알고리즘 변경 : 머신러닝 -> 이수 빈도수
+- 회원탈퇴 기능 추가
+- 업로드 엑셀 형식 변경
+- 커스텀 버그 수정
+
+### 03/28
+- **version 2.0 Beta 1 배포**
+- 기이수성적표를 크롤링해서 받아오는 방식을 -> 엑셀 업로드하는 방식으로 변경
+- 회원가입 기능 추가
+- 기이수과목 커스텀 기능 추가
+- 비밀번호 변경 기능 추가
+- 영어성적 입력 및 연계/복수 전공 기준 추가
 
 ### 02/15
 > 총 방문자 수 : `512` / 총 검사 횟수 : `416` / 실사용자 수 : `260`
@@ -32,7 +46,7 @@
 
 ### 02/09
 > 총 방문자 수 : `152` / 총 검사 횟수 : `156`
-- version 1.0으로 첫 배포
+- **version 1.0으로 첫 배포**
 - 150회 이상의 검사로 uis의 우회 로그인 차단
 - index 페이지에 공지 후 사이트 이용 차단 후 점검
 
@@ -69,6 +83,7 @@
 <br>
 
 ## 설치한 라이브러리 목록
+> venv를 사용하지 않기 때문에 기록
 
 - `pip install django`
 - `pip install mysqlclient`
@@ -78,19 +93,5 @@
 - `pip install beautifulsoup4`
 - `pip install surprise`
 - `pip install django-pandas`
+- `pip install openpyxl`
 - `pip install pylint-django` (vs코드용)
-
-<br>
-
-## 참고 사이트 
-
-- [HTTPS 개념](https://webactually.com/2018/11/16/http%EC%97%90%EC%84%9C-https%EB%A1%9C-%EC%A0%84%ED%99%98%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%9C-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C/)
-- [AWS -> ACM + 로드밸런서 + Route53 HTTPS 적용](https://jootc.com/p/202004053362)
-- [AWS mysql 설치](https://ndb796.tistory.com/314)
-- [AWS-Django 연동](https://nerogarret.tistory.com/47)
-- [AWS-Django 연동2](https://nachwon.github.io/django-deploy-3-nginx/)
-- [ubuntu vim 사용](https://jhnyang.tistory.com/54)
-- [ubuntu 크롬 드라이버](https://dvpzeekke.tistory.com/1)
-- [ubuntu 파일 권한 변경 chmod](https://withcoding.com/103)
-- [Django 세션 settings](https://ndjman7.github.io/django/2019/12/21/Django%EC%97%90%EC%84%9C-%EC%84%B8%EC%85%98-%EC%9C%A0%EC%A7%80%EC%8B%9C%EA%B0%84-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0.html)
-- [Django 세션DB 클리어](http://www.iorchard.net/docs/pvdi2/django_clearsessions.html)
