@@ -194,7 +194,6 @@ input[type="number"]
     color:black;
 }
 
-
 .num_visit_test{
     color:rgb(207, 207, 207);
     font-size:0.9rem;
@@ -206,6 +205,34 @@ input[type="number"]
     margin-top:6rem;    
 }
 
+.popup_content{
+    margin:0 auto;
+    text-align: center;
+    width:90%;
+}
+.popup_title{
+    margin-top:2rem;
+    font-size:2.5rem; 
+    font-weight:bold; 
+    color : #d32f2f
+}
+.popup_box{
+    margin:0 auto;
+    font-size:1.1rem; 
+    margin-top:2rem; 
+    margin-bottom:1rem; 
+    text-align:left; 
+    padding:1.5rem 2rem 1.5rem 2rem;
+    border: 1px solid rgb(216, 216, 216);
+}
+.popup_box li{
+    line-height: 2.5rem;
+}
+.popup_check{
+    font-size:1.2rem; 
+    text-align: right;
+    color:gray;
+}
 
 @keyframes fadein {
     from {opacity:0;}
@@ -317,6 +344,7 @@ input[type="number"]
 body:not(.device-touch) .ajax_search_btn,
 body:not(.device-touch) .add_btn,
 body:not(.device-touch) .save_btn,
+body:not(.device-touch) .tooltip,
 body:not(.device-touch) .rbutton,
 body:not(.device-touch) .show_table,
 body:not(.device-touch) .my_box_mod_btn,
@@ -584,7 +612,7 @@ body:not(.device-touch) .suc_btn
     display: flex;
     flex-direction: column;
     width: 28rem;
-    height: 17rem;
+    height: 18rem;
     padding:2.5rem;
     margin: 1rem 1rem 1rem;
     border:1px solid rgb(216, 216, 216);
@@ -996,6 +1024,7 @@ body:not(.device-touch) .suc_btn
     cursor: pointer;
 }
 
+.tooltip:hover,
 .rbutton:hover {
     background-color: white;
     color: #272727;

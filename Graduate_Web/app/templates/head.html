@@ -30,24 +30,28 @@
 </header>
 
 <!-- 업데이트 공지 -->
-<div id='myModal' class="modal" style ="display: block;">
+<div id='myModal' class="modal" style ="display: none;">
     <div class="modal-content">
-        <span class="close" style="font-size:3rem;">&times;</span>
-        <div class="modal_div">
-            <br>
-            <div style="font-size:2.5rem; font-weight:bold; color : #d32f2f">
-                ※ version 2.0 베타 테스트 ※
+        <span id='dd' class="close" style="font-size:3rem;">&times;</span>
+        <div class='popup_content'>
+            <div class='popup_title'>
+                version 2.0 Beta 업데이트 내용
             </div>
-            <div style="font-size:1.3rem; margin-top:3rem;">
-                <p style="font-size:2rem; font-weight:bold;">2.0 업데이트 내용</p>
-                <p>1. 더 이상 UIS에 우회 로그인하여 자동으로 성적표를 가져오지 않습니다.</p>
-                <p>2. 따라서 자신의 기이수성적 엑셀을 직접 업로드 해야합니다.</p>
-                <p>3. 회원가입 절차를 추가하여 자신의 졸업정보에 대한 체계적인 관리기능을 제공합니다.</p>
+            <div class='popup_box'>
+                <ul>
+                    <li>UIS 개편으로 인한 엑셀 형식이 변경되었습니다.</li>
+                    <li>커스텀 기능 버그가 수정되었습니다.</li>
+                    <li>머신러닝 과목 추천이 삭제되고, 추천 알고리즘이 변경되었습니다.</li>
+                    <li>회원탈퇴 기능이 추가되었습니다.</li>
+                    <li>팝업창 다시보지 않기 기능이 추가되었습니다.</li>
+                </ul>
+            </div>
+            <div class="popup_check">
+                <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>&nbsp;&nbsp;일주일동안 보지 않을래요
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- 웹 권장 모달 (모바일에서만 뜸) 
 <div id='myModal' class="modal" style ="display: none;">
@@ -82,13 +86,26 @@
     }
     */
 
-    // 모달 창
-    var Spanclick = function (x, y) {
+    // 쿠키 여부에 따라 모달창 렌더링
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook' + '=([^;]*)(;|$)');
+    if(unlook_cookie == null){
+        document.getElementById('myModal').style.display = 'block';
+    }
+
+    // 모달 창 끄기 + 다시 보지 않음 쿠키 설정
+    var Spanclick_set_cookie = function (x, y) {
         x.onclick = function () {
             y.style.display = "none";
+            var chk = document.getElementById('unlook');
+            // 체크하고 누르면 쿠키 생성
+            if(chk.checked){
+                var date = new Date();
+                // 유효기간 7일
+                date.setTime(date.getTime() + 7*24*60*60*1000);
+                document.cookie = 'is_unlook' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+            }
         }
     }
-    
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = "none";
@@ -98,6 +115,6 @@
     var modal = document.getElementById('myModal');
     var span = document.getElementsByClassName("close")[0];
 
-    Spanclick(span, modal);
+    Spanclick_set_cookie(span, modal);
 </script>
 {% endblock %}

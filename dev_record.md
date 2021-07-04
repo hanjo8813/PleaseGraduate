@@ -1,6 +1,6 @@
 # 개발일지
 
-## Please Graduate의 개발 과정을 기록합니다
+### Please Graduate의 개발 과정을 기록합니다
 
 <br>
 

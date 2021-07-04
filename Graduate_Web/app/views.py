@@ -104,34 +104,29 @@ def f_add_custom(request):
     return redirect('/mypage/')
 
 def r_head(request):
-    vc = VisitorCount.objects.get(index=0)
-    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
-
     context = {
         # 세션 테이블의 행의 개수 (방문자 수)를 센다
-        'visit_num' : vc.visit_count,
+        'visit_num' : VisitorCount.objects.get(index=0).visit_count,
         # success_test_count 테이블의 검사횟수 누적값을 가져옴
-        'user_num' : user_num
+        'user_num' : UserInfo.objects.count() + NewUserInfo.objects.count()
     }
-    res = render(request, "head.html", context)
+    return render(request, "head.html", context)
 
-    # 해당 사용자의 브라우저가 첫 방문일 경우 +1
-    # 접근된 브라우저가 ELB-HealthChecker/2.0인 경우는 제외해야함
-    browser_type = request.META['HTTP_USER_AGENT']
-    if browser_type != 'ELB-HealthChecker/2.0' and request.COOKIES.get('is_visit') is None:
-        # 쿠키는 1주동안 유지
-        res.set_cookie('is_visit', 'visited', 7*24*60*60)
-        vc.visit_count += + 1
-        vc.save()
-
-    return res
 
 def r_agree(request):
     return render(request, "agree.html")
 
 def r_login(request):
     request.session.clear()
-    return render(request, "login.html")
+    response = render(request, "login.html")
+    # 해당 사용자의 브라우저가 첫 방문일 경우 +1
+    if request.COOKIES.get('is_visit') is None:
+        # 쿠키는 1주동안 유지
+        response.set_cookie('is_visit', 'visited', 7*24*60*60)
+        vc = VisitorCount.objects.get(index=0)
+        vc.visit_count += + 1
+        vc.save()
+    return response
 
 def r_mypage(request):
     ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
@@ -819,9 +814,11 @@ def make_recommend_list_other(other_, user_lec_list):
             break
         # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
         if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
-            rank += 1
-            row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
-            recom.append( [row_dic[0], rank] )
+            # AllLecture에서 이수구분이 교선일때만 리스트에 추가함
+            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전공필수', '전공선택', '교양선택(1영역)', '중핵필수선택']).exists():
+                rank += 1
+                row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
+                recom.append( [row_dic[0], rank] )
     # 학수번호 -> 쿼리셋 -> 모든 정보 리스트로 변환 후 리턴
     return recom
 
@@ -978,7 +975,6 @@ def f_result(user_id, major_status):
     other_ms = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
     # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
     # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목+커스텀 제외 
-    recom_cs_part = []
     part_candidate = recom_cs_part
     if not part_candidate :
         part_candidate = cs_part
@@ -986,20 +982,20 @@ def f_result(user_id, major_status):
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
     # context에 넘겨줄 변수 저장
-    recom_me = make_recommend_list_other(other_me, user_major_lec)
-    recom_ms = make_recommend_list_other(other_ms, user_major_lec)
-    recom_cs = make_recommend_list_other(other_cs, user_cs_lec)
+    recom_select_me = make_recommend_list_other(other_me, user_major_lec)
+    recom_select_ms = make_recommend_list_other(other_ms, user_major_lec)
+    recom_select_cs = make_recommend_list_other(other_cs, user_cs_lec)
     pass_ml_me = 1
     pass_ml_ms = 1
-    if not recom_me:
+    if not recom_select_me:
         pass_ml_me = 0
-    if not recom_ms:
+    if not recom_select_ms:
         pass_ml_ms = 1
 
     recommend_sel = {
-        'me' : recom_me,    # 전필 zip(학수번호, 추천지수)    
-        'ms' : recom_ms,    # 전선
-        'cs' : recom_cs,    # 교선
+        'me' : recom_select_me,    # 전필 zip(학수번호, 추천지수)    
+        'ms' : recom_select_ms,    # 전선
+        'cs' : recom_select_cs,    # 교선
     }
 
     # 영어합격기준
@@ -1110,6 +1106,7 @@ def f_result(user_id, major_status):
         'pass_obj' : pass_obj,              # 패스 여부
         'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
+
     return result_context
 
 
@@ -1308,7 +1305,7 @@ def r_admin_test(request):
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
-        uid.append([row.major, row.student_id, row.name])
+        uid.append([row.register_time, row.major, row.student_id, row.name])
     
     context={
         'uid' : uid,
@@ -1492,7 +1489,7 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
 
-    user_id = '15011187'
+    user_id = '16010795'
     ui_row = UserInfo.objects.get(student_id=user_id)
 
     user_qs = UserGrade.objects.filter(student_id = user_id)
@@ -1543,15 +1540,8 @@ def f_test(request):
     other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
-
-    # other_cs = other_cs.values_list('subject_name').annotate(count=Count('subject_num'))
-    # for row in sorted(list(other_cs), key = lambda x : x[1], reverse=True):
-    #     print(row)
-
-
-    
+    '''
     print('-------- 전필 -------- ')
-
     for row in make_recommend_list_other([], user_major_lec):
         print(row)
 
@@ -1562,25 +1552,13 @@ def f_test(request):
     print('-------- 교선 -------- ')
     for row in make_recommend_list_other(other_cs, user_cs_lec):
         print(row)
-    
-    
-
-
     '''
-    print(ug_MR)
-    print('------------')
-    
-    recom_me = []
-    for s_num, num in ug_MR:
-        if len(recom_me) >= 7:
-            break
-        # 뉴렉쳐에 있는 학수번호 + 내가 안들은것만 담기
-        nl = NewLecture.objects.filter(subject_num=s_num)
-        if nl.exists() and (s_num not in user_major_lec):
-            recom_me.append(s_num)
-        
-    print(list_to_query(recom_me))
-    '''
+
+    # 총 사용자 교선 순위 
+    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'])
+    other_cs = other_cs.values_list('subject_name').annotate(count=Count('subject_num'))
+    for row in sorted(list(other_cs), key = lambda x : x[1], reverse=True):
+        print(row)
 
     return HttpResponse('테스트 완료, 터미널 확인')
 
