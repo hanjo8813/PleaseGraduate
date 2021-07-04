@@ -2,6 +2,5 @@ __pycache__
 *.exe
 update_lecture
 secret.json
-test.py
 
 admin_test.html

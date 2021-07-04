@@ -115,15 +115,15 @@ def r_head(request):
     }
     res = render(request, "head.html", context)
 
-    '''
     # 해당 사용자의 브라우저가 첫 방문일 경우 +1
-    if request.COOKIES.get('is_visit') is None:
+    # 접근된 브라우저가 ELB-HealthChecker/2.0인 경우는 제외해야함
+    browser_type = request.META['HTTP_USER_AGENT']
+    if browser_type != 'ELB-HealthChecker/2.0' and request.COOKIES.get('is_visit') is None:
         # 쿠키는 1주동안 유지
         res.set_cookie('is_visit', 'visited', 7*24*60*60)
         vc.visit_count += + 1
         vc.save()
-    '''
-    
+
     return res
 
 def r_agree(request):
