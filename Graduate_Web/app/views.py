@@ -70,10 +70,8 @@ def f_add_custom(request):
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
     if request.POST['arr_delete']:
-        del_ug = UserGrade.objects.none()
-        for s_num in request.POST['arr_delete'].split(','):
-            temp = UserGrade.objects.filter(subject_num = s_num)
-            del_ug = temp | del_ug
+        del_ug = UserGrade.objects.filter(student_id=user_id, subject_num__in = request.POST['arr_delete'].split(','))
+        print(del_ug.values())
         del_ug.delete()
     # 2. 추가된게 있을 경우
     if request.POST['arr_year']:
@@ -169,26 +167,9 @@ def f_login(request):
     if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
         messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/login/')
-    ui_row = ui_row[0]
-
-    # 1. mypage 컨텍스트 정보가 없다면 context를 json으로 변환 후 user_info에 저장
-    if ui_row.mypage_json == None :
-        mypage_context = f_mypage(user_id)
-        ui_row.mypage_json = json.dumps(mypage_context) # 결과 json을 저장
-        ui_row.save()
-    # 업로드된 이수표가 있을때만 
-    if UserGrade.objects.filter(student_id=user_id).exists():
-        # 2. result context 정보가 DB에 없다면 검사 실시
-        if ui_row.result_json == None :
-            result_context = f_result(user_id, ui_row.major_status)
-            ui_row.result_json = json.dumps(result_context)
-            ui_row.save()
-        # 3. 만약 공학인증 기준이 있는데 공학인증 context가 비었다면
-        is_engine = Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng
-        if ui_row.en_result_json == None and  is_engine != 0 and is_engine != -1 :
-            en_result_context = f_en_result(user_id)
-            ui_row.en_result_json = json.dumps(en_result_context)
-            ui_row.save()
+    # FIXME
+    # !! 로그인시마다 json을 최신화시킨다 !!
+    update_json(user_id)
     # 세션에 ID와 전공상태 저장
     request.session['id'] = user_id
     return redirect('/mypage/')
@@ -805,7 +786,6 @@ def add_same_lecture(list_):
 def make_recommend_list_other(other_, user_lec_list):
     # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
     other_ = sorted(list(other_), key = lambda x : x[1], reverse=True)
-    #print(other_)
     # 10개만 추천하기 + 내가 들었던 과목은 제외하기
     recom = []
     rank = 0
@@ -885,7 +865,6 @@ def f_result(user_id, major_status):
     user_qs = UserGrade.objects.filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
     data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
-
     # 이수 구분마다 df 생성
     # 전필
     df_me = data[data['이수구분'].isin(['전필'])]
@@ -926,11 +905,14 @@ def f_result(user_id, major_status):
     my_dic_ce = make_dic(df_ce['학수번호'].tolist())
     my_dic_cs = make_dic(df_cs['학수번호'].tolist())
     my_dic_b = make_dic(df_b['학수번호'].tolist())
+
     #-------------------------------------------------------------------------------------
+
     # 필수과목 >> 추천과목 리스트 생성 (최신과목으로)   
     recom_ce, check_ce = make_recommend_list(my_dic_ce, dic_ce)   # 중필
     recom_cs, check_cs = make_recommend_list(my_dic_cs, dic_cs)   # 중선
     recom_b, check_b = make_recommend_list(my_dic_b, dic_b)      # 기교
+
     standard_list = {
         'ce' : to_zip_list(list_to_query(dic_ce.keys()), check_ce),
         'cs' : to_zip_list(list_to_query(dic_cs.keys()), check_cs),
@@ -956,7 +938,7 @@ def f_result(user_id, major_status):
     for i, c in enumerate(cs_part):
         if c not in my_cs_part:
             part_check[i] = '미이수'
-    cs_part = {
+    cs_part_zip = {
         'check' : part_check,
         'all' : cs_part,
     }
@@ -975,10 +957,9 @@ def f_result(user_id, major_status):
     other_ms = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
     # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
     # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목+커스텀 제외 
-    part_candidate = recom_cs_part
-    if not part_candidate :
-        part_candidate = cs_part
-    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
+    if not recom_cs_part :
+        recom_cs_part = cs_part
+    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=recom_cs_part)
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
     # context에 넘겨줄 변수 저장
@@ -1102,7 +1083,7 @@ def f_result(user_id, major_status):
         'standard_list' : standard_list,    # 기준 필수과목 리스트
         'recommend_ess' : recommend_ess,    # 필수과목 추천리스트
         'recommend_sel' : recommend_sel,    # 선택과목 추천리스트
-        'cs_part' : cs_part,                # 중선 영역
+        'cs_part_zip' : cs_part_zip,                # 중선 영역
         'pass_obj' : pass_obj,              # 패스 여부
         'en_exist' : en_exist,              # 공학인증 기준 존재여부
     }
@@ -1318,7 +1299,11 @@ def r_admin_test(request):
 def f_user_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
-    request.session['id'] = request.POST['user_id']
+
+    user_id = request.POST['user_id']
+    request.session['id'] = user_id
+    update_json(user_id)
+    
     return redirect('/mypage/')
 
 #  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
