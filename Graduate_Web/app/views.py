@@ -110,7 +110,6 @@ def r_head(request):
     }
     return render(request, "head.html", context)
 
-
 def r_agree(request):
     return render(request, "agree.html")
 
