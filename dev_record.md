@@ -7,6 +7,10 @@
 ## 개발/업데이트 기록
 
 ### 07/05
+- 도메인 변경 : `sejong-please-graduate.ml` -> `please-graduate.com`
+- 
+
+### 07/04
 - 방문자 수 집계 방식 변경
 - 팝업 창 다시보지 않기 기능 추가
 
