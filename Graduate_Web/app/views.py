@@ -1013,7 +1013,7 @@ def f_result(user_id, major_status):
     if standard_num['cs'] <= my_num['cs'] : pass_n_cs = 1     
     if pass_n_cs==1 and pass_p_cs==1: pass_cs_tot = 1
     if not recom_b: pass_b = 1
-    if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and ui_row.eng!=0:
+    if pass_me!=0 and pass_ms!=0 and pass_ce!=0 and  pass_cs_tot!=0 and pass_b!=0 and pass_book!=0 and eng!=0:
         pass_total = 1
     
     pass_obj = {
@@ -1257,7 +1257,7 @@ def f_en_result(user_id):
         'standard_list' : standard_list,
         'recommend' : recommend,
         'pass_obj' : pass_obj,
-    }   
+    }
     return en_result_context
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
@@ -1301,8 +1301,9 @@ def f_user_test(request):
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
+    '''
     update_json(user_id)
-    
+    '''
     return redirect('/mypage/')
 
 #  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
