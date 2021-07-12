@@ -1,6 +1,8 @@
 __pycache__
 *.exe
-update_lecture
-secret.json
 
+col_static
+update_lecture
+
+secret.json
 admin_test.html
