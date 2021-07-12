@@ -47,11 +47,15 @@
                 <tr>
                     <td class="my_box_table_1st_td">고전독서현황</td>
                     <td>
-                        서양 - {{ W }}권 / 
-                        동양 - {{ E }}권
-                        <br>
-                        동서양 - {{ EW }}권 / 
-                        과학사상 - {{ S }}권
+                        {% if special_lec %}
+                            {{ special_lec }}
+                        {% else %}
+                            서양 - {{ W }}권 / 
+                            동양 - {{ E }}권
+                            <br>
+                            동서양 - {{ EW }}권 / 
+                            과학사상 - {{ S }}권
+                        {% endif %}
                     </td>
                 </tr>
             </table>

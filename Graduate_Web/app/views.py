@@ -195,24 +195,29 @@ def f_mypage(user_id):
     is_grade = 1
     if not ug.exists():
         is_grade = 0
-    # 고전독서인증 변환하기
-    W, E, EW, S = ui_row.book[0], ui_row.book[1], ui_row.book[2], ui_row.book[3]
+
     mypage_context ={
         'student_id' : ui_row.student_id,
         'year' : ui_row.year,
         'major' : ui_row.major,
         'major_status' : ui_row.major_status,
         'name' : ui_row.name,
-        'W' : W,
-        'E' : E,
-        'EW' : EW,
-        'S' : S,
         'eng' : ui_row.eng,
         'grade' : list(grade.values()),
         'custom_grade' : list(custom_grade.values()),
         'is_grade' : is_grade,
         'is_engine' : is_engine,
     }
+
+    # 고전독서인증 변환하기
+    if ui_row.book == '고특통과':
+        mypage_context['special_lec'] = '고전특강이수'
+    else:
+        mypage_context['W'] = ui_row.book[0]
+        mypage_context['E'] = ui_row.book[1]
+        mypage_context['EW'] = ui_row.book[2]
+        mypage_context['S'] = ui_row.book[3]
+
     return mypage_context
 
 def update_json(user_id):
@@ -1301,9 +1306,9 @@ def f_user_test(request):
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
-    '''
+    
     update_json(user_id)
-    '''
+    
     return redirect('/mypage/')
 
 #  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
