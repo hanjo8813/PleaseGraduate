@@ -6,9 +6,14 @@
 
 ## 개발/업데이트 기록
 
+### 07/13
+- 검사 결과 버그 수정
+- 고전독서 렌더링 버그 수정
+- 렌더링 방식 리팩토링
+- 오늘 방문자 수 추가
+
 ### 07/05
 - 도메인 변경 : `sejong-please-graduate.ml` -> `please-graduate.com`
-- 
 
 ### 07/04
 - 방문자 수 집계 방식 변경
@@ -97,7 +102,6 @@
 - `pip install django`
 - `pip install django-pandas`
 - `pip install django-crontab`
-
 - `pip install mysqlclient`
 - `pip install pandas`
 - `pip install xlrd`
