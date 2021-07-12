@@ -975,7 +975,7 @@ def f_result(user_id, major_status):
     if not recom_select_me:
         pass_ml_me = 0
     if not recom_select_ms:
-        pass_ml_ms = 1
+        pass_ml_ms = 0
 
     recommend_sel = {
         'me' : recom_select_me,    # 전필 zip(학수번호, 추천지수)    
