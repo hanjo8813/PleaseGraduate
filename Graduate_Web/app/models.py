@@ -9,7 +9,7 @@ from django.utils import timezone
 # 테스트용 테이블
 
 class TestTable(models.Model):
-    num = models.IntegerField(primary_key=True)
+    num = models.AutoField(primary_key=True)
     text = models.CharField(max_length=45)
 
     class Meta:
@@ -67,8 +67,8 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 class VisitorCount(models.Model):
+    visit_date = models.CharField(primary_key=True, max_length=45)
     visit_count = models.IntegerField()
-    index = models.IntegerField(primary_key=True)
 
     class Meta:
         managed = False

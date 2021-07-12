@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'app',
 ]
 
@@ -166,16 +167,23 @@ USE_TZ = True
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app', 'static')
 ]
-
 # 장고가 스태틱 모아줄때 폴더명 지정
 STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
-
 # 요청 받는 이름
 STATIC_URL = '/static/'
 
 
+# 크론탭 설정
+
+# 분 시 일 월 요일
+CRONJOBS = [
+    ('*/1 * * * *', 'app.crontab.insert_today'),
+]
+
+
+'''
 # media root 추가
 #app폴더의 하위폴더로 루트 설정.
 MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
 MEDIA_URL = '/uploaded_media/'
-
+'''

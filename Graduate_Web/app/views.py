@@ -29,7 +29,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 # 모델 참조
 from django.db import models
-from django.db.models import Value, Count
+from django.db.models import Value, Count, Sum
 from .models import *
 # AJAX 통신관련 참조
 from django.views.decorators.csrf import csrf_exempt
@@ -102,9 +102,10 @@ def f_add_custom(request):
     return redirect('/mypage/')
 
 def r_head(request):
+    # 모든 날짜의 방문자수 총합을 구함 (aggregate는 딕셔너리 형태로 반환)
+    visit_sum = VisitorCount.objects.aggregate(Sum('visit_count'))
     context = {
-        # 세션 테이블의 행의 개수 (방문자 수)를 센다
-        'visit_num' : VisitorCount.objects.get(index=0).visit_count,
+        'visit_num' : visit_sum['visit_count__sum'],
         # success_test_count 테이블의 검사횟수 누적값을 가져옴
         'user_num' : UserInfo.objects.count() + NewUserInfo.objects.count()
     }
@@ -118,10 +119,11 @@ def r_login(request):
     response = render(request, "login.html")
     # 해당 사용자의 브라우저가 첫 방문일 경우 +1
     if request.COOKIES.get('is_visit') is None:
-        # 쿠키는 1주동안 유지
-        response.set_cookie('is_visit', 'visited', 7*24*60*60)
-        vc = VisitorCount.objects.get(index=0)
-        vc.visit_count += + 1
+        # 쿠키 수명은 오늘이 끝날때까지
+        response.set_cookie('is_visit', 'visited', 1*24*60*60)
+        today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        vc = VisitorCount.objects.get(visit_date=today_date)
+        vc.visit_count += 1
         vc.save()
     return response
 
@@ -1479,7 +1481,15 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
 
-    user_id = '16010795'
+        
+    today_date = datetime.datetime.now()
+    next_date = datetime.datetime(today_date.year, )
+    #.strftime('%Y-%m-%d')
+    
+
+
+    '''
+    user_id = '15011187'
     ui_row = UserInfo.objects.get(student_id=user_id)
 
     user_qs = UserGrade.objects.filter(student_id = user_id)
@@ -1530,7 +1540,7 @@ def f_test(request):
     other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
     other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
 
-    '''
+    
     print('-------- 전필 -------- ')
     for row in make_recommend_list_other([], user_major_lec):
         print(row)
@@ -1542,13 +1552,13 @@ def f_test(request):
     print('-------- 교선 -------- ')
     for row in make_recommend_list_other(other_cs, user_cs_lec):
         print(row)
-    '''
+    
 
     # 총 사용자 교선 순위 
     other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'])
     other_cs = other_cs.values_list('subject_name').annotate(count=Count('subject_num'))
     for row in sorted(list(other_cs), key = lambda x : x[1], reverse=True):
         print(row)
-
+    '''
     return HttpResponse('테스트 완료, 터미널 확인')
 

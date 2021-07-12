@@ -93,13 +93,15 @@
 ## 설치한 라이브러리 목록
 > venv를 사용하지 않기 때문에 기록
 
+- `pip install pylint-django` (vs코드용)
 - `pip install django`
+- `pip install django-pandas`
+- `pip install django-crontab`
+
 - `pip install mysqlclient`
 - `pip install pandas`
 - `pip install xlrd`
 - `pip install selenium`
 - `pip install beautifulsoup4`
 - `pip install surprise`
-- `pip install django-pandas`
 - `pip install openpyxl`
-- `pip install pylint-django` (vs코드용)
