@@ -8,24 +8,24 @@
 
 ### 07/13
 - 검사 결과 버그 수정 
-- 고전독서 렌더링 버그 수정 ([issue](https://github.com/hanjo8813/SGH_for_AWS/issues/44))
+- 고전독서 렌더링 버그 수정 ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/44))
 - 렌더링 방식 리팩토링
-- 오늘 방문자 수 추가 ([issue](https://github.com/hanjo8813/SGH_for_AWS/issues/45))
+- 오늘 방문자 수 추가 ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/45))
 
 ### 07/05
-- 도메인 변경 : `sejong-please-graduate.ml` -> `please-graduate.com` ([issue]](https://github.com/hanjo8813/SGH_for_AWS/issues/40))
+- 도메인 변경 : `sejong-please-graduate.ml` -> `please-graduate.com` ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/40))
 
 ### 07/04
-- 방문자 수 집계 방식 변경 ([issue]](https://github.com/hanjo8813/SGH_for_AWS/issues/37))
+- 방문자 수 집계 방식 변경 ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/37))
 - 팝업 창 다시보지 않기 기능 추가
 
 ### 06/29
 > 총 방문자 수 : `1070` / 실사용자 수 : `421`
 - **version 2.0 Beta 2 배포**
-- 추천 알고리즘 변경 : 머신러닝 -> 이수 빈도수 ([issue]](https://github.com/hanjo8813/SGH_for_AWS/issues/30))
+- 추천 알고리즘 변경 : 머신러닝 -> 이수 빈도수 ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/30))
 - 회원탈퇴 기능 추가
 - 업로드하는 기이수성적 엑셀 형식 변경
-- 커스텀 버그 수정 ([issue]](https://github.com/hanjo8813/SGH_for_AWS/issues/42))
+- 커스텀 버그 수정 ([내용](https://github.com/hanjo8813/SGH_for_AWS/issues/42))
 
 ### 03/28
 - **version 2.0 Beta 1 배포**
