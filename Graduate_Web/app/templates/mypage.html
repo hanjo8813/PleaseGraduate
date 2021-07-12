@@ -236,7 +236,7 @@
         <form action="/f_mod_info_ms/" method="post" onsubmit="return check_up5()">
             {% csrf_token %}
             <div class="regi_box">
-                <label>본인 학부의 전공을 선택하세요</label>
+                <label>본인 학부의 전공을 선택해야합니다</label>
                 <select id="major_select" name="major_select">
                     <option value="x" selected>-- 선택(필수) --</option>
                     {% for ms in request.session.temp_major_select %}

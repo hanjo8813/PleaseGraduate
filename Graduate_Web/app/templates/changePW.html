@@ -18,7 +18,7 @@
             {% csrf_token %}
             <div class="regi_box">
                 <label>ID</label>
-                <input type="text" name="id" value="{{ user_id }}" style="background-color:rgb(248,249,250);" readonly>
+                <input type="text" name="id" value="{{ request.session.temp_user_id }}" style="background-color:rgb(248,249,250);" readonly>
                 <label>비밀번호</label> 
                 <input id="pw1" type="password" name="password">
                 <label>비밀번호 재확인</label>

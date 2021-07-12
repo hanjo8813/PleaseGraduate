@@ -35,6 +35,58 @@ from .models import *
 from django.views.decorators.csrf import csrf_exempt
 
 
+
+
+# ---------------------------------------------------- ( 렌더링 함수 ) ----------------------------------------------------------------
+
+def r_head(request):
+    # 오늘 날자의 누적 방문자수를 추출
+    today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    today_queryset = VisitorCount.objects.get(visit_date = today_date)
+    visit_today = today_queryset.visit_count
+    # 모든 날짜의 방문자수 총합을 구함 (aggregate는 딕셔너리 형태로 반환)
+    sum_dict = VisitorCount.objects.aggregate(Sum('visit_count'))
+    visit_total = sum_dict['visit_count__sum']
+    # user_info 회원수 + new_user_info 회원수 합계
+    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
+    context = {
+        'visit_today' : visit_today,
+        'visit_total' : visit_total,
+        'user_num' : user_num
+    }
+    return render(request, "head.html", context)
+
+def r_login(request):
+    request.session.clear()
+    response = render(request, "login.html")
+    # 해당 사용자의 브라우저가 첫 방문일 경우 +1
+    if request.COOKIES.get('is_visit') is None:
+        # 쿠키 수명은 날짜가 바뀔 때까지
+        response.set_cookie('is_visit', 'visited', 1*24*60*60)
+        today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        vc = VisitorCount.objects.get(visit_date=today_date)
+        vc.visit_count += 1
+        vc.save()
+    return response
+
+def r_agree(request):
+    return render(request, "agree.html")
+
+def r_register(request):
+    return render(request, "register.html")
+
+def r_success(request):
+    return render(request, 'success.html')
+
+def r_changePW(request):
+    return render(request, 'changePW.html')
+
+def r_mypage(request):
+    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    # user_info DB에서 json을 꺼내 contest 딕셔너리에 저장
+    context = json.loads(ui_row.mypage_json)
+    return render(request, "mypage.html", context)
+
 def r_custom(request):
     # 그냥 mypage json을 넘겨주고 거기서 성적표 뽑아쓰자. (DB히트 줄이려고) 
     ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
@@ -45,93 +97,8 @@ def r_custom(request):
     }
     return render(request, "custom.html", context)
 
-@csrf_exempt
-def a_search(request):
-    # AJAX 통신으로 넘어온 학수번호를 받는다
-    s_num = int(request.POST['back_s_num'])
-    # 학수번호를 all_lecture 테이블에서 검색
-    al = AllLecture.objects.filter(subject_num=s_num)
-    # 존재한다면 
-    if al.exists():
-        result = al.values_list()[0]
-    else:
-        result = "검색실패"
-    context = {
-        'result' : result
-    }
-    return JsonResponse(context)
-
-def f_add_custom(request):
-    # 만약 삭제+추가 둘다 없다면 걍 종료
-    if (not request.POST['arr_delete']) and (not request.POST['arr_year']):
-        return redirect('/mypage/')
-    # 아니라면 일단 정보 추출
-    user_id = request.session.get('id')
-    ui_row = NewUserInfo.objects.get(student_id = user_id)
-    # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
-    if request.POST['arr_delete']:
-        del_ug = UserGrade.objects.filter(student_id=user_id, subject_num__in = request.POST['arr_delete'].split(','))
-        print(del_ug.values())
-        del_ug.delete()
-    # 2. 추가된게 있을 경우
-    if request.POST['arr_year']:
-        # POST로 싹다 받아옴
-        year = request.POST['arr_year'].split(',')
-        semester = request.POST['arr_semester'].split(',')
-        subject_num = request.POST['arr_subject_num'].split(',')
-        subject_name = request.POST['arr_subject_name'].split(',')
-        classification = request.POST['arr_classification'].split(',')
-        selection = request.POST['arr_selection'].split(',')
-        grade = request.POST['arr_grade'].split(',')
-        # 커스텀 과목을 한행씩 UserGrade 테이블에 추가
-        for row in zip(year, semester, subject_num, subject_name, classification, selection, grade):
-            new_ug = UserGrade()
-            new_ug.student_id = user_id
-            new_ug.major = ui_row.major
-            new_ug.year = row[0]
-            new_ug.semester = row[1]
-            new_ug.subject_num = row[2]
-            new_ug.subject_name = row[3]
-            new_ug.classification = row[4]
-            new_ug.selection = row[5]
-            new_ug.grade = row[6]
-            new_ug.save()
-    # 3. 모든 변경 후 정보변경 + 재검사
-    update_json(user_id)
-    messages.success(request, '업데이트성공')
-    return redirect('/mypage/')
-
-def r_head(request):
-    # 모든 날짜의 방문자수 총합을 구함 (aggregate는 딕셔너리 형태로 반환)
-    visit_sum = VisitorCount.objects.aggregate(Sum('visit_count'))
-    context = {
-        'visit_num' : visit_sum['visit_count__sum'],
-        # success_test_count 테이블의 검사횟수 누적값을 가져옴
-        'user_num' : UserInfo.objects.count() + NewUserInfo.objects.count()
-    }
-    return render(request, "head.html", context)
-
-def r_agree(request):
-    return render(request, "agree.html")
-
-def r_login(request):
-    request.session.clear()
-    response = render(request, "login.html")
-    # 해당 사용자의 브라우저가 첫 방문일 경우 +1
-    if request.COOKIES.get('is_visit') is None:
-        # 쿠키 수명은 오늘이 끝날때까지
-        response.set_cookie('is_visit', 'visited', 1*24*60*60)
-        today_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        vc = VisitorCount.objects.get(visit_date=today_date)
-        vc.visit_count += 1
-        vc.save()
-    return response
-
-def r_mypage(request):
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
-    # user_info DB에서 json을 꺼내 contest 딕셔너리에 저장
-    context = json.loads(ui_row.mypage_json)
-    return render(request, "mypage.html", context)
+def r_success_delete(request):
+    return render(request, 'success_delete.html')
 
 def r_result(request):
     ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
@@ -148,6 +115,7 @@ def r_en_result(request):
     context = json.loads(ui_row.en_result_json)
     return render(request, "en_result.html", context)
 
+
 # ---------------------------------------------------- ( 로그인 관련 ) ----------------------------------------------------------------
 
 def f_logout(request):
@@ -162,18 +130,39 @@ def f_login(request):
     ui_row = NewUserInfo.objects.filter(student_id=user_id)
     # 우선 회원가입 되지 않았다면?
     if not ui_row.exists():
-        messages.error(request, '⚠️ 가입되지 않은 ID 입니다.')
+        messages.error(request, '⚠️ Please Graduate에 가입되지 않은 ID입니다.')
         return redirect('/login/')
     # 회원인데 비번이 틀렸다면? 입력받은 비번을 암호화하고 DB의 비번과 비교한다.
     if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
-        messages.error(request, '⚠️ 비밀번호를 확인하세요.')
+        messages.error(request, '⚠️ Please Graduate 비밀번호를 확인하세요.')
         return redirect('/login/')
-    # FIXME
     # !! 로그인시마다 json을 최신화시킨다 !!
     update_json(user_id)
     # 세션에 ID와 전공상태 저장
     request.session['id'] = user_id
     return redirect('/mypage/')
+
+# 비밀번호 찾기
+def f_find_pw(request):
+    user_id = request.POST.get('id2')
+    pw = request.POST.get('pw2')
+    ui_row = NewUserInfo.objects.filter(student_id = user_id)
+    # 회원인지 확인
+    if not ui_row.exists() :
+        messages.error(request, '⚠️ Please Graduate에 가입되지 않은 ID입니다.')
+        return redirect('/login/')
+    ui_row = ui_row[0]
+    # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
+    temp_user_info = selenium_DHC(user_id, pw)
+    if temp_user_info == 1:
+        messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+        return redirect('/login/')
+    elif temp_user_info == 2:
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        return redirect('/login/')
+    # 임시 id를 세션에 넣어줌
+    request.session['temp_user_id'] = user_id
+    return redirect('/changePW/')
 
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
 
@@ -257,19 +246,26 @@ def f_mod_info(request):
     temp_user_info = selenium_DHC(user_id, pw)
     # 예외처리
     if temp_user_info == 1:
-        messages.error(request, '⚠️ 비밀번호를 다시 확인하세요! (Caps Lock 확인)')
+        messages.error(request, '⚠️ 세종대학교 포털 비밀번호를 다시 확인하세요. (Caps Lock 확인)')
         return redirect('/mypage/')
     elif temp_user_info == 2:
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/mypage/')
+
+    # ***********************************************************************************
+    
+    #temp_user_info['major'] = '지능기전공학부'
+    
+    # ***********************************************************************************
+    
     name = temp_user_info['name']
     book = temp_user_info['book']
     major = temp_user_info['major']
     ui_row = NewUserInfo.objects.get(student_id = user_id)
+    # 일단 이름이 변경되었다면 저장
     if ui_row.name != name :
         ui_row.name = name
         ui_row.save()
-
     # 전공이 학부로 뜨는 경우(1학년에 해당)
     if major[-2:] == '학부':
         ui_row.book = book
@@ -412,47 +408,82 @@ def f_mod_grade(request):
     messages.success(request, '업데이트성공')
     
     return redirect('/mypage/')
-
-def f_find_pw(request):
-    user_id = request.POST.get('id2')
-    pw = request.POST.get('pw2')
-    ui_row = NewUserInfo.objects.filter(student_id = user_id)
-    # 회원인지 확인
-    if not ui_row.exists() :
-        messages.error(request, '⚠️ 가입되지 않은 학번입니다.')
-        return redirect('/login/')
-    ui_row = ui_row[0]
-    # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
-    temp_user_info = selenium_DHC(user_id, pw)
-    if temp_user_info == 1:
-        messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
-        return redirect('/login/')
-    elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
-        return redirect('/login/')
-    context = {'user_id' : user_id }
-    return render(request, 'changePW.html', context)
-
+    
+# 회원 탈퇴
 def f_delete_account(request):
     user_id = request.session.get('id')
     pw = request.POST.get('pw')
-
     # 해당 사용자의 DB 쿼리셋
     ui_row = NewUserInfo.objects.filter(student_id=user_id)
     ug = UserGrade.objects.filter(student_id = user_id)
-
     # 비밀번호 일치 검사
     if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
         messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/mypage/')
-
     # 데이터베이스 삭제
     ui_row.delete()
     ug.delete()
     request.session.clear()
-    
-    return render(request, 'success_delete.html')
-    
+    return redirect('/success_delete/')
+
+
+# ---------------------------------------------------- ( 커스텀 기능 ) ----------------------------------------------------------------
+
+@csrf_exempt
+def a_search(request):
+    # AJAX 통신으로 넘어온 학수번호를 받는다
+    s_num = int(request.POST['back_s_num'])
+    # 학수번호를 all_lecture 테이블에서 검색
+    al = AllLecture.objects.filter(subject_num=s_num)
+    # 존재한다면 
+    if al.exists():
+        result = al.values_list()[0]
+    else:
+        result = "검색실패"
+    context = {
+        'result' : result
+    }
+    return JsonResponse(context)
+
+def f_add_custom(request):
+    # 만약 삭제+추가 둘다 없다면 걍 종료
+    if (not request.POST['arr_delete']) and (not request.POST['arr_year']):
+        return redirect('/mypage/')
+    # 아니라면 일단 정보 추출
+    user_id = request.session.get('id')
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
+    # 1. 예전 커스텀이 삭제되었을때 -> 사용자의 UG에서도 삭제해주자
+    if request.POST['arr_delete']:
+        del_ug = UserGrade.objects.filter(student_id=user_id, subject_num__in = request.POST['arr_delete'].split(','))
+        print(del_ug.values())
+        del_ug.delete()
+    # 2. 추가된게 있을 경우
+    if request.POST['arr_year']:
+        # POST로 싹다 받아옴
+        year = request.POST['arr_year'].split(',')
+        semester = request.POST['arr_semester'].split(',')
+        subject_num = request.POST['arr_subject_num'].split(',')
+        subject_name = request.POST['arr_subject_name'].split(',')
+        classification = request.POST['arr_classification'].split(',')
+        selection = request.POST['arr_selection'].split(',')
+        grade = request.POST['arr_grade'].split(',')
+        # 커스텀 과목을 한행씩 UserGrade 테이블에 추가
+        for row in zip(year, semester, subject_num, subject_name, classification, selection, grade):
+            new_ug = UserGrade()
+            new_ug.student_id = user_id
+            new_ug.major = ui_row.major
+            new_ug.year = row[0]
+            new_ug.semester = row[1]
+            new_ug.subject_num = row[2]
+            new_ug.subject_name = row[3]
+            new_ug.classification = row[4]
+            new_ug.selection = row[5]
+            new_ug.grade = row[6]
+            new_ug.save()
+    # 3. 모든 변경 후 정보변경 + 재검사
+    update_json(user_id)
+    messages.success(request, '업데이트성공')
+    return redirect('/mypage/')
 
 # ---------------------------------------------------- ( 셀레니움 파트 ) ----------------------------------------------------------------
 
@@ -608,7 +639,7 @@ def selenium_DHC(id, pw):
 
 # ---------------------------------------------------- ( 회원가입 파트 ) ----------------------------------------------------------------
 
-def r_register(request):
+def f_certify(request):
     # 입력받은 id/pw을 꺼낸다.
     id = request.POST.get('id')
     pw = request.POST.get('pw')
@@ -624,7 +655,7 @@ def r_register(request):
 
     # 예외처리
     if temp_user_info == 1:
-        messages.error(request, '⚠️ ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+        messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/agree/')
     elif temp_user_info == 2:
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
@@ -635,8 +666,8 @@ def r_register(request):
 
 # ***********************************************************************************
     
-    #temp_user_info['major'] = '지능기전공학부'
-    #year = 17
+    # temp_user_info['major'] = '지능기전공학부'
+    # year = 17
     
 # ***********************************************************************************
 
@@ -650,7 +681,7 @@ def r_register(request):
     
     # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
     if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
-        messages.error(request, '😢 아직 PleaseGraduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+        messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
         return redirect('/agree/')
     
     # 나머지 데이터도 추가해주기
@@ -659,9 +690,9 @@ def r_register(request):
     temp_user_info['major_select'] = major_select
     # 세션에 저장
     request.session['temp_user_info'] = temp_user_info
-    return render(request, "register.html")
+    return redirect('/register/')
 
-def r_success(request):
+def f_register(request):
     # 1. 세션에 있는것부터 꺼내자
     temp_user_info = request.session.get('temp_user_info')
     student_id = temp_user_info['id']
@@ -707,7 +738,7 @@ def r_success(request):
     new_ui.eng = eng
     new_ui.save()
 
-    return render(request, "success.html")
+    return redirect('/success/')
 
 # ---------------------------------------------------- ( 검사 알고리즘 함수 ) ----------------------------------------------------------------
 
@@ -1481,9 +1512,11 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
 
-        
-    today_date = datetime.datetime.now()
-    next_date = datetime.datetime(today_date.year, )
+    new_tt = TestTable()
+    new_tt.text = 'test'
+    new_tt.save()
+    # today_date = datetime.datetime.now()
+    # next_date = datetime.datetime(today_date.year, )
     #.strftime('%Y-%m-%d')
     
 

@@ -14,7 +14,7 @@
 <!-- 입력란 -->
 <div class="white_sec">
     <div class="container">
-        <form action="/success/" method="post" name='regi_form' onsubmit="return check_up()">
+        <form action="/f_register/" method="post" name='regi_form' onsubmit="return check_up()">
             {% csrf_token %}
             <div class="regi_box">
 
@@ -32,6 +32,9 @@
                     <option value="{{ ms }}">{{ ms }}</option>
                     {% endfor %}
                 </select>
+                <div class='regi_guide'>
+                    * 전공이 정해지지 않은 경우 희망 전공을 선택하세요
+                </div>
                 {% endif %}
 
                 <label>학번</label>
@@ -69,8 +72,9 @@
 
                 <label>비밀번호</label>
                 <input id="pw1" type="password" name="password">
-                <div style="text-align: left; color:#d32f2f; font-size:0.9rem; font-weight: lighter;">* Please Graduate 사이트의 고유 비밀번호를 설정해주세요</div>
-
+                <div class='regi_guide'>
+                    * Please Graduate 사이트의 고유 비밀번호를 설정해주세요
+                </div>
                 <label>비밀번호 재확인</label>
                 <input id="pw2" type="password">
             </div>

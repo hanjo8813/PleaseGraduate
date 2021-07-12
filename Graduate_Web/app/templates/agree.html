@@ -103,13 +103,13 @@
         </div>
         <div class="login_box">
             <!-- 로그인 폼 -->
-            <form action="/register/" method="post">
+            <form action="/f_certify/" method="post" onsubmit="return check_up()">
                 {% csrf_token %}
                 <div class="textbox">
                     <label>아이디</label>
-                    <input type="text" name="id" placeholder="ID">
+                    <input type="text" id="id" name="id" placeholder="ID">
                     <label>비밀번호</label>
-                    <input type="password" name="pw" placeholder="PASSWORD">
+                    <input type="password" id="pw" name="pw" placeholder="PASSWORD">
                 </div>
                 <div id="login_btn">
                     <div class='login_btn_default'>위 약관에 동의해야합니다.</div>
@@ -164,7 +164,7 @@
         var chk = document.getElementById('agree');
         // 체크시
         if(chk.checked){
-            var tag = "<input onclick='pop_modal()' type='submit' class='login_btn' value='인증하기'>";
+            var tag = "<input type='submit' class='login_btn' value='인증하기'>";
         }
         // 체크 풀시
         else{
@@ -176,6 +176,16 @@
     // 인증하기 클릭시 modal 띄움
     function pop_modal(){
         document.getElementById('m1').style.display = "block";
+    }
+
+
+    function check_up(){
+        if (!document.getElementById('pw').value || !document.getElementById('id').value) {
+            alert('⚠️ ID/PW를 입력해주세요.');
+            return false;
+        }
+        pop_modal();
+        return true;
     }
 
 

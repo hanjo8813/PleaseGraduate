@@ -194,7 +194,7 @@ input[type="number"]
     color:black;
 }
 
-.num_visit_test{
+.num_visit{
     color:rgb(207, 207, 207);
     font-size:0.9rem;
     font-weight: bold;
@@ -202,7 +202,8 @@ input[type="number"]
     width:175px;
     clear:right;
     float:right;
-    margin-top:6rem;    
+    margin-top:4.2rem; 
+    margin-right:0.1rem; 
 }
 
 .popup_content{
@@ -513,6 +514,13 @@ body:not(.device-touch) .suc_btn
     outline: 0;
     margin-top:2.5rem;
     margin-bottom: 3rem;
+}
+
+.regi_guide{
+    text-align: left; 
+    color:#d32f2f; 
+    font-size:0.9rem; 
+    font-weight: lighter;
 }
 
 /* ---------------------------------( success )---------------------------------------- */
