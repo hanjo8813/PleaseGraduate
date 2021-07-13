@@ -178,7 +178,7 @@ STATIC_URL = '/static/'
 
 # 분 시 일 월 요일
 CRONJOBS = [
-    ('0 0 * * *', 'app.crontab.insert_today'),
+    ('*/1 * * * *', 'app.crontab.insert_today'),
 ]
 
 
