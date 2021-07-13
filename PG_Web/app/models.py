@@ -38,6 +38,7 @@ class TestNewLecture(models.Model):
 
 
 class NewUserInfo(models.Model):
+    last_update_time = models.CharField(max_length=45, blank=True, null=True)
     register_time = models.CharField(max_length=45, blank=True, null=True)
     student_id = models.CharField(primary_key=True, max_length=10)
     password = models.CharField(max_length=100)

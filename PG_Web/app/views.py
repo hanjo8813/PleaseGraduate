@@ -225,6 +225,8 @@ def update_json(user_id):
         if mypage_context['is_engine'] == 2:
             en_result_context = f_en_result(user_id)
             ui_row.en_result_json = json.dumps(en_result_context)
+    # 업데이트 시간 기록
+    ui_row.last_update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     ui_row.save()
     return
 
@@ -1340,7 +1342,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    update_json(user_id)
+    #update_json(user_id)
     
     return redirect('/mypage/')
 

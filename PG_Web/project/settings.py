@@ -148,6 +148,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+# Default 시간에서 서울 시간으로 변경했음
 TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
@@ -177,7 +178,7 @@ STATIC_URL = '/static/'
 
 # 분 시 일 월 요일
 CRONJOBS = [
-    ('*/1 * * * *', 'app.crontab.insert_today'),
+    ('0 0 * * *', 'app.crontab.insert_today'),
 ]
 
 

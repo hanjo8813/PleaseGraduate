@@ -7,6 +7,10 @@
 ## 개발/업데이트 기록
 
 ### 07/13
+- Repo명 / 프로젝트 폴더명 / conf 설정 파일명 변경 ([내용](https://github.com/hanjo8813/PleaseGraduate/issues/47))
+- 
+
+### 07/12
 - 검사 결과 버그 수정 
 - 고전독서 렌더링 버그 수정 ([내용](https://github.com/hanjo8813/PleaseGraduate/issues/44))
 - 렌더링 방식 리팩토링
