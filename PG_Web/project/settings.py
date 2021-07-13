@@ -151,10 +151,9 @@ LANGUAGE_CODE = 'en-us'
 # Default 시간에서 서울 시간으로 변경했음
 TIME_ZONE = 'Asia/Seoul'
 
+# TIME_ZONE = 'UTC'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -178,7 +177,7 @@ STATIC_URL = '/static/'
 
 # 분 시 일 월 요일
 CRONJOBS = [
-    ('26 0 14 7 *', 'app.crontab.insert_today'),
+    ('53 15 13 7 *', 'app.crontab.insert_today'),
 ]
 
 

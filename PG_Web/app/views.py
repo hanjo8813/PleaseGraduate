@@ -1520,9 +1520,12 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('업데이트는 로컬에서만!')
 
-    new_tt = TestTable()
-    new_tt.text = 'test'
-    new_tt.save()
+    from django.utils import timezone
+
+    print(datetime.datetime.now())
+    print(timezone.now())
+    print(timezone.localtime())
+    
     # today_date = datetime.datetime.now()
     # next_date = datetime.datetime(today_date.year, )
     #.strftime('%Y-%m-%d')
