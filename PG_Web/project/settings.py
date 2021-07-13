@@ -45,7 +45,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 if platform.system() == 'Windows':
     DEBUG = True
 else:
-    DEBUG = True
+    DEBUG = False
 
 
 # 호스트 설정

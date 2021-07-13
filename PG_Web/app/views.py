@@ -79,23 +79,45 @@ def r_agree(request):
     return render(request, "agree.html")
 
 def r_register(request):
+    temp_user_info = request.session.get('temp_user_info')
+    if not temp_user_info :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
     return render(request, "register.html")
 
 def r_success(request):
+    temp_user_info = request.session.get('temp_user_info')
+    if not temp_user_info :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    request.session.clear()
     return render(request, 'success.html')
 
 def r_changePW(request):
+    temp_user_id = request.session.get('temp_user_id')
+    if not temp_user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    request.session.clear()
     return render(request, 'changePW.html')
 
 def r_mypage(request):
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     # user_info DB에서 json을 꺼내 contest 딕셔너리에 저장
     context = json.loads(ui_row.mypage_json)
     return render(request, "mypage.html", context)
 
 def r_custom(request):
-    # 그냥 mypage json을 넘겨주고 거기서 성적표 뽑아쓰자. (DB히트 줄이려고) 
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    # 그냥 mypage json을 넘겨주고 거기서 성적표 뽑아쓰자. (DB히트 감소)
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     mypage_context = json.loads(ui_row.mypage_json)
     context = {
         'grade' : mypage_context['grade'],
@@ -104,20 +126,37 @@ def r_custom(request):
     return render(request, "custom.html", context)
 
 def r_success_delete(request):
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    request.session.clear()
     return render(request, 'success_delete.html')
 
 def r_result(request):
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     context = json.loads(ui_row.result_json)
     return render(request, "result.html", context)
 
 def r_multi_result(request):
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     context = json.loads(ui_row.result_json)
     return render(request, "multi_result.html", context)
 
 def r_en_result(request):
-    ui_row = NewUserInfo.objects.get(student_id = request.session.get('id'))
+    user_id = request.session.get('id')
+    if not user_id :
+        messages.error(request, '❌ 세션 정보가 없습니다!')
+        return redirect('/')
+    ui_row = NewUserInfo.objects.get(student_id = user_id)
     context = json.loads(ui_row.en_result_json)
     return render(request, "en_result.html", context)
 
@@ -431,7 +470,6 @@ def f_delete_account(request):
     # 데이터베이스 삭제
     ui_row.delete()
     ug.delete()
-    request.session.clear()
     return redirect('/success_delete/')
 
 
