@@ -3,7 +3,7 @@ Description=uWSGI service
 After=syslog.target
 
 [Service]
-ExecStart=/home/ubuntu/myvenv/bin/uwsgi -i /srv/SGH_for_AWS/.config/uwsgi/SGH.ini 
+ExecStart=/home/ubuntu/myvenv/bin/uwsgi -i /srv/PleaseGraduate/.config/uwsgi/PG.ini 
 
 Restart=always
 KillSignal=SIGQUIT
