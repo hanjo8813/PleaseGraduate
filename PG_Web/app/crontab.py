@@ -5,7 +5,9 @@ from .models import *
 # 매일 00:00 마다 실행됨
 # visitor_count 테이블에 해당 날짜 row을 생성
 def insert_today():
-    print(datetime.datetime.now())
+    new_tt = TestTable()
+    new_tt.text = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    new_tt.save()
 
     '''
     new_vc = VisitorCount()
