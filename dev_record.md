@@ -7,6 +7,7 @@
 ## 개발/업데이트 기록
 
 ### 07/13
+> 총 방문자 수 : `1178` / 실사용자 수 : `434`
 - 렌더링 방식 리팩토링 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/46))
 - Repo명 / 프로젝트 폴더명 / conf 설정 파일명 변경 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/47))
 
