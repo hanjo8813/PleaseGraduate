@@ -14,7 +14,6 @@
     <tr>
         <td width="600" align='center'>사이트 링크 <br> https://www.please-graduate.com/</td>
         <td width="600" align='center'><a href="/dev_record.md">개발일지 / 업데이트 기록</a></td>
-       <td width="600" align='center'>구버전(ver 1.0) 내용</td>
     </tr>
 </table>
 
@@ -57,7 +56,7 @@
 
 <br>
 
-## 🔎 사용 방법
+## 🔎 기능 소개
 
 <br>
 
@@ -144,7 +143,62 @@
 
 - Recommend 버튼을 누르면 각 영역의 세부 정보를 확인할 수 있습니다.
 - 필수과목이 있는 영역에선 필수과목을 검사하여 부족한 과목을 추천합니다.
-- 필수과목 없이 기준 학점만 만족하면 되는 영역에선 다른 사용자의 데이터를 참조해 과목을 추천합니다.
-- 
+   - 만약 기준 필수과목의 과목명이 변경되었다면 최신강의 중 동일과목을 추천합니다.
+- 필수과목이 없는 영역에선 다른 사용자의 기이수과목 데이터를 참조해 과목을 추천합니다.
+   - 전공 영역 : 사용자와 동일한 학과의 모든 사용자 데이터를 참조해 수강 횟수를 기준으로 추천합니다.
+   - 교양 영역 : 모든 사용자의 데이터를 참조해 수강 횟수를 기준으로 추천합니다.  (해당 사용자에게 부족한 선택영역만을 추천합니다.)
+                       
+
 </details>
 
+<br>
+
+## 📁 DB 구조
+
+<image width="550" src="https://user-images.githubusercontent.com/71180414/125682617-94fcf596-7722-4d75-8f6a-a4199b98a859.png">
+
+- 과목 정보는 매학기 학교에서 제공하는 개설과목 엑셀 5개년치를  Dataframe으로 병합, 중복제거 후 DB에 저장하였습니다.
+- 이 중 폐강된 강의들도 존재하기에, 최근 1년 내 개설된 강의 테이블 `new_lecture`를 따로 유지합니다.
+- 각 과목은 고유한 **학수번호**(PK)를 통해 구분됩니다.
+- 학수번호가 다른 동일과목들이 존재하기에 `subject_group` 테이블에서 학수번호와 그룹번호를 매핑시켜줍니다.
+- 검사 기준은 학과 - 학번별로 모두 다르기 때문에, `standard` 테이블에서 모든 경우의 기준을 저장합니다.
+- `standard` 테이블에는 학과 - 학번별 각 영역의 기준 학점과 필수과목 학수번호 리스트를 저장합니다.
+
+<br>
+
+## ⚙ 시스템 아키텍처
+
+![PG 아키텍처](https://user-images.githubusercontent.com/71180414/125759854-a7b24966-b2ca-4da8-884d-0f419f86ad7f.png)
+
+- 디자인 패턴은 Djagno의 고유 패턴인 MVT(Model/View/Template)패턴을 사용하였습니다.
+- 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
+- 일일 방문자수 구현을 위해 djanog-crontab을 사용하였습니다.
+- AWS 로드 밸런서와 Nginx를 사용해 로드밸런싱 및 리다이렉팅을 구현하였습니다.
+
+<br>
+
+## 📜 기술 스택
+
+### Front, Backend
+- Django
+- AJAX 
+- MySQL
+
+
+### Library
+- Selenium
+- BeautifulSoup
+- Pandas, django-pandas
+- bcrypt
+- openpyxl
+- django-crontab
+
+### Infrastructure
+- AWS EC2
+- AWS Elastic Load Balancer
+- AWS Route 53
+- AWS Certificate Manager
+- nginx
+- uwsgi
+
+<br>
