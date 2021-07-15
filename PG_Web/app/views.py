@@ -1369,7 +1369,7 @@ def r_admin_test(request):
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
-        uid.append([row.register_time, row.major, row.student_id, row.name])
+        uid.append([row.last_update_time, row.register_time, row.major, row.student_id, row.name])
     
     context={
         'uid' : uid,
