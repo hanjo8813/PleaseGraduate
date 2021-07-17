@@ -610,7 +610,7 @@ def selenium_DHC(id, pw):
             # 크롬드라이버 열기
             driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
             driver.get(url)
-            # 기존 회원인지 체크 & 고전독서인증센터 크롤링 
+            # 고전독서인증센터 크롤링 
             checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
             if checked:
                 driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
@@ -717,20 +717,25 @@ def f_certify(request):
     
 # ***********************************************************************************
 
-    # 학부로 뜨는 경우(1학년에 해당)
     major_select = []
+    # 학부로 뜨는 경우(1학년에 해당)
     if temp_user_info['major'][-2:] == '학부':
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
         md = MajorDepartment.objects.filter(department = temp_user_info['major'])
         for m in md:
             major_select.append(m.major)
+        # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
+        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
+    # 학과 or 전공으로 뜨는 경우
+    else:
+        # 예외처리
+        if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
     
-    # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
-    if (not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists()) and (not major_select):
-        messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-        return redirect('/agree/')
-    
-    # 나머지 데이터도 추가해주기
+    # 나머지 데이터도 추가해주기    
     temp_user_info['id'] = id
     temp_user_info['year'] = year
     temp_user_info['major_select'] = major_select
@@ -1365,7 +1370,7 @@ def f_en_result(user_id):
 def r_admin_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('업데이트는 로컬에서만!')
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
@@ -1381,7 +1386,7 @@ def r_admin_test(request):
 
 def f_user_test(request):
     if platform.system() != 'Windows':
-        return HttpResponse('업데이트는 로컬에서만!')
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
@@ -1468,7 +1473,7 @@ def f_test_update(request):
 def f_update(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('업데이트는 로컬에서만!')
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     df_merge, s_num_list = make_merge_df()
 
@@ -1505,7 +1510,7 @@ def f_update(request):
 def f_input_st(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('업데이트는 로컬에서만!')
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     # 엑셀 불러오기
     file_path = './app/update_lecture/input_standard/'
@@ -1556,7 +1561,7 @@ def f_input_st(request):
 def f_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('업데이트는 로컬에서만!')
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     from django.utils import timezone
 
