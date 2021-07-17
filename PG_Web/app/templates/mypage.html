@@ -443,6 +443,9 @@
 
 {% block js_section %}
 
+{% load static %}
+<script src="{% static 'js/modal.js' %}"></script>
+
 <script>
     // 마이페이지에서 뒤로가기 버튼 클릭시 무조건 head로
     history.pushState(null, null, location.href);
@@ -453,12 +456,7 @@
     // 졸업요건으로 넘어가기
     function go_result() {
         if ('{{is_grade}}' == 1) {
-            if('{{major_status}}' == '해당없음'){
-                location.href = '/result/';
-            }
-            else{
-                location.href = '/multi_result/';
-            }
+            location.href = '/result/';
         }
         else {
             alert('🤔 기이수과목 엑셀파일을 먼저 업로드 해주세요!');
@@ -606,19 +604,6 @@
         document.getElementById("long_table").style.display = "none";
         document.getElementById("show_btn").style.display = "block";
         document.getElementById("hide_btn").style.display = "none";
-    }
-
-    // 모달 창 켜기
-    var Btnclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "block";
-        }
-    }
-    // 모달 창 끄기
-    var Spanclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-        }
     }
     
     // 모달 켜는 버튼 id

@@ -1563,16 +1563,9 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
-    from django.utils import timezone
+    print(make_dic('10352/10354/9067/9068/8364/10351/9030'.split('/')))
+    print(make_dic('/'.split('/')))
 
-    print(datetime.datetime.now())
-    print(timezone.now())
-    print(timezone.localtime())
-    
-    # today_date = datetime.datetime.now()
-    # next_date = datetime.datetime(today_date.year, )
-    #.strftime('%Y-%m-%d')
-    
 
 
     '''

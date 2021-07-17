@@ -141,6 +141,9 @@
     {% endfor %}
 {% endif %}
 
+{% load static %}
+<script src="{% static 'js/modal.js' %}"></script>
+
 <script>
     function logout(){
         var back_head = confirm('✋ 정말 로그아웃 하시겠습니까? ✋');
@@ -149,18 +152,6 @@
         }
     };
 
-    // 모달 창 켜기
-    var Btnclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "block";
-        }
-    }
-    // 모달 창 끄기
-    var Spanclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-        }
-    }
     var u_m = document.getElementById('u_m');
     var u_c = document.getElementById("u_c");
     Spanclick(u_c, u_m);

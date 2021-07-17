@@ -33,7 +33,6 @@ urlpatterns = [
     path('success/', views.r_success),
     path('success_delete/', views.r_success_delete),
     path('result/', views.r_result),
-    path('multi_result/', views.r_multi_result),
     path('en_result/', views.r_en_result),
 
     # 다른 함수사용 url 패턴

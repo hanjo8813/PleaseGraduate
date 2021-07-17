@@ -1,6 +1,5 @@
 {% extends 'reference.html' %}
 {% block content %}
-
 <div class="lcontainer">
 
     <!-- 총학점 -->
@@ -40,7 +39,6 @@
                             <span class="cap"><i class="fas fa-graduation-cap"></i></span>
 
                             <div class="T" id="cangraduate"> </div>
-
                         </div>
                     </div>
                 </div>
@@ -48,15 +46,64 @@
         </div>
     </div>
 
-    <!-- 8개 영역 검사 -->
     <div class="rcontainer">
+        <!-- 복필/연선 -->
+        <div class="resultbox">
+            <div class="name">
+                {% if user_info.major_status == '복수전공' %}
+                복수전공 필수
+                {% else %}
+                연계전공 필수
+                {% endif %}
+            </div>
+            <div class="box">
+                <div id="chart_multi_me">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox" style="margin-top:-1rem">
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade_multi_me"></span>
+                    </div>
+                    <div class="gbox" style="margin-top:-3rem">
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="my_grade_multi_me"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="resultbox">
+            <div class="name">
+                {% if user_info.major_status == '복수전공' %}
+                복수전공 선택
+                {% else %}
+                연계전공 선택
+                {% endif %}
+            </div>
+            <div class="box">
+                <div id="chart_multi_ms">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox" style="margin-top:-1rem">
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade_multi_ms"></span>
+                    </div>
+                    <div class="gbox" style="margin-top:-3rem">
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="my_grade_multi_ms"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
         <!-- 전필 -->
         <div class="resultbox container1">
             <!-- 타이틀 -->
             <div class="name name1">
                 전공 필수
-                <span class="tooltip t1" style='margin-bottom:1rem;'>
+                <span class="tooltip t1">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <!-- 클릭시 툴팁 -->
@@ -120,7 +167,7 @@
             </div>
         </div>
 
-        <!-- 교필/중필 -->
+        <!-- 교필/중필 
         <div class="resultbox container3">
             <div class="name name1">
                 교양(중핵) 필수
@@ -152,9 +199,9 @@
                     <button class="rbutton" id="myBtn3">Recommend</button>
                 </div>
             </div>
-        </div>
+        </div>-->
 
-        <!-- 교선/중선 -->
+        <!-- 교선/중선 
         <div class="resultbox container4">
             <div class="name name1">
                 교양(중핵) 선택
@@ -192,7 +239,7 @@
                     <button class="rbutton" id="myBtn4">Recommend</button>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <!-- 기교 -->
         <div class="resultbox container5">
@@ -321,7 +368,7 @@
 <!-- 전필 -->
 <div id="myModal1" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close1">&times;</span>
         <br>
         <div style="padding: 1rem; text-align: center;">
             <!-- 추천과목 -->
@@ -338,7 +385,7 @@
                         <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                         <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">추천순위</th>
+                        <th style="width:12%">추천지수</th>
                     </tr>
                     {% for a,b in recommend_sel.me %}
                     <tr class="mytr">
@@ -371,14 +418,14 @@
 <!-- 전선 -->
 <div id="myModal2" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close2">&times;</span>
         <br>
         <div class="modal_div">
             <div class="p_div">
                 <!-- 추천과목 -->
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
                 </div>
-                <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전선과목 순으로 추천합니다.</div>
+                <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
                 <hr>
                 {% if not pass_obj.n_ms %}
                     {% if pass_obj.ml_ms %}
@@ -389,7 +436,7 @@
                             <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                             <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                             <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                            <th style="width:12%">추천순위</th>
+                            <th style="width:12%">추천지수</th>
                         </tr>
                         {% for a,b in recommend_sel.ms %}
                         <tr class="mytr">
@@ -423,7 +470,7 @@
 <!-- 중필/교필 -->
 <div id="myModal3" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close3">&times;</span>
         <br>
         <div class="modal_div">
             <!-- 필수과목 -->
@@ -498,7 +545,7 @@
 <!-- 중선/교선 -->
 <div id="myModal4" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close4">&times;</span>
         <br>
         <div class="modal_div">
             <div class="p_div">
@@ -609,12 +656,12 @@
                 <hr>
                 <table class="mytable">
                     <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:12%">학수번 호</th>
                         <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
                         <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                         <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">추천순위</th>
+                        <th style="width:12%">추천지수</th>
                     </tr>
                     {% for a,b in recommend_sel.cs %}
                     <tr class="mytr">
@@ -636,7 +683,7 @@
 <!-- 기교 -->
 <div id="myModal5" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close5">&times;</span>
         <br>
         <div class="modal_div">
             <!-- 필수과목 -->
@@ -710,7 +757,7 @@
 <!-- 영어인증 -->
 <div id="myModal8" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close8">&times;</span>
         <br>
         <div class="modal_div">
             <div class="p_div">
@@ -770,14 +817,9 @@
 <!-- 원그래프 js 참조 -->
 {% load static %}
 <script src="{% static 'js/circle-progress.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
 
 <script>
-    // 결과창에서 뒤로가기 버튼 클릭시 무조건 mypage로
-    history.pushState(null, null, location.href);
-    window.onpopstate = function (event) {
-        window.location.href = '/mypage/';
-    };
-
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
@@ -787,6 +829,8 @@
         return a;
     }
 
+    // 빈칸 채우기
+
     var Studentnumber = '{{user_info.id}}';
     var Name = '{{user_info.name}}';
 
@@ -794,17 +838,12 @@
     var Totalgrade = '{{standard_num.ss}}';     // 총학점
     var Grade1 = '{{standard_num.me}}';         // 전필
     var Grade2 = '{{standard_num.ms}}';         // 전선
-    var Grade3 = '{{standard_num.ce}}';         // 교필
-    var Grade4 = '{{standard_num.cs}}';         // 교선
-    var Grade5 = '{{standard_num.b}}';          // 기교
-
+    
+    
     // 사용자 학점
     var Mytotalgrade = '{{my_num.ss}}';         // 총학점
     var Mygrade1 = '{{my_num.me}}'              // 전필
     var Mygrade2 = '{{my_num.ms}}'              // 전선
-    var Mygrade3 = '{{my_num.ce}}';             // 교필
-    var Mygrade4 = '{{my_num.cs}}';             // 교선
-    var Mygrade5 = '{{my_num.b}}';              // 기교
     var remain = '{{my_num.remain}}'    // 전필 초과 학점
 
     // 인증권수
@@ -825,13 +864,9 @@
     var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
     var pernum1 = to_percent(Mygrade1, Grade1);         // 전필
     var pernum2 = to_percent(Number(Mygrade2) + Number(remain), Grade2);         // 전선
-    var pernum3 = to_percent(Mygrade3, Grade3);         // 교필
-    var pernum4 = to_percent(Mygrade4, Grade4);         // 교선
-    var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
     var pernum7 = to_percent(Mybook, 10);               // 고전독서
 
     // pass 여부
-
     // 영어인증
     if ('{{pass_obj.eng}}' == 1) {
         var Grade8 = "Pass";
@@ -842,53 +877,7 @@
         var pernum8 = 0;
     }
 
-    // 교선 영역
-    var Myarea1;
-    if ('{{pass_obj.p_cs}}' == 1) {
-        Myarea1 = "Pass";
-    }
-    else {
-        Myarea1 = "NP";
-        if (pernum4 == 100) {
-            pernum4 -= 1;
-        }
-    }
-
-    // 필수과목
-    // 교선
-    var Cs_p;
-    if ('{{pass_obj.l_cs}}' == 1) {
-        Cs_p = "Pass";
-    }
-    else {
-        Cs_p = "NP";
-        if (pernum4 == 100) {
-            pernum4 -= 1;
-        }
-    }
-    // 교필
-    var Ce_p;
-    if ('{{pass_obj.l_ce}}' == 1) {
-        Ce_p = "Pass";
-    }
-    else {
-        Ce_p = "NP";
-        if (pernum3 == 100) {
-            pernum3 -= 1;
-        }
-    }
-    // 기교
-    var B_p;
-    if ('{{pass_obj.l_b}}' == 1) {
-        B_p = "Pass";
-    }
-    else {
-        B_p = "NP";
-        if (pernum5 == 100) {
-            pernum5 -= 1;
-        }
-    }
-
+    // 총 검사 결과
     if (pernum0 >= 100) {
         if ('{{pass_obj.total}}' == 1) {
             var Cangraduate = "축하합니다! 졸업 가능합니다!!";
@@ -908,68 +897,17 @@
         var Cangraduate = "졸업까지 " + (
             Totalgrade - Mytotalgrade
         ) + "학점이 필요합니다!!";
-
     }
-    const toggleb = document.querySelector('.navbar_toggle');
-    const menu = document.querySelector('.navbar_menu');
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.tooltip_text');
 
-    var modal1 = document.getElementById('myModal1');
-    var modal2 = document.getElementById('myModal2');
-    var modal3 = document.getElementById('myModal3');
-    var modal4 = document.getElementById('myModal4');
-    var modal5 = document.getElementById('myModal5');
-    var modal8 = document.getElementById('myModal8');
+    document.getElementById("name").innerHTML = Name;
+    document.getElementById("studentnumber").innerHTML = Studentnumber;
 
-    var btn1 = document.getElementById("myBtn1");
-    var btn2 = document.getElementById("myBtn2");
-    var btn3 = document.getElementById("myBtn3");
-    var btn4 = document.getElementById("myBtn4");
-    var btn5 = document.getElementById("myBtn5");
-    var btn8 = document.getElementById("myBtn8");
+    document.getElementById("grade1").innerHTML = Grade1;
+    document.getElementById("grade2").innerHTML = Grade2;
+    document.getElementById("grade8").innerHTML = Grade8;
 
-    var span1 = document.getElementsByClassName("close")[0];
-    var span2 = document.getElementsByClassName("close")[1];
-    var span3 = document.getElementsByClassName("close")[2];
-    var span4 = document.getElementsByClassName("close")[3];
-    var span5 = document.getElementsByClassName("close")[4];
-    var span8 = document.getElementsByClassName("close")[5];
-
-    document
-        .getElementById("name")
-        .innerHTML = Name;
-    document
-        .getElementById("studentnumber")
-        .innerHTML = Studentnumber;
-
-    document
-        .getElementById("grade1")
-        .innerHTML = Grade1;
-    document
-        .getElementById("grade2")
-        .innerHTML = Grade2;
-    document
-        .getElementById("grade3")
-        .innerHTML = Grade3;
-    document
-        .getElementById("grade4")
-        .innerHTML = Grade4;
-    document
-        .getElementById("grade5")
-        .innerHTML = Grade5;
-
-
-    document
-        .getElementById("grade8")
-        .innerHTML = Grade8;
-
-    document
-        .getElementById("mygrade1")
-        .innerHTML = Mygrade1;
-    document
-        .getElementById("mygrade2")
-        .innerHTML = Mygrade2;
+    document.getElementById("mygrade1").innerHTML = Mygrade1;
+    document.getElementById("mygrade2").innerHTML = Mygrade2;
 
     if (remain != 0) {
         document
@@ -977,60 +915,17 @@
             .innerHTML = '+' + remain;
     }
 
-    document
-        .getElementById("mygrade3")
-        .innerHTML = Mygrade3;
-    document
-        .getElementById("mygrade4")
-        .innerHTML = Mygrade4;
-    document
-        .getElementById("mygrade5")
-        .innerHTML = Mygrade5;
+    document.getElementById("mytotalgrade").innerHTML = Mytotalgrade;
+    document.getElementById("totalgrade").innerHTML = Totalgrade;
+    document.getElementById("cangraduate").innerHTML = Cangraduate;
 
-    document
-        .getElementById("myarea1")
-        .innerHTML = Myarea1;
+    document.getElementById("swbook").innerHTML = Swbook;
+    document.getElementById("sbook").innerHTML = Sbook;
+    document.getElementById("wbook").innerHTML = Wbook;
+    document.getElementById("scbook").innerHTML = Scbook;
 
-    document
-        .getElementById("mytotalgrade")
-        .innerHTML = Mytotalgrade;
-    document
-        .getElementById("totalgrade")
-        .innerHTML = Totalgrade;
 
-    document
-        .getElementById("cangraduate")
-        .innerHTML = Cangraduate;
-
-    document
-        .getElementById("swbook")
-        .innerHTML = Swbook;
-    document
-        .getElementById("sbook")
-        .innerHTML = Sbook;
-    document
-        .getElementById("wbook")
-        .innerHTML = Wbook;
-    document
-        .getElementById("scbook")
-        .innerHTML = Scbook;
-
-    document
-        .getElementById("ce_p")
-        .innerHTML = Ce_p;
-    document
-        .getElementById("cs_p")
-        .innerHTML = Cs_p;
-    document
-        .getElementById("b_p")
-        .innerHTML = B_p;
-
-    toggleb.addEventListener('click', () => {
-        menu
-            .classList
-            .toggle('active');
-    });
-
+    // 차트 함수
     var CircleProgress = function (x, y, z) {
         if (x == 100) {
             $(y)
@@ -1078,50 +973,32 @@
                 });
         }
     }
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y
-                .classList
-                .toggle('active');
-        });
-    }
-    var Btnclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "block";
-        }
-
-    }
-    var Spanclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
-    }
-    Btnclick(btn1, modal1);
-    Btnclick(btn2, modal2);
-    Btnclick(btn3, modal3);
-    Btnclick(btn4, modal4);
-    Btnclick(btn5, modal5);
-    Btnclick(btn8, modal8);
-
-    Spanclick(span1, modal1);
-    Spanclick(span2, modal2);
-    Spanclick(span3, modal3);
-    Spanclick(span4, modal4);
-    Spanclick(span5, modal5);
-    Spanclick(span8, modal8);
 
     CircleProgress(pernum0, '#chart0', 250);
     CircleProgress(pernum1, '#chart1', 150);
     CircleProgress(pernum2, '#chart2', 150);
-    CircleProgress(pernum3, '#chart3', 150);
-    CircleProgress(pernum4, '#chart4', 150);
-    CircleProgress(pernum5, '#chart5', 150);
     CircleProgress(pernum7, '#chart7', 150);
     CircleProgress(pernum8, '#chart8', 150);
+
+    var modal1 = document.getElementById('myModal1');
+    var modal2 = document.getElementById('myModal2');
+    var modal8 = document.getElementById('myModal8');
+
+    var btn1 = document.getElementById("myBtn1");
+    var btn2 = document.getElementById("myBtn2");
+    var btn8 = document.getElementById("myBtn8");
+
+    var span1 = document.getElementById("close1");
+    var span2 = document.getElementById("close2");
+    var span8 = document.getElementById("close8");
+
+    Btnclick(btn1, modal1);
+    Btnclick(btn2, modal2);
+    Btnclick(btn8, modal8);
+
+    Spanclick(span1, modal1);
+    Spanclick(span2, modal2);
+    Spanclick(span8, modal8);
 
     window.onclick = function (event) {
         if (event.target == modal1) {
@@ -1130,15 +1007,170 @@
         if (event.target == modal2) {
             modal2.style.display = "none";
         }
+    }
+</script>
+
+
+<!--
+<script>
+    // 교필 영역 함수
+    
+    var Grade3 = '{{standard_num.ce}}';         
+    var Mygrade3 = '{{my_num.ce}}';            
+    var pernum3 = to_percent(Mygrade3, Grade3);
+    
+    // 필수과목 패스여부
+    var Ce_p;
+    if ('{{pass_obj.l_ce}}' == 1) {
+        Ce_p = "Pass";
+    }
+    else {
+        Ce_p = "NP";
+        if (pernum3 == 100) {
+            pernum3 -= 1;
+        }
+    }
+
+    document.getElementById("grade3").innerHTML = Grade3;
+    document.getElementById("mygrade3").innerHTML = Mygrade3;
+    document.getElementById("ce_p").innerHTML = Ce_p;
+    var modal3 = document.getElementById('myModal3');
+    var btn3 = document.getElementById("myBtn3");
+    var span3 = document.getElementById("close3");
+    Btnclick(btn3, modal3);
+    Spanclick(span3, modal3);
+    window.onclick = function (event) {
         if (event.target == modal3) {
             modal3.style.display = "none";
         }
+    }
+
+    CircleProgress(pernum3, '#chart3', 150);
+</script>
+
+
+<script>
+    // 교선 영역 함수
+    var Grade4 = '{{standard_num.cs}}';        
+    var Mygrade4 = '{{my_num.cs}}';             
+    var pernum4 = to_percent(Mygrade4, Grade4);       
+
+    // 교선 영역
+    var Myarea1;
+    if ('{{pass_obj.p_cs}}' == 1) {
+        Myarea1 = "Pass";
+    }
+    else {
+        Myarea1 = "NP";
+        if (pernum4 == 100) {
+            pernum4 -= 1;
+        }
+    }
+
+    // 필수과목
+    var Cs_p;
+    if ('{{pass_obj.l_cs}}' == 1) {
+        Cs_p = "Pass";
+    }
+    else {
+        Cs_p = "NP";
+        if (pernum4 == 100) {
+            pernum4 -= 1;
+        }
+    }
+
+    document.getElementById("myarea1").innerHTML = Myarea1;
+    document.getElementById("mygrade4").innerHTML = Mygrade4;
+    document.getElementById("cs_p").innerHTML = Cs_p;
+    var modal4 = document.getElementById('myModal4');
+    var btn4 = document.getElementById("myBtn4");
+    var span4 = document.getElementById("close4");
+    Btnclick(btn4, modal4);
+    Spanclick(span4, modal4);
+    window.onclick = function (event) {
         if (event.target == modal4) {
             modal4.style.display = "none";
         }
+    }
+
+    CircleProgress(pernum4, '#chart4', 150);
+</script>-->
+
+
+<script>
+    // 기교 영역 함수
+    var Grade5 = '{{standard_num.b}}';          // 기교
+    var Mygrade5 = '{{my_num.b}}';              // 기교
+    var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
+
+    // 기교
+    var B_p;
+    if ('{{pass_obj.l_b}}' == 1) {
+        B_p = "Pass";
+    }
+    else {
+        B_p = "NP";
+        if (pernum5 == 100) {
+            pernum5 -= 1;
+        }
+    }
+
+    document.getElementById("grade5").innerHTML = Grade5;
+    document.getElementById("mygrade5").innerHTML = Mygrade5;
+    document.getElementById("b_p").innerHTML = B_p;
+    var modal5 = document.getElementById('myModal5');
+    var btn5 = document.getElementById("myBtn5");
+    var span5 = document.getElementById("close5");
+    Btnclick(btn5, modal5);
+    Spanclick(span5, modal5);
+    window.onclick = function (event) {
         if (event.target == modal5) {
             modal5.style.display = "none";
         }
+    }
+
+    CircleProgress(pernum5, '#chart5', 150);
+</script>
+
+
+<script>
+    // 연계/복수전공시 차트 함수
+    var Grade_multi_me = '{{standard_num.multi_me}}'; 
+    var Grade_multi_ms = '{{standard_num.multi_ms}}'; 
+    var Mygrade_multi_me = '{{my_num.multi_me}}';
+    var Mygrade_multi_ms = '{{my_num.multi_ms}}';
+
+    var pernum_multi_me = to_percent(Mygrade_multi_me, Grade_multi_me);
+    var pernum_multi_ms = to_percent(Mygrade_multi_ms, Grade_multi_ms);
+
+    document.getElementById("grade_multi_me").innerHTML = Grade_multi_me;
+    document.getElementById("grade_multi_ms").innerHTML = Grade_multi_ms;
+    document.getElementById("my_grade_multi_me").innerHTML = Mygrade_multi_me;
+    document.getElementById("my_grade_multi_ms").innerHTML = Mygrade_multi_ms;
+
+    CircleProgress(pernum_multi_me, '#chart_multi_me', 150);
+    CircleProgress(pernum_multi_ms, '#chart_multi_ms', 150);
+</script>
+
+
+<script>
+    // 토글함수
+    const toggleb = document.querySelector('.navbar_toggle');
+    let tooltipeb = document.querySelectorAll('.tooltip');
+    let text = document.querySelectorAll('.tooltip_text');
+
+    toggleb.addEventListener('click', () => {
+        menu.classList.toggle('active');
+    });
+
+    var Tooltipeb = function (x, y) {
+        x.addEventListener('click', () => {
+            y.classList.toggle('active');
+        });
+    }
+
+    for (i = 0; i < 10; i++) {
+        Tooltipeb(tooltipeb[i], text[i]);
     }
 </script>
 
