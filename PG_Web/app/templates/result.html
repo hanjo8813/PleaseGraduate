@@ -48,6 +48,7 @@
 
     <div class="rcontainer">
         <!-- 복필/연선 -->
+        {% if exists.multi %}
         <div class="resultbox">
             <div class="name">
                 {% if user_info.major_status == '복수전공' %}
@@ -97,6 +98,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     
         <!-- 전필 -->
         <div class="resultbox container1">
@@ -167,7 +169,8 @@
             </div>
         </div>
 
-        <!-- 교필/중필 
+        <!-- 교필/중필 -->
+        {% if exists.ce %}
         <div class="resultbox container3">
             <div class="name name1">
                 교양(중핵) 필수
@@ -199,9 +202,11 @@
                     <button class="rbutton" id="myBtn3">Recommend</button>
                 </div>
             </div>
-        </div>-->
+        </div>
+        {% endif %}
 
-        <!-- 교선/중선 
+        <!-- 교선/중선 -->
+        {% if exists.cs %}
         <div class="resultbox container4">
             <div class="name name1">
                 교양(중핵) 선택
@@ -239,9 +244,11 @@
                     <button class="rbutton" id="myBtn4">Recommend</button>
                 </div>
             </div>
-        </div>-->
+        </div>
+        {% endif %}
 
         <!-- 기교 -->
+        {% if exists.b %}
         <div class="resultbox container5">
             <div class="name name1">
                 학문 기초 교양
@@ -274,6 +281,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+
         <!-- 영어 -->
         <div class="resultbox container8">
             <div class="name name8">
@@ -293,7 +302,7 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade" style="font-weight: bold;">{{ pass_obj.eng_category }}</span>
+                        <span class="grade" style="font-weight: bold;">{{ english.category }}</span>
                     </div>
                     <div class="gbox">
                         <span class="grade">통과 여부</span>
@@ -324,7 +333,7 @@
                 <div id="chart7">
                     <strong></strong>
                 </div>
-                {% if pass_obj.book != 2 %}
+                {% if book.pass != 2 %}
                 <div class="sbox Y">
                     <div class="gbox">
                         <span class="grade p">이수 기준</span>
@@ -376,8 +385,8 @@
             </div>
             <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
             <hr>
-            {% if not pass_obj.n_me %}
-                {% if pass_obj.ml_me %}
+            {% if not major_essential.pass %}
+                {% if major_essential.recom_selection %}
                 <table class="mytable">
                     <tr class="myth" style="background-color: #f8f8f8;">
                         <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
@@ -387,7 +396,7 @@
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
                         <th style="width:12%">추천지수</th>
                     </tr>
-                    {% for a,b in recommend_sel.me %}
+                    {% for a,b in major_essential.recom_selection %}
                     <tr class="mytr">
                         <td class="mytd">{{ a.subject_num }}</td>
                         <td class="mytd">{{ a.subject_name }}</td>
@@ -405,10 +414,10 @@
                 {% endif %}
             {% endif %}
             <div class="partdiv">
-                {% if pass_obj.n_me %}
+                {% if major_essential.pass %}
                 <span style="color:#17a55e"> 기준 학점을 만족했습니다. </span>
                 {% else %}
-                <span style="color:#d32f2f">{{ pass_obj.lack_me }} 학점이 부족합니다</span>
+                <span style="color:#d32f2f">{{ major_essential.lack }} 학점이 부족합니다</span>
                 {% endif %}
             </div>
         </div>
@@ -427,8 +436,8 @@
                 </div>
                 <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
                 <hr>
-                {% if not pass_obj.n_ms %}
-                    {% if pass_obj.ml_ms %}
+                {% if not major_selection.pass %}
+                    {% if major_selection.recom_selection %}
                     <table class="mytable">
                         <tr class="myth" style="background-color: #f8f8f8;">
                             <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
@@ -438,7 +447,7 @@
                             <th style="border-right :1px solid #cccccc; width:8%">학점</th>
                             <th style="width:12%">추천지수</th>
                         </tr>
-                        {% for a,b in recommend_sel.ms %}
+                        {% for a,b in major_selection.recom_selection %}
                         <tr class="mytr">
                             <td class="mytd">{{ a.subject_num }}</td>
                             <td class="mytd">{{ a.subject_name }}</td>
@@ -456,10 +465,10 @@
                     {% endif %}
                 {% endif %}
                 <div class="partdiv">
-                    {% if pass_obj.n_ms %}
+                    {% if major_selection.pass %}
                     <span style="color:#17a55e"> 기준 학점을 만족했습니다. </span>
                     {% else %}
-                    <span style="color:#d32f2f">{{ pass_obj.lack_ms }} 학점이 부족합니다</span>
+                    <span style="color:#d32f2f">{{ major_selection.lack }} 학점이 부족합니다</span>
                     {% endif %}
                 </div>
             </div>
@@ -487,7 +496,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q, c in standard_list.ce %}
+                    {% for q, c in core_essential.standard_essential %}
                     {% if c %}
                     <tr class="mytr">
                         {% else %}
@@ -502,14 +511,14 @@
                     {% endfor %}
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.l_ce %}
+                    {% if core_essential.pass %}
                     <span style="color:#17a55e">필수과목 조건을 만족하셨습니다</span>
                     {% else %}
                     <span style="color:#d32f2f">필수과목이 부족합니다</span>
                     {% endif %}
                 </div>
 
-                {% if not pass_obj.l_ce %}
+                {% if not core_essential.pass %}
                 <!-- 필수과목 추천 -->
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 추천
                 </div>
@@ -526,7 +535,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q in recommend_ess.ce %}
+                    {% for q in core_essential.recom_essential %}
                     <tr class="mytr">
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
@@ -555,22 +564,22 @@
                 <hr>
                 <table class="mytable" style="padding-bottom:1rem">
                     <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:20%">{{cs_part_zip.all.0}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{cs_part_zip.all.1}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{cs_part_zip.all.2}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{cs_part_zip.all.3}}</th>
-                        <th style="width:20%">{{cs_part_zip.all.4}}</th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.0}}</th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.1}}</th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.2}}</th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.3}}</th>
+                        <th style="width:20%">{{core_selection.standard_cs_part.4}}</th>
                     </tr>
                     <tr class="mytr">
-                        <td class="mytd">{{ cs_part_zip.check.0 }}</td>
-                        <td class="mytd">{{ cs_part_zip.check.1 }}</td>
-                        <td class="mytd">{{ cs_part_zip.check.2 }}</td>
-                        <td class="mytd">{{ cs_part_zip.check.3 }}</td>
-                        <td class="mytd" style="border-right :0px">{{ cs_part_zip.check.4 }}</td>
+                        <td class="mytd">{{ core_selection.part_check.0 }}</td>
+                        <td class="mytd">{{ core_selection.part_check.1 }}</td>
+                        <td class="mytd">{{ core_selection.part_check.2 }}</td>
+                        <td class="mytd">{{ core_selection.part_check.3 }}</td>
+                        <td class="mytd" style="border-right :0px">{{ core_selection.part_check.4 }}</td>
                     </tr>
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.p_cs %}
+                    {% if core_selection.pass_part %}
                     <span style="color:#17a55e">필수영역 조건을 만족하셨습니다</span>
                     {% else %}
                     <span style="color:#d32f2f">필수영역이 부족합니다</span>
@@ -591,7 +600,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q, c in standard_list.cs %}
+                    {% for q, c in core_selection.standard_essential %}
                     {% if c %}
                     <tr class="mytr">
                         {% else %}
@@ -606,7 +615,7 @@
                     {% endfor %}
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.l_cs %}
+                    {% if core_selection.pass_ess %}
                     <span style="color:#17a55e">필수과목 조건을 만족하셨습니다</span>
                     {% else %}
                     <span style="color:#d32f2f">필수과목이 부족합니다</span>
@@ -614,7 +623,7 @@
                 </div>
             </div>
             <!-- 필수과목 추천 -->
-            {% if not pass_obj.l_cs %}
+            {% if not core_selection.pass_ess %}
             <div class="p_div">
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 추천
                 </div>
@@ -631,7 +640,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q in recommend_ess.cs %}
+                    {% for q in core_selection.recom_essential %}
                     <tr class="mytr">
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
@@ -646,7 +655,7 @@
             {% endif %}
 
             <!-- 추천과목 -->
-            {% if not pass_obj.t_cs %}
+            {% if not core_selection.pass %}
             <div class="p_div">
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
                 </div>
@@ -663,7 +672,7 @@
                         <th style="border-right :1px solid #cccccc; width:8%">학점</th>
                         <th style="width:12%">추천지수</th>
                     </tr>
-                    {% for a,b in recommend_sel.cs %}
+                    {% for a,b in core_selection.recom_selection %}
                     <tr class="mytr">
                         <td class="mytd">{{ a.subject_num }}</td>
                         <td class="mytd">{{ a.subject_name }}</td>
@@ -700,7 +709,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q, c in standard_list.b %}
+                    {% for q, c in basic.standard_essential %}
                     {% if c %}
                     <tr class="mytr">
                         {% else %}
@@ -715,14 +724,14 @@
                     {% endfor %}
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.l_b %}
+                    {% if basic.pass %}
                     <span style="color:#17a55e">필수과목 조건을 만족하셨습니다</span>
                     {% else %}
                     <span style="color:#d32f2f">필수과목이 부족합니다</span>
                     {% endif %}
                 </div>
 
-                {% if not pass_obj.l_b %}
+                {% if not basic.pass %}
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 필수과목 추천
                 </div>
                 <div class="mydiv">
@@ -738,7 +747,7 @@
                         <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
                         <th style="width:15%">학점</th>
                     </tr>
-                    {% for q in recommend_ess.b %}
+                    {% for q in basic.recom_essential %}
                     <tr class="mytr">
                         <td class="mytd">{{ q.subject_num }}</td>
                         <td class="mytd">{{ q.subject_name }}</td>
@@ -777,27 +786,27 @@
                         <th style="width:14.2%">Intensive English</th>
                     </tr>
                     <tr class="mytr">
-                        <td class="mytd">{{ pass_obj.eng_standard.TOEIC }}점 이상</td>
-                        <td class="mytd">{{ pass_obj.eng_standard.TOEFL }}점 이상</td>
-                        <td class="mytd">{{ pass_obj.eng_standard.TEPS }}점 이상</td>
-                        <td class="mytd">Intermediate {{ pass_obj.eng_standard.OPIc }} 이상</td>
-                        <td class="mytd">{{ pass_obj.eng_standard.TOEIC_Speaking }}점 이상</td>
+                        <td class="mytd">{{ english.standard.TOEIC }}점 이상</td>
+                        <td class="mytd">{{ english.standard.TOEFL }}점 이상</td>
+                        <td class="mytd">{{ english.standard.TEPS }}점 이상</td>
+                        <td class="mytd">Intermediate {{ english.standard.OPIc }} 이상</td>
+                        <td class="mytd">{{ english.standard.TOEIC_Speaking }}점 이상</td>
                         <td class="mytd">2학기 이상 면제</td>
                         <td class="mytd" style="border-right :0px">과목 이수</td>
                     </tr>
                 </table>
                 <div class="partdiv">
-                    {% if pass_obj.eng %}
+                    {% if english.pass %}
                     <span style="color:#17a55e">
                         위 조건을 만족하였습니다
                     {% else %}
                     <span style="color:#d32f2f">
                         위 조건을 만족하지 못했습니다
                     {% endif %}
-                        {% if pass_obj.eng_score %}
+                        {% if english.score %}
                         <br><br>
                         <span style="font-size:1.2rem;">- 내 점수 : </span>
-                        <span style="font-weight: bold;">{{ pass_obj.eng_category }} / {{ pass_obj.eng_score }}</span>
+                        <span style="font-weight: bold;">{{ english.category }} / {{ english.score }}</span>
                         {% endif %}
                     </span>
                     
@@ -829,46 +838,41 @@
         return a;
     }
 
-    // 빈칸 채우기
+    // 데이터 바인딩
 
+    // 사용자 정보
     var Studentnumber = '{{user_info.id}}';
     var Name = '{{user_info.name}}';
-
     // 기준학점
-    var Totalgrade = '{{standard_num.ss}}';     // 총학점
-    var Grade1 = '{{standard_num.me}}';         // 전필
-    var Grade2 = '{{standard_num.ms}}';         // 전선
-    
-    
+    var Totalgrade = '{{total.standard_num}}';               // 총학점
+    var Grade1 = '{{major_essential.standard_num}}';         // 전필
+    var Grade2 = '{{major_selection.standard_num}}';         // 전선
     // 사용자 학점
-    var Mytotalgrade = '{{my_num.ss}}';         // 총학점
-    var Mygrade1 = '{{my_num.me}}'              // 전필
-    var Mygrade2 = '{{my_num.ms}}'              // 전선
-    var remain = '{{my_num.remain}}'    // 전필 초과 학점
-
+    var Mytotalgrade = '{{total.user_num}}';         // 총학점
+    var Mygrade1 = '{{major_essential.user_num}}'    // 전필
+    var Mygrade2 = '{{major_selection.user_num}}'    // 전선
+    var remain = '{{major_selection.remain}}'        // 전필 초과 학점
     // 인증권수
     var Swbook = 0;
     var Wbook = 0;
     var Sbook = 0;
     var Scbook = 0;
     var Mybook = 10;
-    if ('{{pass_obj.book}}' != 2) {
-        Swbook = '{{user_info.W}}' + "권";
-        Wbook = '{{user_info.E}}' + "권";
-        Sbook = '{{user_info.EW}}' + "권";
-        Scbook = '{{user_info.S}}' + "권";
-        Mybook = '{{user_info.total}}';
+    if ('{{book.pass}}' != 2) {
+        Swbook = '{{book.W}}' + "권";
+        Wbook = '{{book.E}}' + "권";
+        Sbook = '{{book.EW}}' + "권";
+        Scbook = '{{book.S}}' + "권";
+        Mybook = '{{book.total}}';
     }
-
     // 이수 학점 퍼센트화
     var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
     var pernum1 = to_percent(Mygrade1, Grade1);         // 전필
     var pernum2 = to_percent(Number(Mygrade2) + Number(remain), Grade2);         // 전선
     var pernum7 = to_percent(Mybook, 10);               // 고전독서
-
     // pass 여부
     // 영어인증
-    if ('{{pass_obj.eng}}' == 1) {
+    if ('{{english.pass}}' == 1) {
         var Grade8 = "Pass";
         var pernum8 = 100;
     }
@@ -876,10 +880,9 @@
         var Grade8 = "NP";
         var pernum8 = 0;
     }
-
     // 총 검사 결과
     if (pernum0 >= 100) {
-        if ('{{pass_obj.total}}' == 1) {
+        if ('{{total.pass}}' == 1) {
             var Cangraduate = "축하합니다! 졸업 가능합니다!!";
             document.querySelector('.T').style.fontSize = '24px';
         }
@@ -890,40 +893,29 @@
             document.querySelector('.T').style.fontSize = '23px';
             var Cangraduate = "영역 기준을 모두 만족하지 못했습니다.";
         }
-
     } else {
         document.querySelector('.cap').style.display = 'none';
         document.querySelector('.T').style.fontSize = '23px';
-        var Cangraduate = "졸업까지 " + (
-            Totalgrade - Mytotalgrade
-        ) + "학점이 필요합니다!!";
+        var Cangraduate = "졸업까지 " + (Totalgrade - Mytotalgrade) + "학점이 필요합니다!";
     }
-
+    // id값과 매핑
     document.getElementById("name").innerHTML = Name;
     document.getElementById("studentnumber").innerHTML = Studentnumber;
-
     document.getElementById("grade1").innerHTML = Grade1;
     document.getElementById("grade2").innerHTML = Grade2;
     document.getElementById("grade8").innerHTML = Grade8;
-
     document.getElementById("mygrade1").innerHTML = Mygrade1;
     document.getElementById("mygrade2").innerHTML = Mygrade2;
-
     if (remain != 0) {
-        document
-            .getElementById("myremain")
-            .innerHTML = '+' + remain;
+        document.getElementById("myremain").innerHTML = '+' + remain;
     }
-
     document.getElementById("mytotalgrade").innerHTML = Mytotalgrade;
     document.getElementById("totalgrade").innerHTML = Totalgrade;
     document.getElementById("cangraduate").innerHTML = Cangraduate;
-
     document.getElementById("swbook").innerHTML = Swbook;
     document.getElementById("sbook").innerHTML = Sbook;
     document.getElementById("wbook").innerHTML = Wbook;
     document.getElementById("scbook").innerHTML = Scbook;
-
 
     // 차트 함수
     var CircleProgress = function (x, y, z) {
@@ -939,12 +931,10 @@
                     },
                     thickness: 15,
                     fill: {
-
                         gradient: ["#9ae6b3", "#6aa87f"]
                     }
                 })
                 .on('circle-animation-progress', function (event, progress, stepValue) {
-
                     $(this)
                         .find('strong')
                         .html(Math.round(x * progress) + '<i>%</i>');
@@ -1011,17 +1001,15 @@
 </script>
 
 
-<!--
+{% if exists.ce %}
 <script>
     // 교필 영역 함수
-    
-    var Grade3 = '{{standard_num.ce}}';         
-    var Mygrade3 = '{{my_num.ce}}';            
+    var Grade3 = '{{core_essential.standard_num}}';         
+    var Mygrade3 = '{{core_essential.user_num}}';            
     var pernum3 = to_percent(Mygrade3, Grade3);
-    
     // 필수과목 패스여부
     var Ce_p;
-    if ('{{pass_obj.l_ce}}' == 1) {
+    if ('{{core_essential.pass}}' == 1) {
         Ce_p = "Pass";
     }
     else {
@@ -1030,7 +1018,6 @@
             pernum3 -= 1;
         }
     }
-
     document.getElementById("grade3").innerHTML = Grade3;
     document.getElementById("mygrade3").innerHTML = Mygrade3;
     document.getElementById("ce_p").innerHTML = Ce_p;
@@ -1044,20 +1031,19 @@
             modal3.style.display = "none";
         }
     }
-
     CircleProgress(pernum3, '#chart3', 150);
 </script>
+{% endif %}
 
-
+{% if exists.cs %}
 <script>
     // 교선 영역 함수
-    var Grade4 = '{{standard_num.cs}}';        
-    var Mygrade4 = '{{my_num.cs}}';             
+    var Grade4 = '{{core_selection.standard_num}}';        
+    var Mygrade4 = '{{core_selection.user_num}}';             
     var pernum4 = to_percent(Mygrade4, Grade4);       
-
-    // 교선 영역
+    // 선택영역 패스여부
     var Myarea1;
-    if ('{{pass_obj.p_cs}}' == 1) {
+    if ('{{core_selection.pass_part}}' == 1) {
         Myarea1 = "Pass";
     }
     else {
@@ -1066,10 +1052,9 @@
             pernum4 -= 1;
         }
     }
-
-    // 필수과목
+    // 필수과목 패스여부
     var Cs_p;
-    if ('{{pass_obj.l_cs}}' == 1) {
+    if ('{{core_selection.pass_ess}}' == 1) {
         Cs_p = "Pass";
     }
     else {
@@ -1078,7 +1063,7 @@
             pernum4 -= 1;
         }
     }
-
+    document.getElementById("grade4").innerHTML = Grade4;
     document.getElementById("myarea1").innerHTML = Myarea1;
     document.getElementById("mygrade4").innerHTML = Mygrade4;
     document.getElementById("cs_p").innerHTML = Cs_p;
@@ -1092,20 +1077,19 @@
             modal4.style.display = "none";
         }
     }
-
     CircleProgress(pernum4, '#chart4', 150);
-</script>-->
+</script>
+{% endif %}
 
-
+{% if exists.b %}
 <script>
     // 기교 영역 함수
-    var Grade5 = '{{standard_num.b}}';          // 기교
-    var Mygrade5 = '{{my_num.b}}';              // 기교
-    var pernum5 = to_percent(Mygrade5, Grade5);         // 기교
-
-    // 기교
+    var Grade5 = '{{basic.standard_num}}';          
+    var Mygrade5 = '{{basic.user_num}}';            
+    var pernum5 = to_percent(Mygrade5, Grade5);      
+    // 필수과목 패스여부
     var B_p;
-    if ('{{pass_obj.l_b}}' == 1) {
+    if ('{{basic.pass}}' == 1) {
         B_p = "Pass";
     }
     else {
@@ -1114,7 +1098,6 @@
             pernum5 -= 1;
         }
     }
-
     document.getElementById("grade5").innerHTML = Grade5;
     document.getElementById("mygrade5").innerHTML = Mygrade5;
     document.getElementById("b_p").innerHTML = B_p;
@@ -1128,17 +1111,17 @@
             modal5.style.display = "none";
         }
     }
-
     CircleProgress(pernum5, '#chart5', 150);
 </script>
+{% endif %}
 
-
+{% if exists.multi %}
 <script>
     // 연계/복수전공시 차트 함수
-    var Grade_multi_me = '{{standard_num.multi_me}}'; 
-    var Grade_multi_ms = '{{standard_num.multi_ms}}'; 
-    var Mygrade_multi_me = '{{my_num.multi_me}}';
-    var Mygrade_multi_ms = '{{my_num.multi_ms}}';
+    var Grade_multi_me = '{{multi_major_essential.standard_num}}'; 
+    var Grade_multi_ms = '{{multi_major_selection.standard_num}}'; 
+    var Mygrade_multi_me = '{{multi_major_essential.user_num}}';
+    var Mygrade_multi_ms = '{{multi_major_selection.user_num}}';
 
     var pernum_multi_me = to_percent(Mygrade_multi_me, Grade_multi_me);
     var pernum_multi_ms = to_percent(Mygrade_multi_ms, Grade_multi_ms);
@@ -1151,7 +1134,7 @@
     CircleProgress(pernum_multi_me, '#chart_multi_me', 150);
     CircleProgress(pernum_multi_ms, '#chart_multi_ms', 150);
 </script>
-
+{% endif %}
 
 <script>
     // 토글함수
