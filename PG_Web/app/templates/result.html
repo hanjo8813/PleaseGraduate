@@ -990,6 +990,7 @@
     Spanclick(span2, modal2);
     Spanclick(span8, modal8);
 
+    // 모달 밖 클릭시 꺼짐 함수
     window.onclick = function (event) {
         if (event.target == modal1) {
             modal1.style.display = "none";
@@ -997,7 +998,26 @@
         if (event.target == modal2) {
             modal2.style.display = "none";
         }
+        if(typeof modal3 !=='undefined'){
+            if (event.target == modal3) {
+                modal3.style.display = "none";
+            }
+        }
+        if(typeof modal4 !=='undefined'){
+            if (event.target == modal4) {
+                modal4.style.display = "none";
+            }
+        }
+        if(typeof modal5 !=='undefined'){
+            if (event.target == modal5) {
+                modal5.style.display = "none";
+            }
+        }
+        if (event.target == modal8) {
+            modal8.style.display = "none";
+        }
     }
+
 </script>
 
 
@@ -1026,11 +1046,7 @@
     var span3 = document.getElementById("close3");
     Btnclick(btn3, modal3);
     Spanclick(span3, modal3);
-    window.onclick = function (event) {
-        if (event.target == modal3) {
-            modal3.style.display = "none";
-        }
-    }
+
     CircleProgress(pernum3, '#chart3', 150);
 </script>
 {% endif %}
@@ -1072,11 +1088,7 @@
     var span4 = document.getElementById("close4");
     Btnclick(btn4, modal4);
     Spanclick(span4, modal4);
-    window.onclick = function (event) {
-        if (event.target == modal4) {
-            modal4.style.display = "none";
-        }
-    }
+
     CircleProgress(pernum4, '#chart4', 150);
 </script>
 {% endif %}
@@ -1106,11 +1118,7 @@
     var span5 = document.getElementById("close5");
     Btnclick(btn5, modal5);
     Spanclick(span5, modal5);
-    window.onclick = function (event) {
-        if (event.target == modal5) {
-            modal5.style.display = "none";
-        }
-    }
+
     CircleProgress(pernum5, '#chart5', 150);
 </script>
 {% endif %}
