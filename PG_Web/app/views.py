@@ -1213,14 +1213,12 @@ def f_result(user_id):
         # 전공 기준 학점 수정
         result_context['major_essential']['standard_num'] = new_standard_me
         result_context['major_selection']['standard_num'] = new_standard_ms
-
         # 전필 -> 전선 넘기기 연산 다시하기
         remain = 0
         if new_standard_me < df_me['학점'].sum() :
             remain = df_me['학점'].sum() - new_standard_me
         result_context['major_selection']['remain'] = convert_to_int(remain)
         result_context['major_selection']['user_num'] = convert_to_int(user_num_me - remain)
-
         # 복수전공일때
         if ui_row.major_status == '복수전공':
             user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()
@@ -1229,7 +1227,6 @@ def f_result(user_id):
         elif ui_row.major_status == '연계전공':
             user_multi_me = data[data['이수구분'].isin(['연필'])]['학점'].sum()
             user_multi_ms = data[data['이수구분'].isin(['연선'])]['학점'].sum()
-
         # 전공 패스여부 다시 검사
         pass_me, pass_ms = 0,0
         if new_standard_me <= user_num_me: 
@@ -1241,7 +1238,6 @@ def f_result(user_id):
         # 전공 부족학점 다시 계산
         result_context['major_essential']['lack'] = convert_to_int(new_standard_me - user_num_me)
         result_context['major_selection']['lack'] = convert_to_int(new_standard_ms - user_num_ms - remain)
-
         # 복수/연계 전공 context 생성
         context_multi_major_essential = {
             'standard_num' : standard_multi_me,
@@ -1292,11 +1288,11 @@ def f_result(user_id):
     }
     '''
 
-    for key in result_context:
-        print(key)
-        for key2 in result_context[key]:
-            print(key2, result_context[key][key2])
-        print('------------------------------------------------------------------')
+    # for key in result_context:
+    #     print(key)
+    #     for key2 in result_context[key]:
+    #         print(key2, result_context[key][key2])
+    #     print('------------------------------------------------------------------')
     return result_context
     
 
@@ -1513,7 +1509,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    #update_json(user_id)
+    update_json(user_id)
     
     return redirect('/mypage/')
 
