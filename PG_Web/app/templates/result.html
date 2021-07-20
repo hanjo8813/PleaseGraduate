@@ -558,9 +558,9 @@
         <br>
         <div class="modal_div">
             <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 필수영역 현황
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택영역 현황
                 </div>
-                <div class="mydiv">필수영역을 3개 이상 이수해야 졸업요건을 충족합니다.</div>
+                <div class="mydiv">'선택영역'을 필수로 3개 이상 이수해야 졸업요건을 충족합니다.</div>
                 <hr>
                 <table class="mytable" style="padding-bottom:1rem">
                     <tr class="myth" style="background-color: #f8f8f8;">
@@ -580,9 +580,9 @@
                 </table>
                 <div class="partdiv">
                     {% if core_selection.pass_part %}
-                    <span style="color:#17a55e">필수영역 조건을 만족하셨습니다</span>
+                    <span style="color:#17a55e">선택영역 조건을 만족하셨습니다</span>
                     {% else %}
-                    <span style="color:#d32f2f">필수영역이 부족합니다</span>
+                    <span style="color:#d32f2f">선택영역이 부족합니다</span>
                     {% endif %}
                 </div>
             </div>
@@ -834,7 +834,7 @@
     window.onpopstate = function (event) {
         window.location.href = '/mypage/';
     };
-    
+
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
