@@ -408,32 +408,50 @@ body:not(.device-touch) .suc_btn
     outline: 0;
 }
 
-/* ---------------------------------( agree 검사대상 테이블 )---------------------------------------- */
+/* ---------------------------------( agree 검사대상 모달 )---------------------------------------- */
 
+.target_color_span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: rgb(164, 26, 55)
+}
 
-.possible_com{
-    margin:0 auto;
-    background-color: white;
-    width: 100%;
+.target_num_div {
+    font-size:1.5rem;
+    margin : 2rem 0 2rem 0;
+}
+
+.target_caution_div {
+    color:#d32f2f; 
+    font-weight:bold;
+    font-size:1rem;
+    margin : 2.3rem 0 2.3rem 0;
+}
+
+.target_table {
+    font-size:1rem;
+    width: 55%;
+    margin: 0 auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.target_table_th {
     text-align: center;
-    font-size: 0.9rem;
-}
-
-.possible_com_th {
-    height: 3.5rem;
+    height: 2.5rem;
     background-color: #f8f8f8;
-    border-bottom: 1px solid #3b1b1b;
-}
-
-.possible_com_td {
-    border-right :1px solid #dadada;
+    border-top: 1px solid #dadada;
+    border-right: 1px solid #dadada;
     border-bottom: 1px solid #dadada;
 }
 
-.possible_com_tr {
-    color: black;
-    height: 2rem ;
+.target_table_td {
+    text-align: left;
+    padding : 0.3rem 0.7rem 0.3rem 0.7rem;
+    height: 2rem;
+    border-right: 1px solid #dadada;
     border-bottom: 1px solid #dadada;
+    
 }
 
 /* ---------------------------------( agree 링크 / 강조 )---------------------------------------- */

@@ -76,7 +76,26 @@ def r_login(request):
     return response
 
 def r_agree(request):
-    return render(request, "agree.html")
+    target_qeuryset = Standard.objects.only('user_year', 'user_dep')
+
+    dict_dep_yearlist = defaultdict(lambda:'')
+    for row in target_qeuryset:
+        if row.user_dep not in dict_dep_yearlist.keys():
+            dict_dep_yearlist[row.user_dep] += str(row.user_year)
+        else:
+            dict_dep_yearlist[row.user_dep] += ', ' + str(row.user_year)
+    
+    dep_num = len(dict_dep_yearlist.keys())
+    targe_list = [[ dep, year] for dep, year in dict_dep_yearlist.items()]
+    targe_list = sorted(targe_list, key=(lambda x: x[0]))
+    print(targe_list)
+    print(dep_num)
+    
+    context = {
+        'target' : targe_list,
+        'dep_num' : dep_num
+    }
+    return render(request, "agree.html", context)
 
 def r_register(request):
     temp_user_info = request.session.get('temp_user_info')

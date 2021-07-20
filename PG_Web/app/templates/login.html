@@ -105,6 +105,9 @@
 
 
 {% block js_section %}
+{% load static %}
+<script src="{% static 'js/modal.js' %}"></script>
+
 <script>
     // 인증하기 클릭시 modal 띄움
     function pop_modal(){
@@ -130,16 +133,6 @@
         return true;
     }
 
-    var Btnclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "block";
-        }
-    }
-    var Spanclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-        }
-    }
     var b2 = document.getElementById("b2");
     var m2 = document.getElementById('m2');
     var c2 = document.getElementById("c2");

@@ -13,44 +13,26 @@
     </div>
 </div>
 
+<style>
+
+</style>
+
 <div class="white_sec">
     <div class="container">
         <!-- 검사 대상 박스 -->
         <div class="info_title">검사 관련</div>
         <div class="info_box">
             <div class="info_content">
-                <p>1. 현재 검사 가능한 학과-학번은 아래와 같습니다. (아래 표에 해당하지 않으면 회원가입이 불가합니다.)</p>
-                <table class="possible_com">
-                    <tr class="possible_com_th" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:14.2%">학과-학번</th>
-                        <th style="border-right :1px solid #cccccc; width:14.2%">데이터사이언스<br>17~21</th>
-                        <th style="border-right :1px solid #cccccc; width:14.2%">디콘,소프트웨어<br>15~21</th>
-                        <th style="border-right :1px solid #cccccc; width:14.2%">정보보호<br>15~21</th>
-                        <th style="border-right :1px solid #cccccc; width:14.2%">지능기전<br>17~21</th>
-                        <th style="border-right :1px solid #cccccc; width:14.2%">컴퓨터공학<br>15~21</th>
-                        <th style="width:14.2%">전자정보통신공학<br>15~21</th>
-                    </tr>
-                    <tr class="possible_com_tr">
-                        <td class="possible_com_td" style="background-color: #f8f8f8;">졸업검사</td>
-                        <td class="possible_com_td">O</td>
-                        <td class="possible_com_td">O</td>
-                        <td class="possible_com_td">O</td>
-                        <td class="possible_com_td">O</td>
-                        <td class="possible_com_td">O</td>
-                        <td class="possible_com_td" style="border-right :0px">O</td>
-                    </tr>
-                    <tr class="possible_com_tr">
-                        <td class="possible_com_td" style="background-color: #f8f8f8;">공학인증검사</td>
-                        <td class="possible_com_td">X</td>
-                        <td class="possible_com_td">15제외 가능</td>
-                        <td class="possible_com_td">X</td>
-                        <td class="possible_com_td">X</td>
-                        <td class="possible_com_td">X</td>
-                        <td class="possible_com_td" style="border-right :0px">X</td>
-                    </tr>
-                </table>
+                <p>
+                    1. 현재 검사 가능한 학과-학번은 아래과 같습니다. 검사대상에 속하지 않다면 회원가입이 불가능합니다. <span class="caution_info">꼭 검사대상인지
+                        확인하세요!</span>
+                </p>
+                <p style="margin-left:1rem; font-size:0.85rem;">
+                    - 검사대상 학과-학번 표 : &nbsp;<a id='target_btn' class="link_site" style='cursor: pointer;'>확인하기</a>
+                </p>
                 <p>2. 전과생, 편입생, 외국학생에 해당하는 사용자는 검사 기준이 따로 설정되지 않았습니다.</p>
-                <p>3. 연필/복필 기준은 15학점, 연선/복선 기준은 24학점으로만 설정되어 있습니다. 특수한 경우는 반영되지 않았습니다. (ex. 법학과, 건축학과, 항공시스템학과, 국방시스템공학과 복전)</p>
+                <p>3. 연필/복필 기준은 15학점, 연선/복선 기준은 24학점으로만 설정되어 있습니다. 특수한 경우는 반영되지 않았습니다. (ex. 법학과, 건축학과, 항공시스템학과, 국방시스템공학과
+                    복전)</p>
                 <p>4. 추천 과목 정보는 2020-2, 2021-1학기에 열렸던 최신 기준으로 제공됩니다. (ex. 과거엔 서양철학이 2학점이였다면 현재는 3학점으로 변경됨)</p>
                 <p>5. 검사 기준은 최신버전 수강편람(2021.02.22)을 반영하여 설정되었으며, 수강편람은 매년 개편되므로 자신이 알고 있는 구버전 수강편람과 다를 수 있습니다.</p>
                 <p style="margin-left:1rem; font-size:0.85rem;">- 세종대학교 교과과정 참고 링크 : &nbsp;&nbsp;
@@ -61,7 +43,8 @@
                     <a class="link_site" target="_blank"
                         href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a>
                 </p>
-                <p>6. 세종대학교에서 공식적으로 만든 사이트가 아니므로 <span class="caution_info">검사 결과가 정확하지 않을 수 있습니다.</span> 오류발생 시 상단 메뉴바 링크로 피드백 부탁드립니다.</p>
+                <p>6. 세종대학교에서 공식적으로 만든 사이트가 아니므로 <span class="caution_info">검사 결과가 정확하지 않을 수 있습니다.</span> 오류발생 시 상단 메뉴바
+                    링크로 피드백 부탁드립니다.</p>
                 <p>* 추후 공학인증 및 타과 검사 기준 업데이트 예정 😇</p>
             </div>
         </div>
@@ -99,7 +82,7 @@
     <div class="container">
         <div class="login_title" style="font-size:2rem;">학생 인증</div>
         <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
-            대양휴머니티칼리지 사이트에 로그인하여 인증합니다. (세종대학교 포털 ID/PW와 동일) 
+            대양휴머니티칼리지 사이트에 로그인하여 인증합니다. (세종대학교 포털 ID/PW와 동일)
         </div>
         <div class="login_box">
             <!-- 로그인 폼 -->
@@ -115,6 +98,44 @@
                     <div class='login_btn_default'>위 약관에 동의해야합니다.</div>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- 검사대상표 모달 -->
+<div id="target_modal" class="modal" >
+    <div class="modal-content" style='width:70%'>
+        <span class="close" id="target_close">&times;</span>
+        <br>
+        <div class="modal_div">
+            <div class="p_div">
+                <!-- 추천과목 -->
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 검사대상표
+                </div>
+                <div class="mydiv">아래 표에 해당하는 학과-학번만 회원가입이 가능합니다.</div>
+                <hr>
+
+                <div class='target_num_div'>
+                    현재 총 <span class='target_color_span'>{{ dep_num }}</span>개 학과 검사 가능
+                </div>
+
+                <table class="target_table">
+                    <tr>
+                        <th class="target_table_th" style='border-left: 1px solid #dadada;'>학과/전공</th>
+                        <th class="target_table_th">학번</th>
+                    </tr>
+                    {% for dep, year in target %}
+                    <tr>
+                        <td class="target_table_td" style='border-left: 1px solid #dadada;'>{{ dep }}</td>
+                        <td class="target_table_td" >{{ year }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <div class='target_caution_div'>
+                    ※ 전공이 정해지지 않은 학부 소속 1학년은 희망전공 선택 후 검사가능합니다.
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -152,40 +173,57 @@
 </div>
 
 
+
+
 {% endblock %}
 
 
 
 {% block js_section %}
 
+{% load static %}
+<script src="{% static 'js/modal.js' %}"></script>
+
 <script>
     // 체크박스 누르면 작동
-    function agree_func(){
+    function agree_func() {
         var chk = document.getElementById('agree');
         // 체크시
-        if(chk.checked){
+        if (chk.checked) {
             var tag = "<input type='submit' class='login_btn' value='인증하기'>";
         }
         // 체크 풀시
-        else{
+        else {
             var tag = "<div class='login_btn_default'>위 약관에 동의해야합니다.</div>";
         }
         document.getElementById("login_btn").innerHTML = tag;
     }
-    
+
     // 인증하기 클릭시 modal 띄움
-    function pop_modal(){
+    function pop_modal() {
         document.getElementById('m1').style.display = "block";
     }
 
-
-    function check_up(){
+    // form 체크
+    function check_up() {
         if (!document.getElementById('pw').value || !document.getElementById('id').value) {
             alert('⚠️ ID/PW를 입력해주세요.');
             return false;
         }
         pop_modal();
         return true;
+    }
+
+    // 검사대상표 모달
+    var target_btn = document.getElementById("target_btn");
+    var target_modal = document.getElementById('target_modal');
+    var target_close = document.getElementById("target_close");
+    Btnclick(target_btn, target_modal);
+    Spanclick(target_close, target_modal);
+    window.onclick = function (event) {
+        if (event.target == target_modal) {
+            target_modal.style.display = "none";
+        }
     }
 
 
