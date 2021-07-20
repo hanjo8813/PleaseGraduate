@@ -434,7 +434,7 @@
                 <!-- 추천과목 -->
                 <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
                 </div>
-                <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
+                <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전선과목 순으로 추천합니다.</div>
                 <hr>
                 {% if not major_selection.pass %}
                     {% if major_selection.recom_selection %}
@@ -829,6 +829,12 @@
 <script src="{% static 'js/modal.js' %}"></script>
 
 <script>
+    // 결과창에서 뒤로가기 버튼 클릭시 무조건 mypage로
+    history.pushState(null, null, location.href);
+    window.onpopstate = function (event) {
+        window.location.href = '/mypage/';
+    };
+    
     // 퍼센트화 함수
     function to_percent(my, standard) {
         a = (my / standard) * 100
