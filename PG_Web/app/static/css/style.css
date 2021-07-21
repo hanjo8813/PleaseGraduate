@@ -1373,23 +1373,34 @@ strong {
     cursor: pointer;
 }
 
-.tooltip_text{
-    background-color: #FAFAFA;
+.tooltip_text {
+    text-align: left;
+    background-color: white;
     bottom: 2.5rem;
-    left: -150px;
-    width: 400px;
+    left: -170px;
+    width: auto;
     height: auto;
-    box-shadow: 3px 3px 5px black;
-    padding: 17px;
+    box-shadow: 1px 1px 2px black;
+    padding: 10px 35px 10px 35px;
     color: black;
     border-color: lightgrey;
     border-style: solid;
-    border-width: 1.5px;
+    border-width: 0.5px;
     display: none;
     letter-spacing: 0.7px;
-    border-radius: 30px;
+    border-radius: 10px;
     font-size: 0.9rem;
     position: absolute;
+    white-space: nowrap;
+}
+
+.tooltip_span{
+    color : #d32f2f;
+}
+
+.tooltip_sub_p{
+    margin-left: 1rem;
+    font-size:0.85rem
 }
 
 .my_tooltip_text.active,

@@ -99,7 +99,7 @@
             </div>
         </div>
         {% endif %}
-    
+
         <!-- 전필 -->
         <div class="resultbox container1">
             <!-- 타이틀 -->
@@ -110,8 +110,9 @@
                 </span>
                 <!-- 클릭시 툴팁 -->
                 <div class="tooltip_text">
-                    - 전공 필수 과목으로 기준학점을 채우면 통과됩니다.<br>
-                    - 전공 필수 과목에서 초과되는 학점은 전공 선택 학점에 추가됩니다.
+                    <p>&#183; 전공필수 과목에서 기준보다 <span class='tooltip_span'>초과되는 학점</span>은 전공선택 학점에 추가됩니다.</p>
+                    <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 전공필수 과목으로 기준학점을 만족해야합니다.</p>
                 </div>
             </div>
             <!-- 내용 -->
@@ -143,8 +144,9 @@
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text text2">
-                    - 전공 선택 과목으로 기준학점을 채우면 통과됩니다.
-                    <div class="point"></div>
+                    <p>&#183; 학점 계산시 <span class='tooltip_span'>초과된 전필 학점</span>이 있다면 전선 학점에 더해진 뒤 계산됩니다.</p>
+                    <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 전공선택 과목으로 기준학점을 만족해야합니다.</p>
                 </div>
             </div>
             <div class="box">
@@ -178,8 +180,12 @@
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    - 교양 필수 과목을 모두 이수하면 통과됩니다.<br>
-                    ( 필수 과목을 모두 들으면 기준학점이 만족됩니다. )
+                    <p>&#183; 16년도부터 <span class='tooltip_span'>중핵필수 -> 교양필수</span>로 이수구분명이 변경되었습니다.</p>
+                    <p>&#183; 두 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 교양필수 과목으로 기준학점을 만족해야합니다.</p>
+                    <p class='tooltip_sub_p'>2. 교양필수 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
+                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
+                    </p>
                 </div>
             </div>
             <div class="box">
@@ -214,10 +220,15 @@
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    - 교양선택1은 세가지 조건을 만족해야합니다.<br>
-                    1. 교양선택1 과목으로 기준 학점을 채워야 합니다.<br>
-                    2. 필수과목을 모두 이수하여야 합니다.<br>
-                    3. 서로 다른 선택영역의 과목을 최소 3개 이수해야 합니다.
+                    <p>&#183; 16년도부터 <span class='tooltip_span'>중핵선택 -> 교양선택1</span>로 이수구분명이 변경되었습니다.</p>
+                    <p>&#183; 교양선택2는 <span class='tooltip_span'>기준 학점에 인정되지 않습니다.</span></p>
+                    <p>&#183; 세 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 교양선택1 과목으로 기준학점을 만족해야합니다.</p>
+                    <p class='tooltip_sub_p'>2. 교양선택1 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
+                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
+                    </p>
+                    <p class='tooltip_sub_p'>3. 과목마다 '선택영역'이 존재하고, 5가지의 선택영역 중 3가지 이상 이수해야합니다.</p>
+
                 </div>
             </div>
             <div class="box">
@@ -256,8 +267,12 @@
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    - 학문 기초 교양 과목을 모두 이수하면 통과됩니다.<br>
-                    ( 필수 과목을 모두 들으면 기준학점이 만족됩니다. )
+                    <p>&#183; 두 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 학문기초교양 과목으로 기준학점을 만족해야합니다.</p>
+                    <p class='tooltip_sub_p'>2. 학문기초교양 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
+                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
+                    </p>
+                    <p><span class='tooltip_span'>※ 화학과는 선택과목 조건이 추가로 존재합니다.</span></p>
                 </div>
             </div>
             <div class="box">
@@ -286,14 +301,17 @@
         <!-- 영어 -->
         <div class="resultbox container8">
             <div class="name name8">
-                영어 인증
+                영어졸업인증
                 <span class="tooltip t8">
                     <span class='tip_div'>Tip</span>
                 </span>
-                <div class="tooltip_text text8">
-                    - 5가지의 영어 시험 중 하나만 기준 점수를 넘기면 통과합니다.<br>
-                    - 혹은 Intensive English 과목을 이수하면 통과합니다.
-                    <div class="point"></div>
+                <div class="tooltip_text" style='left: -230px;'>
+                    <p>&#183; 총 3가지 통과 방법이 존재하고, 이 중 하나만 만족하면 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 5가지 공인영어인증시험 중, 하나의 시험에서 기준 점수를 만족</p>
+                    <p class='tooltip_sub_p'>2. Intensive English 과목을 이수</p>
+                    <p class='tooltip_sub_p'>3. 초과학기(or 졸업유예) 1년 이상 면제</p>
+                    <p>&#183; 영어인증시험 성적은 정해진 기간에 <span class='tooltip_span'>교양영어실</span>에 방문 제출해야합니다.</p>
+                    <p>&#183; 모든 졸업 기준 만족 후 영어 성적을 제출하지 않으면 <span class='tooltip_span'>졸업유예</span> 상태가 됩니다.</p>
                 </div>
             </div>
             <div class="box ">
@@ -316,16 +334,27 @@
         <!-- 고전독서 -->
         <div class="resultbox container7">
             <div class="name name1">
-                고전 독서 인증
+                고전독서인증
                 <span class="tooltip t7">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text text7">
-                    - 영역별 기준 권수를 만족하면 통과합니다.<br>
-                    1. 3학년 2학기 이전 : 고전강독 강의를 듣거나 시험을 봐서 권수를 채웁니다.<br>
-                    2. 4학년 1학기 이후 : 최소 5권 만족시 고전특강 강의를 들을 수 있습니다.<br>
-                    3. 고전특강을 들으면 통과합니다.
-                    <div class="point"></div>
+                    <p>&#183; 각 4개 영역에서의 기준 권수를 만족하면 통과합니다. (총 10권)</p>
+                    <p>&#183; 7학기를 기점으로 인증 방법이 나뉘며, 다양한 방법으로 권수를 채울 수 있습니다.</p>
+
+                    <p>&#183; 7학기 시작 전 (3-2까지 가능)</p>
+                    <p class='tooltip_sub_p'>1. <a class="link_site" target="_blank"
+                        href="http://classic.sejong.ac.kr/">고전독서인증센터</a> 에서 시험 예약 후 응시하기</p>
+                    <p class='tooltip_sub_p'>2. 고전강독 강의 수강 대체인증</p>
+                    <p class='tooltip_sub_p'>3. 학술정보원주최 독서경시대회 입상</p>
+                    <p class='tooltip_sub_p'>4. 대양휴머니티칼리지주최 고전PT대회 1차 예선 통과</p>
+
+                    <p>&#183; 7학기 시작 후 (4학년 이후)</p>
+                    <p class='tooltip_sub_p'>4학년이 되었는데 기준을 통과하지 못했다면... 😱 <br>
+                        위 4가지 방법으로 5권까지 이수 후, <span class='tooltip_span'>고전특강</span> 강의 수강시 통과
+                    </p>
+                    <p class='tooltip_sub_p'><span class='tooltip_span'>※ 5권 이상 이수하지 못했다면 강의 수강 불가</span></p>
+
                 </div>
             </div>
 
@@ -386,32 +415,32 @@
             <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전필과목 순으로 추천합니다.</div>
             <hr>
             {% if not major_essential.pass %}
-                {% if major_essential.recom_selection %}
-                <table class="mytable">
-                    <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
-                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                        <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
-                        <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
-                        <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                        <th style="width:12%">수강순위</th>
-                    </tr>
-                    {% for a,b in major_essential.recom_selection %}
-                    <tr class="mytr">
-                        <td class="mytd">{{ a.subject_num }}</td>
-                        <td class="mytd">{{ a.subject_name }}</td>
-                        <td class="mytd">{{ a.classification }}</td>
-                        <td class="mytd">{{ a.selection }}</td>
-                        <td class="mytd">{{ a.grade|floatformat }}</td>
-                        <td class="mytd" style="border-right :0px">{{ b }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                {% else %}
-                <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
-                    😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
-                    </div>
-                {% endif %}
+            {% if major_essential.recom_selection %}
+            <table class="mytable">
+                <tr class="myth" style="background-color: #f8f8f8;">
+                    <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                    <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                    <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
+                    <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
+                    <th style="border-right :1px solid #cccccc; width:8%">학점</th>
+                    <th style="width:12%">수강순위</th>
+                </tr>
+                {% for a,b in major_essential.recom_selection %}
+                <tr class="mytr">
+                    <td class="mytd">{{ a.subject_num }}</td>
+                    <td class="mytd">{{ a.subject_name }}</td>
+                    <td class="mytd">{{ a.classification }}</td>
+                    <td class="mytd">{{ a.selection }}</td>
+                    <td class="mytd">{{ a.grade|floatformat }}</td>
+                    <td class="mytd" style="border-right :0px">{{ b }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
+                😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
+            </div>
+            {% endif %}
             {% endif %}
             <div class="partdiv">
                 {% if major_essential.pass %}
@@ -437,32 +466,32 @@
                 <div class="mydiv">같은 학과 사용자들이 가장 많이 수강했던 전선과목 순으로 추천합니다.</div>
                 <hr>
                 {% if not major_selection.pass %}
-                    {% if major_selection.recom_selection %}
-                    <table class="mytable">
-                        <tr class="myth" style="background-color: #f8f8f8;">
-                            <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
-                            <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                            <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
-                            <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
-                            <th style="border-right :1px solid #cccccc; width:8%">학점</th>
-                            <th style="width:12%">수강순위</th>
-                        </tr>
-                        {% for a,b in major_selection.recom_selection %}
-                        <tr class="mytr">
-                            <td class="mytd">{{ a.subject_num }}</td>
-                            <td class="mytd">{{ a.subject_name }}</td>
-                            <td class="mytd">{{ a.classification }}</td>
-                            <td class="mytd">{{ a.selection }}</td>
-                            <td class="mytd">{{ a.grade|floatformat }}</td>
-                            <td class="mytd" style="border-right :0px">{{ b }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                    {% else %}
-                        <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
-                            😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
-                        </div>
-                    {% endif %}
+                {% if major_selection.recom_selection %}
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
+                        <th style="border-right :1px solid #cccccc; width:8%">학점</th>
+                        <th style="width:12%">수강순위</th>
+                    </tr>
+                    {% for a,b in major_selection.recom_selection %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ a.subject_num }}</td>
+                        <td class="mytd">{{ a.subject_name }}</td>
+                        <td class="mytd">{{ a.classification }}</td>
+                        <td class="mytd">{{ a.selection }}</td>
+                        <td class="mytd">{{ a.grade|floatformat }}</td>
+                        <td class="mytd" style="border-right :0px">{{ b }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <div style="color:#888888; margin-top:4rem; margin-bottom:2rem;font-size:1.5rem;">
+                    😱 죄송합니다... 아직 참조할 수 있는 '{{user_info.major}}'의 데이터가 부족합니다...
+                </div>
+                {% endif %}
                 {% endif %}
                 <div class="partdiv">
                     {% if major_selection.pass %}
@@ -564,18 +593,26 @@
                 <hr>
                 <table class="mytable" style="padding-bottom:1rem">
                     <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.0}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.1}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.2}}</th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.3}}</th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.0}}
+                        </th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.1}}
+                        </th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.2}}
+                        </th>
+                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.3}}
+                        </th>
                         <th style="width:20%">{{core_selection.standard_cs_part.4}}</th>
                     </tr>
                     <tr class="mytr">
-                        <td class="mytd">{{ core_selection.part_check.0 }}</td>
-                        <td class="mytd">{{ core_selection.part_check.1 }}</td>
-                        <td class="mytd">{{ core_selection.part_check.2 }}</td>
-                        <td class="mytd">{{ core_selection.part_check.3 }}</td>
-                        <td class="mytd" style="border-right :0px">{{ core_selection.part_check.4 }}</td>
+                        {% for check in core_selection.part_check %}
+                        {% if check == '이수' %}
+                        <td class="mytd" style='color:#17a55e; font-weight: bold;'>
+                            {% else %}
+                        <td class="mytd">
+                            {% endif %}
+                            {{ check }}
+                        </td>
+                        {% endfor %}
                     </tr>
                 </table>
                 <div class="partdiv">
@@ -665,7 +702,7 @@
                 <hr>
                 <table class="mytable">
                     <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:12%">학수번 호</th>
+                        <th style="border-right :1px solid #cccccc; width:12%">학수번호</th>
                         <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
                         <th style="border-right :1px solid #cccccc; width:16%">이수구분</th>
                         <th style="border-right :1px solid #cccccc; width:12%">선택영역</th>
@@ -761,137 +798,137 @@
 
                 <!-- 화학과 기교에서는 추가 조건 붙음 !!! -->
                 {% if user_info.major == '화학과' %}
-                    <br><br><br>
-                    <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(A)
-                    </div>
-                    <div class="mydiv">
-                        화학과는 아래 기교 선택과목(A)들 중 한가지를 선택하여 이수하여야합니다.
-                    </div>
-                    <hr>
-                    <table class="mytable">
-                        <tr class="myth" style="background-color: #f8f8f8;">
-                            <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
-                            <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                            <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
-                            <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
-                            <th style="width:15%">학점</th>
-                        </tr>
-                        {% for q, c in basic.standard_chemy_A %}
-                        {% if not c %}
-                        <tr class="mytr">
-                            {% else %}
-                        <tr class="mytr" style="color: #17a55e">
-                            {% endif %}
-                            <td class="mytd">{{ q.subject_num }}</td>
-                            <td class="mytd">{{ q.subject_name }}</td>
-                            <td class="mytd">{{ q.classification }}</td>
-                            <td class="mytd">{{ q.selection }}</td>
-                            <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                    <div class="partdiv">
-                        {% if basic.pass_chemy_A %}
-                        <span style="color:#17a55e">선택과목(A) 조건을 만족하셨습니다</span>
+                <br><br><br>
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(A)
+                </div>
+                <div class="mydiv">
+                    화학과는 아래 기교 선택과목(A)들 중 한가지를 선택하여 이수하여야합니다.
+                </div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q, c in basic.standard_chemy_A %}
+                    {% if not c %}
+                    <tr class="mytr">
                         {% else %}
-                        <span style="color:#d32f2f">선택과목(A)이 부족합니다</span>
+                    <tr class="mytr" style="color: #17a55e">
                         {% endif %}
-                    </div>
-
-                    {% if not basic.pass_chemy_A %}
-                    <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(A) 추천
-                    </div>
-                    <div class="mydiv">
-                        최근 1년의 강의목록 중 동일 과목으로 추천합니다.<br>
-                        (다른 과목이 추천될 때 : 과목명이 변경된 것입니다. / 과목이 추천되지 않을 때 : 더 이상 열리지 않는 과목입니다.)
-                    </div>
-                    <hr>
-                    <table class="mytable">
-                        <tr class="myth" style="background-color: #f8f8f8;">
-                            <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
-                            <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                            <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
-                            <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
-                            <th style="width:15%">학점</th>
-                        </tr>
-                        {% for q in basic.recom_chemy_A %}
-                        <tr class="mytr">
-                            <td class="mytd">{{ q.subject_num }}</td>
-                            <td class="mytd">{{ q.subject_name }}</td>
-                            <td class="mytd">{{ q.classification }}</td>
-                            <td class="mytd">{{ q.selection }}</td>
-                            <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if basic.pass_chemy_A %}
+                    <span style="color:#17a55e">선택과목(A) 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">선택과목(A)이 부족합니다</span>
                     {% endif %}
+                </div>
 
-                    {% if basic.chemy_B_exists %}
-                        <br><br><br>
-                        <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(B)
-                        </div>
-                        <div class="mydiv">
-                            화학과는 아래 기교 선택과목(B)들 중 한가지를 선택하여 이수하여야합니다.
-                        </div>
-                        <hr>
-                        <table class="mytable">
-                            <tr class="myth" style="background-color: #f8f8f8;">
-                                <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
-                                <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                                <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
-                                <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
-                                <th style="width:15%">학점</th>
-                            </tr>
-                            {% for q, c in basic.standard_chemy_B %}
-                            {% if not c %}
-                            <tr class="mytr">
-                                {% else %}
-                            <tr class="mytr" style="color: #17a55e">
-                                {% endif %}
-                                <td class="mytd">{{ q.subject_num }}</td>
-                                <td class="mytd">{{ q.subject_name }}</td>
-                                <td class="mytd">{{ q.classification }}</td>
-                                <td class="mytd">{{ q.selection }}</td>
-                                <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                        <div class="partdiv">
-                            {% if basic.pass_chemy_B %}
-                            <span style="color:#17a55e">선택과목(B) 조건을 만족하셨습니다</span>
-                            {% else %}
-                            <span style="color:#d32f2f">선택과목(B)이 부족합니다</span>
-                            {% endif %}
-                        </div>
+                {% if not basic.pass_chemy_A %}
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(A) 추천
+                </div>
+                <div class="mydiv">
+                    최근 1년의 강의목록 중 동일 과목으로 추천합니다.<br>
+                    (다른 과목이 추천될 때 : 과목명이 변경된 것입니다. / 과목이 추천되지 않을 때 : 더 이상 열리지 않는 과목입니다.)
+                </div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in basic.recom_chemy_A %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
 
-                        {% if not basic.pass_chemy_B %}
-                        <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(B) 추천
-                        </div>
-                        <div class="mydiv">
-                            최근 1년의 강의목록 중 동일 과목으로 추천합니다.<br>
-                            (다른 과목이 추천될 때 : 과목명이 변경된 것입니다. / 과목이 추천되지 않을 때 : 더 이상 열리지 않는 과목입니다.)
-                        </div>
-                        <hr>
-                        <table class="mytable">
-                            <tr class="myth" style="background-color: #f8f8f8;">
-                                <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
-                                <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
-                                <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
-                                <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
-                                <th style="width:15%">학점</th>
-                            </tr>
-                            {% for q in basic.recom_chemy_B %}
-                            <tr class="mytr">
-                                <td class="mytd">{{ q.subject_num }}</td>
-                                <td class="mytd">{{ q.subject_name }}</td>
-                                <td class="mytd">{{ q.classification }}</td>
-                                <td class="mytd">{{ q.selection }}</td>
-                                <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
+                {% if basic.chemy_B_exists %}
+                <br><br><br>
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(B)
+                </div>
+                <div class="mydiv">
+                    화학과는 아래 기교 선택과목(B)들 중 한가지를 선택하여 이수하여야합니다.
+                </div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q, c in basic.standard_chemy_B %}
+                    {% if not c %}
+                    <tr class="mytr">
+                        {% else %}
+                    <tr class="mytr" style="color: #17a55e">
                         {% endif %}
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="partdiv">
+                    {% if basic.pass_chemy_B %}
+                    <span style="color:#17a55e">선택과목(B) 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">선택과목(B)이 부족합니다</span>
                     {% endif %}
+                </div>
+
+                {% if not basic.pass_chemy_B %}
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 선택과목(B) 추천
+                </div>
+                <div class="mydiv">
+                    최근 1년의 강의목록 중 동일 과목으로 추천합니다.<br>
+                    (다른 과목이 추천될 때 : 과목명이 변경된 것입니다. / 과목이 추천되지 않을 때 : 더 이상 열리지 않는 과목입니다.)
+                </div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in basic.recom_chemy_B %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+                {% endif %}
                 {% endif %}
 
             </div>
@@ -935,17 +972,17 @@
                     {% if english.pass %}
                     <span style="color:#17a55e">
                         위 조건을 만족하였습니다
-                    {% else %}
-                    <span style="color:#d32f2f">
-                        위 조건을 만족하지 못했습니다
-                    {% endif %}
-                        {% if english.score %}
-                        <br><br>
-                        <span style="font-size:1.2rem;">- 내 점수 : </span>
-                        <span style="font-weight: bold;">{{ english.category }} / {{ english.score }}</span>
-                        {% endif %}
-                    </span>
-                    
+                        {% else %}
+                        <span style="color:#d32f2f">
+                            위 조건을 만족하지 못했습니다
+                            {% endif %}
+                            {% if english.score %}
+                            <br><br>
+                            <span style="font-size:1.2rem;">- 내 점수 : </span>
+                            <span style="font-weight: bold;">{{ english.category }} / {{ english.score }}</span>
+                            {% endif %}
+                        </span>
+
                 </div>
             </div>
         </div>
@@ -1140,17 +1177,17 @@
         if (event.target == modal2) {
             modal2.style.display = "none";
         }
-        if(typeof modal3 !=='undefined'){
+        if (typeof modal3 !== 'undefined') {
             if (event.target == modal3) {
                 modal3.style.display = "none";
             }
         }
-        if(typeof modal4 !=='undefined'){
+        if (typeof modal4 !== 'undefined') {
             if (event.target == modal4) {
                 modal4.style.display = "none";
             }
         }
-        if(typeof modal5 !=='undefined'){
+        if (typeof modal5 !== 'undefined') {
             if (event.target == modal5) {
                 modal5.style.display = "none";
             }
@@ -1166,8 +1203,8 @@
 {% if exists.ce %}
 <script>
     // 교필 영역 함수
-    var Grade3 = '{{core_essential.standard_num}}';         
-    var Mygrade3 = '{{core_essential.user_num}}';            
+    var Grade3 = '{{core_essential.standard_num}}';
+    var Mygrade3 = '{{core_essential.user_num}}';
     var pernum3 = to_percent(Mygrade3, Grade3);
     // 필수과목 패스여부
     var Ce_p;
@@ -1196,9 +1233,9 @@
 {% if exists.cs %}
 <script>
     // 교선 영역 함수
-    var Grade4 = '{{core_selection.standard_num}}';        
-    var Mygrade4 = '{{core_selection.user_num}}';             
-    var pernum4 = to_percent(Mygrade4, Grade4);       
+    var Grade4 = '{{core_selection.standard_num}}';
+    var Mygrade4 = '{{core_selection.user_num}}';
+    var pernum4 = to_percent(Mygrade4, Grade4);
     // 선택영역 패스여부
     var Myarea1;
     if ('{{core_selection.pass_part}}' == 1) {
@@ -1238,14 +1275,14 @@
 {% if exists.b %}
 <script>
     // 기교 영역 함수
-    var Grade5 = '{{basic.standard_num}}';          
-    var Mygrade5 = '{{basic.user_num}}';            
-    var pernum5 = to_percent(Mygrade5, Grade5);      
+    var Grade5 = '{{basic.standard_num}}';
+    var Mygrade5 = '{{basic.user_num}}';
+    var pernum5 = to_percent(Mygrade5, Grade5);
     // 필수과목 패스여부
     var B_p;
     // 화학과 기교 걸러내기
     var temp_p = '{{basic.pass}}';
-    if( '{{user_info.major}}' == '화학과'){
+    if ('{{user_info.major}}' == '화학과') {
         temp_p = '{{basic.pass_chemy_all}}'
     }
     console.log(temp_p);
@@ -1275,8 +1312,8 @@
 {% if exists.multi %}
 <script>
     // 연계/복수전공시 차트 함수
-    var Grade_multi_me = '{{multi_major_essential.standard_num}}'; 
-    var Grade_multi_ms = '{{multi_major_selection.standard_num}}'; 
+    var Grade_multi_me = '{{multi_major_essential.standard_num}}';
+    var Grade_multi_ms = '{{multi_major_selection.standard_num}}';
     var Mygrade_multi_me = '{{multi_major_essential.user_num}}';
     var Mygrade_multi_ms = '{{multi_major_selection.user_num}}';
 
