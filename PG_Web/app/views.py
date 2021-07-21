@@ -77,22 +77,20 @@ def r_login(request):
 
 def r_agree(request):
     target_qeuryset = Standard.objects.only('user_year', 'user_dep')
-
+    # { 학과 : [21, 20 ...] }
     dict_dep_yearlist = defaultdict(lambda:'')
     for row in target_qeuryset:
         if row.user_dep not in dict_dep_yearlist.keys():
             dict_dep_yearlist[row.user_dep] += str(row.user_year)
         else:
             dict_dep_yearlist[row.user_dep] += ', ' + str(row.user_year)
-    
+    # 지원 학과 개수
     dep_num = len(dict_dep_yearlist.keys())
-    targe_list = [[ dep, year] for dep, year in dict_dep_yearlist.items()]
-    targe_list = sorted(targe_list, key=(lambda x: x[0]))
-    print(targe_list)
-    print(dep_num)
-    
+    # [ 학과, '21,20....' ] => 정렬
+    target_list = [[ dep, year] for dep, year in dict_dep_yearlist.items()]
+    target_list = sorted(target_list, key=(lambda x: x[0]))
     context = {
-        'target' : targe_list,
+        'target' : target_list,
         'dep_num' : dep_num
     }
     return render(request, "agree.html", context)
@@ -730,8 +728,8 @@ def f_certify(request):
 
 # ***********************************************************************************
     
-    # temp_user_info['major'] = '지능기전공학부'
-    # year = 17
+    temp_user_info['major'] = '화학과'
+    year = 20
     
 # ***********************************************************************************
 
@@ -1216,6 +1214,49 @@ def f_result(user_id):
             'standard_essential' : standard_essential_b,
             'pass' : pass_b,
         }
+
+        # 화학과 기교에서는 조건이 추가된다.
+        if ui_row.major == '화학과':
+            pass_chemy_all = pass_b
+            chemy_B_exists = 0
+            # 기교 -> 선택과목 기준 설정
+            if ui_row.year >= 19:
+                data_chemy_A = ['2657', '3353']             # 일생 / 통계
+                data_chemy_B = []
+            elif ui_row.year >= 16:
+                data_chemy_A = ['2647', '2657']             # 일물실1 / 일생
+                data_chemy_B = ['2649', '2657', '3353']     # 일물실2 / 일생 / 통계
+            else:
+                data_chemy_A = ['4082', '2647', '2657']     # 고미적1 / 일물실1 / 일생
+                data_chemy_B = ['4300', '2649']             # 고미적 2 / 일물실2
+
+            dic_chemy_A = make_dic(data_chemy_A)
+            recom_chemy_A, check_chemy_A = make_recommend_list(user_dic_b, dic_chemy_A)
+            standard_chemy_A = to_zip_list(list_to_query(dic_chemy_A.keys()), check_chemy_A)
+            pass_chemy_A = 0
+            if 1 in check_chemy_A:
+                pass_chemy_A = 1
+            else:
+                pass_chemy_all = 0
+                context_basic['recom_chemy_A'] = list_to_query(recom_chemy_A)
+            context_basic['standard_chemy_A'] = standard_chemy_A
+            context_basic['pass_chemy_A'] = pass_chemy_A
+                
+            if data_chemy_B:
+                chemy_B_exists = 1
+                dic_chemy_B = make_dic(data_chemy_B)
+                recom_chemy_B, check_chemy_B = make_recommend_list(user_dic_b, dic_chemy_B)
+                standard_chemy_B = to_zip_list(list_to_query(dic_chemy_B.keys()), check_chemy_B)
+                pass_chemy_B = 0
+                if 1 in check_chemy_B:
+                    pass_chemy_B = 1
+                else:
+                    pass_chemy_all = 0
+                    context_basic['recom_chemy_B'] =list_to_query(recom_chemy_B)
+                context_basic['standard_chemy_B'] = standard_chemy_B
+                context_basic['pass_chemy_B'] = pass_chemy_B
+            context_basic['chemy_B_exists'] = chemy_B_exists
+            context_basic['pass_chemy_all'] = pass_chemy_all
         result_context['basic'] = context_basic
 
 
@@ -1269,9 +1310,12 @@ def f_result(user_id):
         result_context['multi_major_essential'] = context_multi_major_essential
         result_context['multi_major_selection'] = context_multi_major_selection
 
-    # 최종 통과 여부
+    #############################################
+    ################### Total ###################
+    #############################################
     standard_num_total = standard_row.sum_score
     user_num_total = data['학점'].sum()
+    # 총 기준 학점 넘기 + 모든 영역에서 pass 받으면 통과
     pass_total = 1
     if standard_num_total > user_num_total:
         pass_total = 0
@@ -1283,7 +1327,11 @@ def f_result(user_id):
                     break
             except:
                 pass
-    
+    # 화학과는 한번더 검사
+    if ui_row.major == '화학과':
+        if not result_context['basic']['pass_chemy_all']:
+            pass_total = 0
+
     context_total = {
         'standard_num' : standard_num_total,
         'user_num' : convert_to_int(user_num_total),
@@ -1291,30 +1339,23 @@ def f_result(user_id):
     }
     result_context['total'] = context_total
 
-    ''' context 구조
-    result_context = {
-        'user_info',
-        'book',
-        'english',
-        'major_essential',
-        'major_selection',
-        'core_essential',
-        'core_selection',
-        'basic',
-        'multi_major_essential',
-        'multi_major_selection',
-        'total',
-    }
-    '''
-
-    # for key in result_context:
-    #     print(key)
-    #     for key2 in result_context[key]:
-    #         print(key2, result_context[key][key2])
-    #     print('------------------------------------------------------------------')
     return result_context
-    
 
+    # @@@ result_context 구조 @@@
+    # result_context = {
+    #     'user_info',
+    #     'book',
+    #     'english',
+    #     'major_essential',
+    #     'major_selection',
+    #     'core_essential',
+    #     'core_selection',
+    #     'basic',
+    #     'multi_major_essential',
+    #     'multi_major_selection',
+    #     'total',
+    # }
+    
 
 # ---------------------------------------------------- (공학인증 파트) ----------------------------------------------------------------
 
