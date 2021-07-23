@@ -19,15 +19,21 @@
 
 <br>
 
-## 💻 프로젝트 소개
+## 💻 Please Graduate 소개
 
 ![python-bg](https://img.shields.io/badge/Python-v3.9-blue?logo=Python) ![django-bg](https://img.shields.io/badge/Django-v3.1.4-44b78b?logo=Django)
 
 ![image](https://user-images.githubusercontent.com/71180414/125630704-4954ae10-8c76-4530-9c87-28d4c383e951.png)
 
-<div align='center'>
-   <h3>세종대학교 졸업요건 검사 및 강의 추천 서비스 'Please Graduate'</h3>
-</div>
+
+Please Graduate는 세종대학교 졸업요건 검사 및 강의 추천 사이트입니다.
+
+총 **337**개의 검사 기준으로, **58**개 학과 및 7개 학번(15~21)의 검사를 지원합니다.
+
+회원가입은 재학생 인증을 필수로 해야하고, 기이수성적 엑셀파일만 업로드하면 자동으로 검사합니다.
+
+검사 결과에선 자신이 부족한 부분을 시각화하고, 자신과 비슷한 사용자들이 많이 들었던 과목을 추천합니다.
+
 
 ### 구현 계기
 - 세종대학교의 졸업요건은 기준 학점도 채워야하지만, **7가지 영역**을 모두 만족해야 해서 매우 복잡합니다.
