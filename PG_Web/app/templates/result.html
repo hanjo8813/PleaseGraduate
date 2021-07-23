@@ -299,6 +299,7 @@
         {% endif %}
 
         <!-- 영어 -->
+        {% if exists.english %}
         <div class="resultbox container8">
             <div class="name name8">
                 영어졸업인증
@@ -330,6 +331,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- 고전독서 -->
         <div class="resultbox container7">
@@ -1049,16 +1051,8 @@
     var pernum1 = to_percent(Mygrade1, Grade1);         // 전필
     var pernum2 = to_percent(Number(Mygrade2) + Number(remain), Grade2);         // 전선
     var pernum7 = to_percent(Mybook, 10);               // 고전독서
+
     // pass 여부
-    // 영어인증
-    if ('{{english.pass}}' == 1) {
-        var Grade8 = "Pass";
-        var pernum8 = 100;
-    }
-    else {
-        var Grade8 = "NP";
-        var pernum8 = 0;
-    }
     // 총 검사 결과
     if (pernum0 >= 100) {
         if ('{{total.pass}}' == 1) {
@@ -1082,7 +1076,6 @@
     document.getElementById("studentnumber").innerHTML = Studentnumber;
     document.getElementById("grade1").innerHTML = Grade1;
     document.getElementById("grade2").innerHTML = Grade2;
-    document.getElementById("grade8").innerHTML = Grade8;
     document.getElementById("mygrade1").innerHTML = Mygrade1;
     document.getElementById("mygrade2").innerHTML = Mygrade2;
     if (remain != 0) {
@@ -1095,6 +1088,7 @@
     document.getElementById("sbook").innerHTML = Sbook;
     document.getElementById("wbook").innerHTML = Wbook;
     document.getElementById("scbook").innerHTML = Scbook;
+
 
     // 차트 함수
     var CircleProgress = function (x, y, z) {
@@ -1142,33 +1136,27 @@
                 });
         }
     }
-
     CircleProgress(pernum0, '#chart0', 250);
     CircleProgress(pernum1, '#chart1', 150);
     CircleProgress(pernum2, '#chart2', 150);
     CircleProgress(pernum7, '#chart7', 150);
-    CircleProgress(pernum8, '#chart8', 150);
+    
 
     var modal1 = document.getElementById('myModal1');
     var modal2 = document.getElementById('myModal2');
-    var modal8 = document.getElementById('myModal8');
 
     var btn1 = document.getElementById("myBtn1");
     var btn2 = document.getElementById("myBtn2");
-    var btn8 = document.getElementById("myBtn8");
-
+    
     var span1 = document.getElementById("close1");
     var span2 = document.getElementById("close2");
-    var span8 = document.getElementById("close8");
 
     Btnclick(btn1, modal1);
     Btnclick(btn2, modal2);
-    Btnclick(btn8, modal8);
 
     Spanclick(span1, modal1);
     Spanclick(span2, modal2);
-    Spanclick(span8, modal8);
-
+    
     // 모달 밖 클릭시 꺼짐 함수
     window.onclick = function (event) {
         if (event.target == modal1) {
@@ -1192,8 +1180,10 @@
                 modal5.style.display = "none";
             }
         }
-        if (event.target == modal8) {
-            modal8.style.display = "none";
+        if (typeof modal8 !== 'undefined') {
+            if (event.target == modal8) {
+                modal8.style.display = "none";
+            }
         }
     }
 
@@ -1308,6 +1298,31 @@
     CircleProgress(pernum5, '#chart5', 150);
 </script>
 {% endif %}
+
+
+{% if exists.english %}
+<script>
+    // 영어인증
+    if ('{{english.pass}}' == 1) {
+        var Grade8 = "Pass";
+        var pernum8 = 100;
+    }
+    else {
+        var Grade8 = "NP";
+        var pernum8 = 0;
+    }
+
+    document.getElementById("grade8").innerHTML = Grade8;
+    var modal8 = document.getElementById('myModal8');
+    var btn8 = document.getElementById("myBtn8");
+    var span8 = document.getElementById("close8");
+    Btnclick(btn8, modal8);
+    Spanclick(span8, modal8);
+
+    CircleProgress(pernum8, '#chart8', 150);
+</script>
+{% endif %}
+
 
 {% if exists.multi %}
 <script>

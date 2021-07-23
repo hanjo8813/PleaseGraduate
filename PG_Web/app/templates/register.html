@@ -48,27 +48,32 @@
                 </select>
 
                 <label>영어인증</label>
-                <select onclick="pop_score()" id="eng" name="eng">
-                    <option value="해당없음" selected>해당없음</option>
-                    <option value="TOEIC">TOEIC</option>
-                    <option value="TOEFL">TOEFL</option>
-                    <option value="TEPS">TEPS</option>
-                    <option value="OPIc">OPIc</option>
-                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
-                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
-                </select>
-
-                <!-- 숨겨져있는 애들 -->
-                <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
-                <select id="opic" name="opic" style="display:none">
-                    <option value="NL" selected>Novice Low</option>
-                    <option value="NM">Novice Mid</option>
-                    <option value="NH">Novice High</option>
-                    <option value="IL">Intermediate Low</option>
-                    <option value="IM">Intermediate Mid</option>
-                    <option value="IH">Intermediate High</option>
-                    <option value="AL">Advanced Low</option>
-                </select>
+                {% if not request.session.temp_user_info.is_exempt_english %}
+                    <select onclick="pop_score()" id="eng" name="eng">
+                        <option value="해당없음" selected>해당없음</option>
+                        <option value="TOEIC">TOEIC</option>
+                        <option value="TOEFL">TOEFL</option>
+                        <option value="TEPS">TEPS</option>
+                        <option value="OPIc">OPIc</option>
+                        <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                        <option value="초과학기면제">초과학기 2학기이상 면제</option>
+                    </select>
+                    <!-- 숨겨져있는 애들 -->
+                    <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                    <select id="opic" name="opic" style="display:none">
+                        <option value="NL" selected>Novice Low</option>
+                        <option value="NM">Novice Mid</option>
+                        <option value="NH">Novice High</option>
+                        <option value="IL">Intermediate Low</option>
+                        <option value="IM">Intermediate Mid</option>
+                        <option value="IH">Intermediate High</option>
+                        <option value="AL">Advanced Low</option>
+                    </select>
+                {% else %}
+                    <select id="eng" name="eng">
+                        <option value="영어인증면제학과" selected>영어인증 면제학과</option>
+                    </select>
+                {% endif %}
 
                 <label>비밀번호</label>
                 <input id="pw1" type="password" name="password">
@@ -114,8 +119,6 @@
 
     // 가입하기 버튼 눌렀을 때 검사하기
     function check_up(){
-        var eng_box = document.getElementById('eng');
-        var eng_ind = document.getElementById("eng").options.selectedIndex;
         // 1. 학부생일경우 학과 선택했는지 확인
         if(document.getElementById('major_select'))
         {
@@ -128,6 +131,8 @@
             }
         }
         // 2. 영어인증 선택시 점수 입력확인
+        var eng_box = document.getElementById('eng');
+        var eng_ind = document.getElementById("eng").options.selectedIndex;
         if(eng_box.options[eng_ind].value !== "해당없음" && eng_box.options[eng_ind].value !== "초과학기면제" && eng_box.options[eng_ind].value !== "OPIc"){
             if (!document.getElementById('eng_score').value || document.getElementById('eng_score').value == 0) {
                 alert('🤔 영어 점수를 입력해주세요.') ;

@@ -171,9 +171,9 @@
 
 ![PG 아키텍처](https://user-images.githubusercontent.com/71180414/125759854-a7b24966-b2ca-4da8-884d-0f419f86ad7f.png)
 
-- 디자인 패턴은 Djagno의 고유 패턴인 MVT(Model/View/Template)패턴을 사용하였습니다.
+- 디자인 패턴은 Django의 고유 패턴인 MVT(Model/View/Template)패턴을 사용하였습니다.
 - 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
-- 일일 방문자수 구현을 위해 djanog-crontab을 사용하였습니다.
+- 일일 방문자수 구현을 위해 django-crontab을 사용하였습니다.
 - AWS 로드 밸런서와 Nginx를 사용해 로드밸런싱 및 리다이렉팅을 구현하였습니다.
 
 <br>

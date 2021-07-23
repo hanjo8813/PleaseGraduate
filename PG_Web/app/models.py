@@ -117,6 +117,7 @@ class Standard(models.Model):
     ce_list = models.CharField(max_length=100)
     cs_list = models.CharField(max_length=100)
     b_list = models.CharField(max_length=100)
+    english = models.JSONField()
     sum_eng = models.IntegerField()
     pro = models.IntegerField(blank=True, null=True)
     bsm = models.IntegerField(blank=True, null=True)

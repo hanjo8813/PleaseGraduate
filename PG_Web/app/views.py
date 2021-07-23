@@ -35,8 +35,6 @@ from .models import *
 from django.views.decorators.csrf import csrf_exempt
 
 
-
-
 # ---------------------------------------------------- ( 렌더링 함수 ) ----------------------------------------------------------------
 
 def r_head(request):
@@ -316,43 +314,57 @@ def f_mod_info(request):
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/mypage/')
 
-    # ***********************************************************************************
-    
-    #temp_user_info['major'] = '지능기전공학부'
-    
-    # ***********************************************************************************
-    
-    name = temp_user_info['name']
-    book = temp_user_info['book']
-    major = temp_user_info['major']
+    # 기본 정보 -> 변수에 저장
     ui_row = NewUserInfo.objects.get(student_id = user_id)
-    # 일단 이름이 변경되었다면 저장
-    if ui_row.name != name :
-        ui_row.name = name
-        ui_row.save()
+    year = user_id[:2]
+    getted_major = temp_user_info['major']
+
+    # ***********************************************************************************
+    
+    getted_major = '국제학부'
+    year = 21
+    ui_row.year = year
+    ui_row.save()
+    
+    # ***********************************************************************************
+
+    # 받아온거에서 전공제외 항목들 쿼리셋에 저장
+    ui_row.book = temp_user_info['book']
+    ui_row.name = temp_user_info['name']
+    
     # 전공이 학부로 뜨는 경우(1학년에 해당)
-    if major[-2:] == '학부':
-        ui_row.book = book
-        ui_row.save()
-        major_select = []
+    if getted_major[-2:] == '학부':
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = MajorDepartment.objects.filter(department = major)
-        for m in md:
-            major_select.append(m.major)
-        # 세션에 전공선택지 넣어주고
+        md = MajorDepartment.objects.filter(department = getted_major)
+        major_select = [row.major for row in md]
+        # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
+        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 변경된 '+ getted_major + '-' + year + '의 검사를 지원하지 않습니다.')
+            return redirect('/mypage/')
+        # 통과하면 저장 후 세션에 전공선택지 넣고 메시지로 선택창 띄워준다
+        ui_row.save()
         request.session['temp_major_select'] = major_select
-        # 메시지 mypage에 보내기
         messages.warning(request, '전공선택 창 띄우기')
         return redirect('/mypage/')
-    # 아니면 바로 전공수정후 저장
+    # 학과/전공으로 뜨는 경우
     else:
-        #변경시에만 저장
-        if not(ui_row.book == book and ui_row.major == major):
-            ui_row.book = book
-            ui_row.major = major
-            ui_row.save()
-            # json DB도 업데이트
-            update_json(user_id)
+        # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
+        if not Standard.objects.filter(user_year = year, user_dep = getted_major).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 변경된 '+ getted_major + '-' + year + '의 검사를 지원하지 않습니다.')
+            return redirect('/mypage/')
+        # 영어인증 면제학과로 변경시, user_info의 영어정보를 면제로 바꾼다
+        user_standard_row = Standard.objects.get(user_year = year, user_dep = getted_major)
+        english_standard = json.loads(user_standard_row.english)
+        if not english_standard:
+            ui_row.eng = '영어인증면제학과'
+        # 면제학과에서 이수해야하는 학과로 전과했을때
+        elif ui_row.eng  == '영어인증면제학과':
+            ui_row.eng = '해당없음'
+        # 유저정보 테이블에 저장
+        ui_row.major = getted_major
+        ui_row.save()
+        # json DB도 업데이트
+        update_json(user_id)
         messages.success(request, '업데이트성공')
         return redirect('/mypage/') 
 
@@ -364,7 +376,7 @@ def f_mod_ms_eng(request):
     eng = request.POST.get('eng')
     if eng == 'OPIc':
         eng = eng + '/' + request.POST.get('opic')
-    elif eng != '해당없음' and eng != '초과학기면제':
+    elif eng not in ['해당없음', '초과학기면제', '영어인증면제학과']:
         eng = eng + '/' + str(request.POST.get('eng_score'))
     # 사용자의 user_info row 부르기
     ui_row = NewUserInfo.objects.get(student_id = user_id)
@@ -556,7 +568,6 @@ def selenium_DHC(id, pw):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
-
     # 로컬 - 개발용 -------------------------------------------------------------------------------
     if platform.system() == 'Windows':
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
@@ -728,8 +739,8 @@ def f_certify(request):
 
 # ***********************************************************************************
     
-    #temp_user_info['major'] = '화학과'
-    #year = 20
+    temp_user_info['major'] = '국제학부'
+    year = 21
     
 # ***********************************************************************************
 
@@ -750,6 +761,15 @@ def f_certify(request):
         if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
             messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
             return redirect('/agree/')
+
+    # 예체능대/호경특정학과 는 영어인증 면제 / (학부소속에선 면제 없음)
+    is_exempt_english = 0
+    if not major_select:
+        user_standard_row = Standard.objects.get(user_year = year, user_dep = temp_user_info['major'])
+        english_standard = json.loads(user_standard_row.english)
+        if not english_standard:
+            is_exempt_english = 1
+    temp_user_info['is_exempt_english'] = is_exempt_english
     
     # 나머지 데이터도 추가해주기    
     temp_user_info['id'] = id
@@ -786,7 +806,7 @@ def f_register(request):
     eng = request.POST.get('eng')
     if eng == 'OPIc':
         eng = eng + '/' + request.POST.get('opic')
-    elif eng != '해당없음' and eng != '초과학기면제':
+    elif eng not in ['해당없음', '초과학기면제', '영어인증면제학과']:
         eng = eng + '/' + str(request.POST.get('eng_score'))
 
     # 가입시간을 저장
@@ -927,7 +947,7 @@ def f_result(user_id):
     result_context = {}     
 
     # 교필, 교선, 기교, 복전 여부 판단
-    ce_exists, cs_exists, b_exists, multi_exists= 0, 0, 0, 0
+    ce_exists, cs_exists, b_exists, multi_exists, english_exists = 0, 0, 0, 0, 0
     if standard_row.core_essential:
         ce_exists = 1
     if standard_row.core_selection:
@@ -936,10 +956,13 @@ def f_result(user_id):
         b_exists = 1 
     if ui_row.major_status != '해당없음':
         multi_exists = 1 
+    if json.loads(standard_row.english):
+        english_exists = 1
     context_exists = {
         'ce' : ce_exists,
         'cs' : cs_exists,
         'b' : b_exists,
+        'english' : english_exists,
         'multi' : multi_exists,
     }
     result_context['exists'] = context_exists
@@ -986,43 +1009,6 @@ def f_result(user_id):
     }
     result_context['book'] = context_book
     
-    
-    ################################################
-    ################### 영어 영역 ###################
-    ################################################
-    # 영어합격기준 (영문과만 예외처리)
-    if ui_row.major == '영어영문학전공':
-        eng_standard = {'TOEIC':800,'TOEFL':91,'TEPS':637,'OPIc':'MID','TOEIC_Speaking':130} 
-    else:
-        eng_standard = {'TOEIC':700,'TOEFL':80,'TEPS':556,'OPIc':'LOW','TOEIC_Speaking':120}
-    # 영어 인증 여부
-    eng_pass, eng_score = 0, 0
-    eng_category = ui_row.eng
-    # 인텐시브 들었다면 통과
-    if '6844' in data['학수번호'].tolist():
-        eng_category = 'Intensive English 이수'
-        eng_pass = 1
-    else:
-        if eng_category != '해당없음':
-            if eng_category == '초과학기면제': 
-                eng_pass = 1
-            # 영어 점수 기재했을 경우
-            else: 
-                eng_category, eng_score = eng_category.split('/')
-                # OPIc일 경우
-                if eng_category == 'OPIc':
-                    if eng_score in ['AL', 'IH', 'IM', 'IL']:
-                        eng_pass = 1
-                elif int(eng_score) >= eng_standard[eng_category] :
-                    eng_pass = 1
-    context_english = {
-        'standard' : eng_standard,
-        'category' : eng_category,
-        'score' : eng_score,
-        'pass' : eng_pass,
-    }
-    result_context['english'] = context_english
-
     ################################################
     ################### 전공 공통 ###################
     ################################################
@@ -1061,7 +1047,6 @@ def f_result(user_id):
         'pass' : pass_me,
     }
     result_context['major_essential'] = context_major_essential
-
 
 
     ################################################
@@ -1258,6 +1243,47 @@ def f_result(user_id):
             context_basic['chemy_B_exists'] = chemy_B_exists
             context_basic['pass_chemy_all'] = pass_chemy_all
         result_context['basic'] = context_basic
+
+
+    ################################################
+    ################### 영어 영역 ###################
+    ################################################
+    if english_exists:
+        # 영어합격기준 (영문과만 예외처리)
+        eng_standard = json.loads(standard_row.english)
+        # 영어 인증 여부
+        eng_pass, eng_score = 0, 0
+        eng_category = ui_row.eng
+        # 인텐시브 들었다면 통과
+        if '6844' in data['학수번호'].tolist():
+            eng_category = 'Intensive English 이수'
+            eng_pass = 1
+        else:
+            if eng_category != '해당없음':
+                if eng_category == '초과학기면제': 
+                    eng_pass = 1
+                # 영어 점수 기재했을 경우
+                else: 
+                    eng_category, eng_score = eng_category.split('/')
+                    print(eng_standard[eng_category])
+                    # OPIc일 경우
+                    if eng_category == 'OPIc':
+                        # 영어영문은 기준이 더 높다
+                        if ui_row.major == '영어영문학전공':
+                            opic_standard = ['AL', 'IH', 'IM']
+                        else:
+                            opic_standard = ['AL', 'IH', 'IM', 'IL']
+                        if eng_score in opic_standard:
+                            eng_pass = 1
+                    elif int(eng_score) >= eng_standard[eng_category] :
+                        eng_pass = 1
+        context_english = {
+            'standard' : eng_standard,
+            'category' : eng_category,
+            'score' : eng_score,
+            'pass' : eng_pass,
+        }
+        result_context['english'] = context_english
 
 
     #####################################################
@@ -1714,6 +1740,7 @@ def f_input_st(request):
         new_st.ce_list = str(row['ce_list'])
         new_st.cs_list = str(row['cs_list'])
         new_st.b_list = str(row['b_list'])
+        new_st.english = json.dumps(eval(row['english']))
         new_st.sum_eng = int(row['sum_eng'])
         new_st.pro = int(row['pro'])
         new_st.bsm = int(row['bsm'])
@@ -1740,9 +1767,8 @@ def f_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
-
-    print(make_dic('10352/10354/9067/9068/8364/10351/9030'.split('/')))
-    print(make_dic('/'.split('/')))
+    
+    print(MajorDepartment.objects.filter(department = '국제학부').values_list('major'))
 
 
 

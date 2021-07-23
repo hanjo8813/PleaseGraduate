@@ -269,25 +269,31 @@
                     <option value="복수전공">복수전공</option>
                 </select>
                 <label>영어인증</label>
-                <select onclick="pop_score()" id="eng" name="eng">
-                    <option value="해당없음" selected>해당없음</option>
-                    <option value="TOEIC">TOEIC</option>
-                    <option value="TOEFL">TOEFL</option>
-                    <option value="TEPS">TEPS</option>
-                    <option value="OPIc">OPIc</option>
-                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
-                    <option value="초과학기면제">초과학기 2학기이상 면제</option>
-                </select>
-                <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
-                <select id="opic" name="opic" style="display:none">
-                    <option value="NL" selected>Novice Low</option>
-                    <option value="NM">Novice Mid</option>
-                    <option value="NH">Novice High</option>
-                    <option value="IL">Intermediate Low</option>
-                    <option value="IM">Intermediate Mid</option>
-                    <option value="IH">Intermediate High</option>
-                    <option value="AL">Advanced Low</option>
-                </select>
+                {% if eng != '영어인증면제학과' %}
+                    <select onclick="pop_score()" id="eng" name="eng">
+                        <option value="해당없음" selected>해당없음</option>
+                        <option value="TOEIC">TOEIC</option>
+                        <option value="TOEFL">TOEFL</option>
+                        <option value="TEPS">TEPS</option>
+                        <option value="OPIc">OPIc</option>
+                        <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                        <option value="초과학기면제">초과학기 2학기이상 면제</option>
+                    </select>
+                    <input id="eng_score" style="display:none" type="number" name="eng_score" placeholder='점수'>
+                    <select id="opic" name="opic" style="display:none">
+                        <option value="NL" selected>Novice Low</option>
+                        <option value="NM">Novice Mid</option>
+                        <option value="NH">Novice High</option>
+                        <option value="IL">Intermediate Low</option>
+                        <option value="IM">Intermediate Mid</option>
+                        <option value="IH">Intermediate High</option>
+                        <option value="AL">Advanced Low</option>
+                    </select>
+                {% else %}
+                    <select id="eng" name="eng">
+                        <option value="영어인증면제학과" selected>영어인증 면제학과</option>
+                    </select>
+                {% endif %}
             </div>
             <input type='submit' class='login_btn' value='수정하기' style="margin:2.5rem 0 2rem 0;">
         </form>
