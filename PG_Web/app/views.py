@@ -321,10 +321,10 @@ def f_mod_info(request):
 
     # ***********************************************************************************
     
-    getted_major = '국제학부'
-    year = 21
-    ui_row.year = year
-    ui_row.save()
+    # getted_major = '회화과'
+    # year = 20
+    # ui_row.year = year
+    # ui_row.save()
     
     # ***********************************************************************************
 
@@ -733,14 +733,11 @@ def f_certify(request):
     elif temp_user_info == 2:
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
         return redirect('/agree/')
-    elif temp_user_info == 3:
-        messages.error(request, '테스트')
-        return redirect('/agree/')
 
 # ***********************************************************************************
     
-    temp_user_info['major'] = '국제학부'
-    year = 21
+    # temp_user_info['major'] = '호텔외식관광프랜차이즈경영학과'
+    # year = 21
     
 # ***********************************************************************************
 
@@ -762,7 +759,7 @@ def f_certify(request):
             messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
             return redirect('/agree/')
 
-    # 예체능대/호경특정학과 는 영어인증 면제 / (학부소속에선 면제 없음)
+    # 예체능대/호경특정학과 는 영어인증 면제 / (학부소속에선 면제 없음)``
     is_exempt_english = 0
     if not major_select:
         user_standard_row = Standard.objects.get(user_year = year, user_dep = temp_user_info['major'])
@@ -946,7 +943,10 @@ def f_result(user_id):
     # 아래 로직을 거치며 채워질 데이터바인딩용 context 선언
     result_context = {}     
 
-    # 교필, 교선, 기교, 복전 여부 판단
+    ####################################################
+    ################### 예외처리 여부 ###################
+    ####################################################
+    # 교필, 교선, 기교, 복전, 영어 여부 판단
     ce_exists, cs_exists, b_exists, multi_exists, english_exists = 0, 0, 0, 0, 0
     if standard_row.core_essential:
         ce_exists = 1
@@ -1138,15 +1138,17 @@ def f_result(user_id):
 
         # 선택추천과목 리스트 생성
         user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in standard_row.cs_list.split('/')]
-        if not recom_cs_part :
-            recom_cs_part = standard_cs_part
-        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=recom_cs_part)
+        if not recom_cs_part :  # 만족한경우엔 5개 다 추천
+            cs_part_for_recom = standard_cs_part
+        else:                   # 만족 못했으면 영역 recom 리스트 그대로
+            cs_part_for_recom = recom_cs_part
+        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
 
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)
         pass_cs_part, pass_cs_num, pass_cs_ess, pass_cs= 0, 0, 0, 0
-        if len(recom_cs_part) == 5:
+        if not recom_cs_part:
             pass_cs_part = 1
         if standard_num_cs <= user_num_cs:
             pass_cs_num = 1
@@ -1265,7 +1267,6 @@ def f_result(user_id):
                 # 영어 점수 기재했을 경우
                 else: 
                     eng_category, eng_score = eng_category.split('/')
-                    print(eng_standard[eng_category])
                     # OPIc일 경우
                     if eng_category == 'OPIc':
                         # 영어영문은 기준이 더 높다
@@ -1369,6 +1370,7 @@ def f_result(user_id):
 
     # @@@ result_context 구조 @@@
     # result_context = {
+    #     'exists',
     #     'user_info',
     #     'book',
     #     'english',

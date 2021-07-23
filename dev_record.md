@@ -6,6 +6,10 @@
 
 ## 개발/업데이트 기록
 
+### 07/23
+- 세종대의 모든 학과(58개) 검사기준 추가 🎉
+- 영어인증 예외처리 (영어전공, 면제학과들) ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/49))
+
 ### 07/22
 - 자연과학대, 생명과학대 소속 학과(8개) 기준 추가
 - 화학과 기초교양 선택과목 예외처리 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/49))
