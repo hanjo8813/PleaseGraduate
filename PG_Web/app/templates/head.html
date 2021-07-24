@@ -80,7 +80,6 @@
 {% endblock %}
 
 
-
 {% block js_section %}
 <!-- js 파트 -->
 <script>
@@ -94,7 +93,7 @@
         } 
     }
     */
-
+   
     // 쿠키 여부에 따라 모달창 렌더링
     var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook' + '=([^;]*)(;|$)');
     if(unlook_cookie == null){
@@ -126,4 +125,5 @@
 
     Spanclick_set_cookie(span, modal);
 </script>
+
 {% endblock %}

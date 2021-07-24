@@ -1122,6 +1122,11 @@ def f_result(user_id):
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_cs, check_cs = make_recommend_list(user_dic_cs, dic_cs)
         standard_essential_cs = to_zip_list(list_to_query(dic_cs.keys()), check_cs)
+        # 16 17의 소기코 대체과목은 컴기코로 바꿔줌
+        if ui_row.year in [16, 17]:
+            if '9799' in recom_essential_cs:
+                recom_essential_cs.remove('9799')
+                recom_essential_cs.append('10528')
 
         # 선택영역 검사
         standard_cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
