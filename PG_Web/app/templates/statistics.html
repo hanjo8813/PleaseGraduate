@@ -1,0 +1,239 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<!-- 처음 타이틀 -->
+<div class="gray_sec">
+    <div class="container">
+        <div style="font-size:4rem;">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="big_title">교양통계</div>
+        <div class="small_title">사용자 통계를 통해 꿀교양을 찾아보자!</div>
+    </div>
+</div>
+
+
+<div class="white_sec">
+    <div class="custom_box_wrap">
+
+        <!-- 설명 박스 -->
+        <div class="statistics_user_box">
+            <div class='statistics_user_sub'>
+                필터링을 통해 다른 사용자들이 많이 듣는 교양 강의를 검색해보세요!
+            </div>
+            <div class="statistics_user_main">
+                현재
+                <span class='statistics_color_span'>{{ major_num }}</span>개 학과
+                <span class='statistics_color_span'>{{ user_num }}</span>명의 사용자 데이터를 참조합니다.
+            </div>
+        </div>
+
+        <!-- 검색창 박스 -->
+        <div>
+            <div class="my_box_grade">
+                <!-- 필터링 박스 -->
+                <div style="padding:2.5rem 2.5rem 0 2.5rem">
+                    <!-- 상단 제목 -->
+                    <div class='filter_title'>
+                        📌 필터링
+                    </div>
+                    <!-- 구분 박스들 -->
+                    <div class="filter_wrap">
+                        <form method="post" id='filter_form' name='filter_form'>
+                            <!-- 내부 박스 -->
+                            <div class='filter_select_wrap'>
+                                <!-- 이수구분 박스 -->
+                                <div class='filter_select_div'>
+                                    <div class='filter_select_title'>이수구분</div>
+                                    <div class='filter_select_box'>
+                                        <div class='filter_select_chk'>
+                                            <label>
+                                                <input type="radio" id='cs_1' name="classification" value="교선1" onclick='show_box()' checked>
+                                                <label for='cs_1'></label>
+                                                교양선택(1영역)
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="radio" id='cs_2' name="classification" value="교선2" onclick='hide_box()'>
+                                                <label for='cs_2'></label>
+                                                교양선택(2영역)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 학점 박스 -->
+                                <div class='filter_select_div'>
+                                    <div class='filter_select_title'>학점</div>
+                                    <div class='filter_select_box'>
+                                        <div class='filter_select_chk'>
+                                            <label>
+                                                <input type="checkbox" id='g_05' name="grade[]" value="0.5" checked> 
+                                                <label for='g_05'></label>
+                                                &nbsp;0.5 학점
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='g_1' name="grade[]" value="1" checked> 
+                                                <label for='g_1'></label>
+                                                &nbsp;1 학점
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='g_2' name="grade[]" value="2" checked> 
+                                                <label for='g_2'></label>
+                                                &nbsp;2 학점
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='g_3' name="grade[]" value="3" checked> 
+                                                <label for='g_3'></label>
+                                                &nbsp;3 학점
+                                            </label>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 선택영역 박스 -->
+                                <div class='filter_select_div'>
+                                    <div class='filter_select_title'>선택영역</div>
+                                    <div class='filter_select_box'>
+                                        <div id='selection_box' class='filter_select_chk'>
+                                            <label>
+                                                <input type="checkbox" id='s_1' name="selection[]" value="사상과역사" checked>
+                                                <label for='s_1'></label>
+                                                &nbsp;사상과역사
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='s_2' name="selection[]" value="사회와문화" checked>
+                                                <label for='s_2'></label>
+                                                &nbsp;사회와문화
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='s_3' name="selection[]" value="융합과창업" checked>
+                                                <label for='s_3'></label>
+                                                &nbsp;융합과창업
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='s_4' name="selection[]" value="자연과과학기술" checked>
+                                                <label for='s_4'></label>
+                                                &nbsp;자연과과학기술
+                                            </label>
+                                            <br>
+                                            <label>
+                                                <input type="checkbox" id='s_5' name="selection[]" value="세계와지구촌" checked>
+                                                <label for='s_5'></label>
+                                                &nbsp;세계와지구촌
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 검색버튼-->
+                            <input class='filter_btn' type="button" value="검색하기" onclick="ajax_get_data(); return false">
+                        </form>
+                    </div>
+
+                    <!-- 결과 박스 -->
+                    <div style="margin-top:5rem;">
+                        <div class="filter_title">
+                            <div>📜 교양 순위</div>
+                        </div>
+                        <hr>
+                        <!-- 여기에 테이블이 채워짐-->
+                        <div id='update_div'></div>
+                        <br><br>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+{% block js_section %}
+
+<script>
+
+    ajax_get_data();
+
+    function show_box() {
+        document.getElementById('selection_box').style.visibility = "visible";
+    }
+
+    function hide_box() {
+        document.getElementById('selection_box').style.visibility = "hidden";
+    }
+
+
+
+    function ajax_get_data() {
+
+        var formData = $("#filter_form").serialize();
+
+        let update_div = document.getElementById('update_div');
+        html = "<div class='loading_wrap'><div class='circle'></div> 데이터를 불러오는 중입니다...</div>"
+        update_div.innerHTML = html;
+
+        $.ajax(
+            {
+                type: 'POST',
+                url: '/a_statistics/',
+                // 보내는 데이터
+                data: formData,
+                // 성공시 받는 데이터
+                success: function (context) {
+
+                    let zip_lecture_count = context['zip_lecture_count']
+
+                    html = "<table class='grade_table' style='margin-top:0'>";
+                    html += "<tr>";
+                    html += "<th class='grade_table_th' style='width:12%'>학수번호</th>"
+                    html += "<th class='grade_table_th' style='width:40%'>과목명</th>"
+                    html += "<th class='grade_table_th' style='width:16%'>이수구분</th>"
+                    html += "<th class='grade_table_th' style='width:12%'>선택영역</th>"
+                    html += "<th class='grade_table_th' style='width:8%'>학점</th>"
+                    html += "<th class='grade_table_th' style='width:12%; border-right :0px'>수강횟수</th>"
+                    html += "</tr>";
+                    for (let i = 0; i < zip_lecture_count.length; i++) {
+                        lecture_info = zip_lecture_count[i][0]
+                        console.log(lecture_info)
+                        count = zip_lecture_count[i][1]
+                        html += "<tr>";
+                        html += "<td class='grade_table_td'>" + lecture_info.subject_num + "</td>";
+                        html += "<td class='grade_table_td'>" + lecture_info.subject_name + "</td>";
+                        html += "<td class='grade_table_td'>" + lecture_info.classification + "</td>";
+                        html += "<td class='grade_table_td'>" + lecture_info.selection + "</td>";
+                        html += "<td class='grade_table_td'>" + lecture_info.grade + "</td>";
+                        html += "<td class='grade_table_td' style='border-right :0px;'><span style='font-weight:bold; color:#17a55e;'>" +
+                            count + "</span> 회</td>";
+                        html += "</tr>";
+                    }
+                    html += "</table>";
+
+
+                    update_div.innerHTML = html;
+                },
+                // 에러시 설정
+                error: function (e) { }
+            }
+        );
+    }
+
+
+
+</script>
+
+
+
+{% endblock %}

@@ -40,8 +40,6 @@ SECRET_KEY = get_secret("SECRET_KEY")
 
 
 # 개발시엔 True로 디버그 확인, 배포시엔 False
-#DEBUG = True    # 우선 사용자 피드백을 위해 켜두자
-
 if platform.system() == 'Windows':
     DEBUG = True
 else:
@@ -60,7 +58,7 @@ ALLOWED_HOSTS = [
 # 세션 설정
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True      # 브라우저 종료시 세션 파괴
 SESSION_SAVE_EVERY_REQUEST = True           # 사용자가 리퀘 날릴때마다 초기화
-SESSION_COOKIE_AGE = 60*60                  # 60분간 안건들면 세션 파괴
+SESSION_COOKIE_AGE = 3*60*60                # 3시간 안건들면 세션 파괴
 
 
 # Application definition

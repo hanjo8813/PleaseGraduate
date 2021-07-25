@@ -24,6 +24,8 @@ urlpatterns = [
 
     # 페이지 렌더링
     path('', views.r_head),
+    path('information/', views.r_information),
+    path('statistics/', views.r_statistics),
     path('login/', views.r_login),
     path('changePW/', views.r_changePW),
     path('mypage/', views.r_mypage),
@@ -50,7 +52,9 @@ urlpatterns = [
     path('f_delete_account/', views.f_delete_account),
 
     # AJAX 통신
+    path('a_statistics/', views.a_statistics),
     path('a_search/', views.a_search),
+    
 
     # 테스트용
     path('admin_test/', views.r_admin_test),

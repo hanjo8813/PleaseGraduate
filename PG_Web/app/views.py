@@ -54,6 +54,43 @@ def r_head(request):
     }
     return render(request, "head.html", context)
 
+def r_information(request):
+    return render(request, "information.html")
+
+@csrf_exempt
+def a_statistics(request):
+    # POST로 온 form 데이터 꺼내기
+    selection_list = request.POST.getlist('selection[]')
+    grade_list = request.POST.getlist('grade[]')
+    classification = request.POST.get('classification')
+    # 이수구분에 따라 쿼리 날리기
+    if classification == '교선1':
+        cs_queryset = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'], selection__in=selection_list, grade__in= grade_list)
+    else:
+        cs_queryset = UserGrade.objects.exclude(year = '커스텀').filter(classification = classification, grade__in= grade_list)
+    cs_count = cs_queryset.values_list('subject_num').annotate(count=Count('subject_num'))
+    # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
+    cs_count = sorted(list(cs_count), key = lambda x : x[1], reverse=True)
+    zip_lecture_count = []
+    for s_num, count in cs_count:
+        if AllLecture.objects.filter(subject_num = s_num).exists():
+            lec_info = list(AllLecture.objects.filter(subject_num = s_num).values())[0]
+            zip_lecture_count.append([lec_info, count])
+    # context 전송
+    context={
+        'zip_lecture_count': zip_lecture_count
+    }
+    return JsonResponse(context)
+
+def r_statistics(request):
+    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
+    major_num = UserInfo.objects.values('major').distinct().count()
+    context = {
+        'user_num' : user_num,
+        'major_num' : major_num,
+    }
+    return render(request, "statistics.html", context)
+
 def r_login(request):
     request.session.clear()
     response = render(request, "login.html")
@@ -113,7 +150,6 @@ def r_changePW(request):
     if not temp_user_id :
         messages.error(request, '❌ 세션 정보가 없습니다!')
         return redirect('/')
-    request.session.clear()
     return render(request, 'changePW.html')
 
 def r_mypage(request):
@@ -222,6 +258,7 @@ def f_find_pw(request):
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
     request.session['temp_user_id'] = user_id
+    print(user_id)
     return redirect('/changePW/')
 
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
@@ -986,27 +1023,38 @@ def f_result(user_id):
     pass_book = 0
     if ui_row.book == '고특통과': 
         pass_book = 2
+        context_book = {
+            'pass' : pass_book
+        }
     else:
         W, E, EW, S = int(ui_row.book[0]), int(ui_row.book[1]), int(ui_row.book[2]), int(ui_row.book[3])
         total_book = 0
-        if W > 4: total_book += 4
-        else : total_book += W
-        if E > 2: total_book += 2
-        else : total_book += E
-        if EW > 3: total_book += 3
-        else : total_book += EW
-        if S > 1: total_book += 1
-        else : total_book += S
+        if W > 4: 
+            total_book += 4
+        else : 
+            total_book += W
+        if E > 2: 
+            total_book += 2
+        else : 
+            total_book += E
+        if EW > 3: 
+            total_book += 3
+        else : 
+            total_book += EW
+        if S > 1: 
+            total_book += 1
+        else : 
+            total_book += S
         if total_book == 10:
             pass_book = 1
-    context_book = {
-        'W' : W,
-        'E' : W,
-        'EW' : W,
-        'S' : W,
-        'total' : total_book,
-        'pass' : pass_book
-    }
+        context_book = {
+            'W' : W,
+            'E' : E,
+            'EW' : EW,
+            'S' : S,
+            'total' : total_book,
+            'pass' : pass_book
+        }
     result_context['book'] = context_book
     
     ################################################
@@ -1602,7 +1650,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    #update_json(user_id)
+    update_json(user_id)
     
     return redirect('/mypage/')
 

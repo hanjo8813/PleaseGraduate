@@ -19,11 +19,15 @@ a {
 input[type="submit"],
 input[type="text"],
 input[type="password"],
-input[type="number"]
+input[type="number"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="button"]
 {
     -webkit-appearance: none;
- }
+}
 
+ 
  
 /* ---------------------------------( 상단 소개/컨테이너 공통 )---------------------------------------- */
 
@@ -245,6 +249,174 @@ input[type="number"]
 }
 
 
+/* ---------------------------------( statistics  )---------------------------------------- */
+
+
+.statistics_user_box {
+    margin: 2rem 0 3rem 0;
+    text-align: center;
+}
+
+.statistics_user_sub {
+    font-size: 1.2rem;
+    color: rgb(104, 104, 104);
+    margin-bottom: 0.8rem;
+}
+
+.statistics_user_main {
+    font-size: 1.6rem;
+}
+
+.statistics_color_span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: rgb(164, 26, 55)
+}
+
+.filter_wrap {
+    display: block;
+    text-align: center;
+    border: 1px solid rgb(153, 153, 153);
+    margin-bottom: -1rem;
+    width: 50rem;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+.filter_title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+.filter_radio_wrap {
+    margin: 2rem 0 2rem 0;
+}
+
+.filter_select_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.filter_select_div {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2.5rem;
+}
+
+.filter_select_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 10rem;
+    height: 12rem;
+    margin: 0.5rem 1rem 1rem 1rem;
+    padding: 1rem;
+    border: 1px solid rgb(216, 216, 216);
+    background-color: white;
+}
+
+.filter_select_title {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.filter_select_chk {
+    text-align: left;
+    margin: 0 auto;
+    line-height: 2.2rem;
+}
+
+.filter_select_chk label{
+    cursor:pointer;
+}
+
+.filter_btn {
+    background: rgb(164, 26, 55);
+    width: 12%;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: 0;
+    margin: 1.5rem 0 2.5rem 0;
+}
+
+.loading_wrap{
+    font-size : 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5rem;
+    margin-bottom: 3rem;
+    letter-spacing: 3px;
+}
+
+.circle {
+    display:inline-block;
+    position: relative;
+    top:25px;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    border: 10px solid #e0e0e0;
+    border-top: 10px solid rgb(164, 26, 55);
+    border-radius: 50em;
+    transition: all .1s;
+    animation-name: spinCircle;
+    animation-duration: .8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spinCircle {
+    from {
+        transform: translate(-50%, -50%) rotate(0);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+input[type=radio] + label {
+    display:inline-block;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #000000;
+    cursor:pointer;
+}
+
+input[type=radio]:checked + label {
+    background-image: url('../img/checker-on.svg');
+}
+
+input[type=radio] {
+    display: none;
+}
+
+input[type=checkbox] + label {
+    display:inline-block;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #000000;
+    cursor:pointer;
+}
+
+input[type=checkbox]:checked + label {
+    background-image: url('../img/checker-on.svg');
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+
 /* ---------------------------------( login  )---------------------------------------- */
 
 .container {
@@ -330,6 +502,7 @@ input[type="number"]
     margin-right : 1rem;
 } 
 
+.filter_btn:hover,
 .ajax_search_btn:hover,
 .add_btn:hover,
 .save_btn:hover,
@@ -342,6 +515,8 @@ input[type="number"]
     font-weight: bold;
 }
 
+
+body:not(.device-touch) .filter_btn,
 body:not(.device-touch) .ajax_search_btn,
 body:not(.device-touch) .add_btn,
 body:not(.device-touch) .save_btn,

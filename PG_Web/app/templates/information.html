@@ -8,10 +8,14 @@
         <div style="font-size:4rem;">
             <i class="fas fa-graduation-cap"></i>
         </div>
-        <div class="big_title">이용약관 동의</div>
-        <div class="small_title">아래 사항을 모두 읽고 약관에 동의해주세요.</div>
+        <div class="big_title">안내사항</div>
+        <div class="small_title">Please Graduate를 사용할 때 주의할 사항입니다.</div>
     </div>
 </div>
+
+<style>
+
+</style>
 
 <div class="white_sec">
     <div class="container">
@@ -60,44 +64,10 @@
                 <p>5. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. <span class="caution_info">(평점은 저장되지
                         않습니다.)</span></p>
                 <p>6. 업로드 시 성적 중 평점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
-                <p>7. 저장된 사용자 데이터베이스는 <span class="caution_info">과목추천 및 교양과목 통계에 사용됩니다.</span></p>
+                <p>7. 관리자는 저장된 데이터베이스를 <span class="caution_info">절대 다른 용도로 사용하지 않습니다.</span></p>
             </div>
         </div>
-
-        <!-- 동의 체크박스 -->
-        <div class="info_agree">
-            <label style='cursor: pointer;'>
-                <input type="checkbox" onclick="agree_func()" id="agree">
-                <label for='agree'></label>
-                &nbsp;위 검사관련 및 안내사항을 확인하였고 개인정보 수집에 동의합니다.
-            </label>
-        </div>
         <br>
-    </div>
-</div>
-
-<!-- 로그인 박스 -->
-<div class="gray_sec">
-    <div class="container">
-        <div class="login_title" style="font-size:2rem;">학생 인증</div>
-        <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
-            대양휴머니티칼리지 사이트에 로그인하여 인증합니다. (세종대학교 포털 ID/PW와 동일)
-        </div>
-        <div class="login_box">
-            <!-- 로그인 폼 -->
-            <form action="/f_certify/" method="post" onsubmit="return check_up()">
-                {% csrf_token %}
-                <div class="textbox">
-                    <label>아이디</label>
-                    <input type="text" id="id" name="id" placeholder="ID">
-                    <label>비밀번호</label>
-                    <input type="password" id="pw" name="pw" placeholder="PASSWORD">
-                </div>
-                <div id="login_btn">
-                    <div class='login_btn_default'>위 약관에 동의해야합니다.</div>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
@@ -139,41 +109,6 @@
     </div>
 </div>
 
-
-<!-- 로딩 모달 창 -->
-<div id='m1' class="modal">
-    <div class="load-modal-content">
-        <div class="modal_loadcontainer">
-            <div class="sk-chase">
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-                <div class="sk-chase-dot"></div>
-            </div>
-            <div class="loading">
-                <span>인</span>
-                <span>증</span>
-                <span>정</span>
-                <span>보</span>
-                <span>확</span>
-                <span>인</span>
-                <span>중</span>
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-            </div>
-            <div class="load_info">
-                5초 정도 소요됩니다. 창을 이동하지 마세요!
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 {% endblock %}
 
 
@@ -184,35 +119,6 @@
 <script src="{% static 'js/modal.js' %}"></script>
 
 <script>
-    // 체크박스 누르면 작동
-    function agree_func() {
-        var chk = document.getElementById('agree');
-        // 체크시
-        if (chk.checked) {
-            var tag = "<input type='submit' class='login_btn' value='인증하기'>";
-        }
-        // 체크 풀시
-        else {
-            var tag = "<div class='login_btn_default'>위 약관에 동의해야합니다.</div>";
-        }
-        document.getElementById("login_btn").innerHTML = tag;
-    }
-
-    // 인증하기 클릭시 modal 띄움
-    function pop_modal() {
-        document.getElementById('m1').style.display = "block";
-    }
-
-    // form 체크
-    function check_up() {
-        if (!document.getElementById('pw').value || !document.getElementById('id').value) {
-            alert('⚠️ ID/PW를 입력해주세요.');
-            return false;
-        }
-        pop_modal();
-        return true;
-    }
-
     // 검사대상표 모달
     var target_btn = document.getElementById("target_btn");
     var target_modal = document.getElementById('target_modal');
@@ -224,8 +130,6 @@
             target_modal.style.display = "none";
         }
     }
-
-
 </script>
 
 {% endblock %}

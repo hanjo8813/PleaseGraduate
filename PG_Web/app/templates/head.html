@@ -42,21 +42,26 @@
         <span id='dd' class="close" style="font-size:3rem;">&times;</span>
         <div class='popup_content'>
             <div class='popup_title'>
-                version 2.0 Beta 업데이트 내용
+                Version 2.0 업데이트 내용
             </div>
             <div class='popup_box'>
                 <ul>
-                    <li><b>2021.07.23 업데이트</b></li>
-                    <li>🎉 이제 세종대 모든 학과(58개)가 검사 가능합니다 🎉</li>
+                    <li><b>2021.07.26 업데이트</b></li>
+                    <li>🎉 이제 세종대 모든 학과의 검사를 지원합니다 🎉</li>
+                    <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
+                    <li>첫 사용이라면 회원가입이 필요합니다!</li>
                     <li>학사정보시스템 개편으로 인한 기이수성적 엑셀 형식이 변경되었습니다.<br>
                         (기존 회원도 다시 기이수성적 엑셀을 업로드해야합니다.)
                     </li>
-                    <li>머신러닝 과목 추천이 삭제되고, 추천 알고리즘이 변경되었습니다.</li>
-                    <li>회원탈퇴 기능이 추가되었습니다.</li>
                 </ul>
             </div>
             <div class="popup_check">
-                <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>&nbsp;&nbsp;일주일동안 보지 않을래요
+                <label style='cursor:pointer'>
+                    <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>
+                    <label for='unlook'></label>
+                    &nbsp;하루동안 보지 않을래요
+                </label>
+                
             </div>
         </div>
     </div>
@@ -108,8 +113,8 @@
             // 체크하고 누르면 쿠키 생성
             if(chk.checked){
                 var date = new Date();
-                // 유효기간 7일
-                date.setTime(date.getTime() + 7*24*60*60*1000);
+                // 유효기간 1일
+                date.setTime(date.getTime() + 1*24*60*60*1000);
                 document.cookie = 'is_unlook' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
