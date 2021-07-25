@@ -1,5 +1,5 @@
 <div align='center'>
-    <h3> 사이트 version 2.0 베타 테스트 중... </h3>
+    <h3> version 2.0 배포! </h3>
 </div>
 
 <br>
