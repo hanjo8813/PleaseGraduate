@@ -258,7 +258,6 @@ def f_find_pw(request):
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
     request.session['temp_user_id'] = user_id
-    print(user_id)
     return redirect('/changePW/')
 
 # ---------------------------------------------------- ( mypage 관련 ) ----------------------------------------------------------------
@@ -1650,7 +1649,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    update_json(user_id)
+    #update_json(user_id)
     
     return redirect('/mypage/')
 

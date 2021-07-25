@@ -1047,11 +1047,6 @@
         Scbook = '{{book.S}}' + "권";
         Mybook = '{{book.total}}';
     }
-    console.log('{{book.W}}')
-    console.log('{{book.E}}')
-    console.log('{{book.EW}}')
-    console.log('{{book.S}}')
-    console.log('{{book.total}}')
 
     // 이수 학점 퍼센트화
     var pernum0 = to_percent(Mytotalgrade, Totalgrade); // 총학점
@@ -1282,7 +1277,6 @@
     if ('{{user_info.major}}' == '화학과') {
         temp_p = '{{basic.pass_chemy_all}}'
     }
-    console.log(temp_p);
 
     if (temp_p == 1) {
         B_p = "Pass";
