@@ -6,7 +6,7 @@
 
 # Please Graduate
 
- ![pg](https://img.shields.io/badge/version-2.0_beta-a3374f) 
+ ![pg](https://img.shields.io/badge/version-2.0-a3374f) 
 
 ## 관련 링크
 
