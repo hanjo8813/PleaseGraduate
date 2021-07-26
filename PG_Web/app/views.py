@@ -84,7 +84,7 @@ def a_statistics(request):
 
 def r_statistics(request):
     user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
-    major_num = UserInfo.objects.values('major').distinct().count()
+    major_num = NewUserInfo.objects.values('major').distinct().count()
     context = {
         'user_num' : user_num,
         'major_num' : major_num,
