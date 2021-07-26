@@ -1356,6 +1356,8 @@ def f_result(user_id):
         remain = 0
         if new_standard_me < df_me['학점'].sum() :
             remain = df_me['학점'].sum() - new_standard_me
+
+        result_context['major_essential']['user_num'] = convert_to_int(df_me['학점'].sum() - remain)
         result_context['major_selection']['remain'] = convert_to_int(remain)
         result_context['major_selection']['user_num'] = convert_to_int(user_num_ms)
         # 복수전공일때
@@ -1649,7 +1651,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    #update_json(user_id)
+    update_json(user_id)
     
     return redirect('/mypage/')
 
