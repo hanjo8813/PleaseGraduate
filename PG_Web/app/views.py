@@ -1357,7 +1357,7 @@ def f_result(user_id):
         if new_standard_me < df_me['학점'].sum() :
             remain = df_me['학점'].sum() - new_standard_me
         result_context['major_selection']['remain'] = convert_to_int(remain)
-        result_context['major_selection']['user_num'] = convert_to_int(user_num_me - remain)
+        result_context['major_selection']['user_num'] = convert_to_int(user_num_ms)
         # 복수전공일때
         if ui_row.major_status == '복수전공':
             user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()
