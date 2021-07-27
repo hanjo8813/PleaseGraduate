@@ -480,22 +480,11 @@ def f_mod_grade(request):
         return redirect('/mypage/')
     # 검사를 통과하면 df를 형식에 맞게 수정
     df.fillna('', inplace = True)
-
-    # 논패, F과목 삭제
-    n = df.shape[0]
-    flag = 0    
-    while(True):
-        for i in range(1, n, 1):
-            if i == n-1 :
-                flag = 1
-            if df['등급'][i]=='NP' or df['등급'][i]=='F' or df['등급'][i]=='FA':
-                df = df.drop(df.index[i])
-                n -= 1
-                df.reset_index(inplace=True, drop=True)
-                break
-        if flag == 1:
-            break
-    # DF에서 불필요 칼럼 삭제 (평점 삭제)
+    # F 나 NP 과목은 삭제함
+    for i, row in df.iterrows():
+        if row['등급'] in ['F', 'FA', 'NP']:
+            df.drop(i, inplace=True)
+            
     df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
     # 추가 전 user_grade DB에 이미 데이터가 있는지 확인 후 삭제
     user_id = request.session.get('id')
@@ -1651,7 +1640,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    update_json(user_id)
+    #update_json(user_id)
     
     return redirect('/mypage/')
 
