@@ -254,7 +254,7 @@ def f_find_pw(request):
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/login/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
     request.session['temp_user_id'] = user_id
@@ -347,7 +347,7 @@ def f_mod_info(request):
         messages.error(request, '⚠️ 세종대학교 포털 비밀번호를 다시 확인하세요. (Caps Lock 확인)')
         return redirect('/mypage/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/mypage/')
 
     # 기본 정보 -> 변수에 저장
@@ -757,7 +757,7 @@ def f_certify(request):
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/agree/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/agree/')
 
 # ***********************************************************************************
