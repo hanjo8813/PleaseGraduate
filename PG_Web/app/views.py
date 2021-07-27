@@ -254,7 +254,7 @@ def f_find_pw(request):
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/login/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
     request.session['temp_user_id'] = user_id
@@ -347,7 +347,7 @@ def f_mod_info(request):
         messages.error(request, '⚠️ 세종대학교 포털 비밀번호를 다시 확인하세요. (Caps Lock 확인)')
         return redirect('/mypage/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
         return redirect('/mypage/')
 
     # 기본 정보 -> 변수에 저장
@@ -480,6 +480,7 @@ def f_mod_grade(request):
         return redirect('/mypage/')
     # 검사를 통과하면 df를 형식에 맞게 수정
     df.fillna('', inplace = True)
+
     # F 나 NP 과목은 삭제함
     for i, row in df.iterrows():
         if row['등급'] in ['F', 'FA', 'NP']:
@@ -756,7 +757,7 @@ def f_certify(request):
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/agree/')
     elif temp_user_info == 2:
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.\n\n❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\nhttps://portal.sejong.ac.kr 로그인 -> 정보수정 -> 개인정보수집동의 모두 동의')
         return redirect('/agree/')
 
 # ***********************************************************************************
@@ -1345,18 +1346,9 @@ def f_result(user_id):
         remain = 0
         if new_standard_me < df_me['학점'].sum() :
             remain = df_me['학점'].sum() - new_standard_me
-
         result_context['major_essential']['user_num'] = convert_to_int(df_me['학점'].sum() - remain)
         result_context['major_selection']['remain'] = convert_to_int(remain)
         result_context['major_selection']['user_num'] = convert_to_int(user_num_ms)
-        # 복수전공일때
-        if ui_row.major_status == '복수전공':
-            user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()
-            user_multi_ms = data[data['이수구분'].isin(['복선'])]['학점'].sum()
-        # 연계전공일때
-        elif ui_row.major_status == '연계전공':
-            user_multi_me = data[data['이수구분'].isin(['연필'])]['학점'].sum()
-            user_multi_ms = data[data['이수구분'].isin(['연선'])]['학점'].sum()
         # 전공 패스여부 다시 검사
         pass_me, pass_ms = 0,0
         if new_standard_me <= user_num_me: 
@@ -1368,14 +1360,32 @@ def f_result(user_id):
         # 전공 부족학점 다시 계산
         result_context['major_essential']['lack'] = convert_to_int(new_standard_me - user_num_me)
         result_context['major_selection']['lack'] = convert_to_int(new_standard_ms - user_num_ms - remain)
+
+        
+        # 복수전공일때
+        if ui_row.major_status == '복수전공':
+            user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()
+            user_multi_ms = data[data['이수구분'].isin(['복선'])]['학점'].sum()
+        # 연계전공일때
+        elif ui_row.major_status == '연계전공':
+            user_multi_me = data[data['이수구분'].isin(['연필'])]['학점'].sum()
+            user_multi_ms = data[data['이수구분'].isin(['연선'])]['학점'].sum()
+        # 복수/연계전공 pass 여부 검사
+        pass_multi_me, pass_multi_ms = 0, 0
+        if standard_multi_me <= user_multi_me:
+            pass_multi_me = 1
+        if standard_multi_ms <= user_multi_ms:
+            pass_multi_ms = 1
         # 복수/연계 전공 context 생성
         context_multi_major_essential = {
             'standard_num' : standard_multi_me,
             'user_num' : convert_to_int(user_multi_me),
+            'pass' : pass_multi_me,
         }
         context_multi_major_selection = {
             'standard_num' : standard_multi_ms,
             'user_num' : convert_to_int(user_multi_ms),
+            'pass' : pass_multi_ms,
         }
         result_context['multi_major_essential'] = context_multi_major_essential
         result_context['multi_major_selection'] = context_multi_major_selection
