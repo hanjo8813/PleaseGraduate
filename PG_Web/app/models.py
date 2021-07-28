@@ -78,6 +78,8 @@ class UserGrade(models.Model):
 class DeleteAccountLog(models.Model):
     index = models.AutoField(primary_key=True)
     major = models.CharField(max_length=45)
+    year = models.IntegerField()
+    name = models.CharField(max_length=45)
     register_time = models.CharField(max_length=45)
     delete_time = models.CharField(max_length=45)
 

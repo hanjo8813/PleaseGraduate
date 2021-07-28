@@ -525,6 +525,8 @@ def f_delete_account(request):
     # 회원탈퇴 로그에 기록
     new_da = DeleteAccountLog()
     new_da.major = ui_row.major
+    new_da.year = ui_row.year
+    new_da.name = ui_row.name
     new_da.register_time = ui_row.register_time
     new_da.delete_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     new_da.save()
