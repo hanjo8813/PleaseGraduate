@@ -4,9 +4,8 @@ from uuid import uuid4
 from django.db import models
 from django.utils import timezone
 
-# DB 테이블의 구조를 파이썬 클래스로 보여주고, 수정가능
 
-# 테스트용 테이블
+# ------------------------------------- ( 테스트용 테이블 ) -------------------------------------
 
 class TestTable(models.Model):
     num = models.AutoField(primary_key=True)
@@ -37,9 +36,11 @@ class TestNewLecture(models.Model):
         db_table = 'test_new_lecture'
 
 
+# ------------------------------------- ( 회원 정보 테이블 ) -------------------------------------
+
 class NewUserInfo(models.Model):
     last_update_time = models.CharField(max_length=45, blank=True, null=True)
-    register_time = models.CharField(max_length=45, blank=True, null=True)
+    register_time = models.CharField(max_length=45)
     student_id = models.CharField(primary_key=True, max_length=10)
     password = models.CharField(max_length=100)
     year = models.IntegerField()
@@ -56,53 +57,48 @@ class NewUserInfo(models.Model):
         managed = False
         db_table = 'new_user_info'
 
-# ---------------------------------------------------------------------------
 
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
-
-class VisitorCount(models.Model):
-    visit_date = models.CharField(primary_key=True, max_length=45)
-    visit_count = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'visitor_count'
-
-class MajorDepartment(models.Model):
-    major = models.CharField(primary_key=True, max_length=45)
-    department = models.CharField(max_length=45)
-
-    class Meta:
-        managed = False
-        db_table = 'major_department'
-
-
-class AllLecture(models.Model):
-    subject_num = models.CharField(primary_key=True, max_length=10)
+class UserGrade(models.Model):
+    student_id = models.CharField(max_length=10)
+    major = models.CharField(max_length=45, blank=True, null=True)
+    year = models.CharField(max_length=10)
+    semester = models.CharField(max_length=45)
+    subject_num = models.CharField(max_length=10)
     subject_name = models.CharField(max_length=70)
     classification = models.CharField(max_length=45)
     selection = models.CharField(max_length=45, blank=True, null=True)
     grade = models.FloatField()
+    index = models.AutoField(primary_key=True)
 
     class Meta:
         managed = False
-        db_table = 'all_lecture'
+        db_table = 'user_grade'
 
 
-class NewLecture(models.Model):
-    subject_num = models.CharField(primary_key=True, max_length=10)
+class DeleteAccountLog(models.Model):
+    index = models.AutoField(primary_key=True)
+    major = models.CharField(max_length=45)
+    register_time = models.CharField(max_length=45)
+    delete_time = models.CharField(max_length=45)
 
     class Meta:
         managed = False
-        db_table = 'new_lecture'
+        db_table = 'delete_account_log'
 
+
+class UserInfo(models.Model):
+    student_id = models.CharField(primary_key=True, max_length=10)
+    year = models.IntegerField()
+    major = models.CharField(max_length=45)
+    name = models.CharField(max_length=45)
+    book = models.CharField(max_length=45)
+    eng = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'user_info'
+
+# ------------------------------------- ( 검사 기준 테이블 ) -------------------------------------
 
 class Standard(models.Model):
     index = models.IntegerField(primary_key=True)
@@ -135,6 +131,58 @@ class Standard(models.Model):
         managed = False
         db_table = 'standard'
 
+# ------------------------------------- ( 강의 정보 테이블 ) -------------------------------------
+
+class AllLecture(models.Model):
+    subject_num = models.CharField(primary_key=True, max_length=10)
+    subject_name = models.CharField(max_length=70)
+    classification = models.CharField(max_length=45)
+    selection = models.CharField(max_length=45, blank=True, null=True)
+    grade = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'all_lecture'
+
+
+class NewLecture(models.Model):
+    subject_num = models.CharField(primary_key=True, max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'new_lecture'
+
+# ------------------------------------- ( 브라우저 세션/쿠키 ) -------------------------------------
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(primary_key=True, max_length=40)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_session'
+
+class VisitorCount(models.Model):
+    visit_date = models.CharField(primary_key=True, max_length=45)
+    visit_count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'visitor_count'
+
+
+# ------------------------------------- ( 매핑 테이블 ) -------------------------------------
+
+
+class MajorDepartment(models.Model):
+    major = models.CharField(primary_key=True, max_length=45)
+    department = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'major_department'
+
 
 class SubjectGroup(models.Model):
     subject_num = models.CharField(primary_key=True, max_length=10)
@@ -143,33 +191,3 @@ class SubjectGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'subject_group'
-
-
-class UserGrade(models.Model):
-    student_id = models.CharField(max_length=10)
-    major = models.CharField(max_length=45, blank=True, null=True)
-    year = models.CharField(max_length=10)
-    semester = models.CharField(max_length=45)
-    subject_num = models.CharField(max_length=10)
-    subject_name = models.CharField(max_length=70)
-    classification = models.CharField(max_length=45)
-    selection = models.CharField(max_length=45, blank=True, null=True)
-    grade = models.FloatField()
-    index = models.AutoField(primary_key=True)
-
-    class Meta:
-        managed = False
-        db_table = 'user_grade'
-
-
-class UserInfo(models.Model):
-    student_id = models.CharField(primary_key=True, max_length=10)
-    year = models.IntegerField()
-    major = models.CharField(max_length=45)
-    name = models.CharField(max_length=45)
-    book = models.CharField(max_length=45)
-    eng = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'user_info'

@@ -516,12 +516,18 @@ def f_delete_account(request):
     user_id = request.session.get('id')
     pw = request.POST.get('pw')
     # 해당 사용자의 DB 쿼리셋
-    ui_row = NewUserInfo.objects.filter(student_id=user_id)
+    ui_row = NewUserInfo.objects.get(student_id=user_id)
     ug = UserGrade.objects.filter(student_id = user_id)
     # 비밀번호 일치 검사
-    if not bcrypt.checkpw(pw.encode('utf-8'), ui_row[0].password.encode('utf-8')):
+    if not bcrypt.checkpw(pw.encode('utf-8'), ui_row.password.encode('utf-8')):
         messages.error(request, '⚠️ 비밀번호를 확인하세요.')
         return redirect('/mypage/')
+    # 회원탈퇴 로그에 기록
+    new_da = DeleteAccountLog()
+    new_da.major = ui_row.major
+    new_da.register_time = ui_row.register_time
+    new_da.delete_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    new_da.save()
     # 데이터베이스 삭제
     ui_row.delete()
     ug.delete()
@@ -1823,81 +1829,20 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
     
-    print(MajorDepartment.objects.filter(department = '국제학부').values_list('major'))
+    user_major = list(NewUserInfo.objects.values_list('major').distinct())    
+    all_major = list(Standard.objects.values_list('user_dep').distinct())
+    for major in user_major :
+        if major in all_major:
+            all_major.remove(major)
+    print(' @@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@ ')
+    print()
+    print(all_major)
+    print()
+    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
+    print()
 
-
-
-    '''
-    user_id = '15011187'
-    ui_row = UserInfo.objects.get(student_id=user_id)
-
-    user_qs = UserGrade.objects.filter(student_id = user_id)
-    data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
-    data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
-
-    # 전필
-    df_me = data[data['이수구분'].isin(['전필'])]
-    df_me.reset_index(inplace=True,drop=True)
-    #my_me_list = df_me['학수번호'].tolist()
-    # 전선
-    df_ms = data[data['이수구분'].isin(['전선'])]
-    df_ms.reset_index(inplace=True,drop=True)
-    # 중선(교선)
-    df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
-    df_cs.reset_index(inplace=True,drop=True)
-
-    s_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
-    
-    # 영역 추출
-    cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
-    my_cs_part = list(set(df_cs[df_cs['선택영역'].isin(cs_part)]['선택영역'].tolist()))
-    # 사용자가 안들은 영역 추출
-    recom_cs_part = []
-    if len(my_cs_part) < 3:
-        pass_p_cs = 0
-        recom_cs_part = list(set(cs_part) - set(my_cs_part))
-
-
-    # ---------------------------------------------------------------------------------
-
-
-    # 내가들은 전필 + 전선의 동일과목 학수번호 추가한 리스트
-    user_major_lec = add_same_lecture(df_ms['학수번호'].tolist() + df_me['학수번호'].tolist())
-    # 내가들은 교선 + 내 학과의 교선 필수과목 추가 리스트
-    user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in s_row.cs_list.split('/')]
-
-
-    # 1차 - 유저의 학과 + 영역 + 학수번호 + 등장횟수를 담은 쿼리셋 추출 / 커스텀은 제외함
-    other_me = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전필').values_list('subject_num').annotate(count=Count('subject_num'))
-    other_ms = UserGrade.objects.exclude(year = '커스텀').filter(major = ui_row.major, classification = '전선').values_list('subject_num').annotate(count=Count('subject_num'))
-    # 중선 영역은 학점이 2 이상인 과목만 필터링 (grade__gte)
-    # 전체 -> 교선 + 2학점 + 부족한영역 -> 등장횟수정렬 -> 내가들은거+구과목+필수과목+커스텀 제외 
-    recom_cs_part = []
-    part_candidate = recom_cs_part
-    if not part_candidate :
-        part_candidate = cs_part
-    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=part_candidate)
-    other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
-
-    
-    print('-------- 전필 -------- ')
-    for row in make_recommend_list_other([], user_major_lec):
-        print(row)
-
-    print('-------- 전선 --------')
-    for row in make_recommend_list_other(other_ms, user_major_lec):
-        print(row)
-
-    print('-------- 교선 -------- ')
-    for row in make_recommend_list_other(other_cs, user_cs_lec):
+    for row in NewUserInfo.objects.values_list('major').annotate(count=Count('major')):
         print(row)
     
-
-    # 총 사용자 교선 순위 
-    other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'])
-    other_cs = other_cs.values_list('subject_name').annotate(count=Count('subject_num'))
-    for row in sorted(list(other_cs), key = lambda x : x[1], reverse=True):
-        print(row)
-    '''
     return HttpResponse('테스트 완료, 터미널 확인')
 
