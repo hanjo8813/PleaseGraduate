@@ -250,10 +250,13 @@ def f_find_pw(request):
     ui_row = ui_row[0]
     # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
     temp_user_info = selenium_DHC(user_id, pw)
-    if temp_user_info == 1:
+    if temp_user_info == 'err_auth':
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/login/')
-    elif temp_user_info == 2:
+    elif temp_user_info == 'err_enter_mybook':
+        messages.error(request, '⚠️ 계약학과, 편입생, 재외국민전형 입학자는 회원가입이 불가능합니다.😥')
+        return redirect('/login/')
+    elif temp_user_info == 'err_all':
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
@@ -343,13 +346,15 @@ def f_mod_info(request):
     # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
     temp_user_info = selenium_DHC(user_id, pw)
     # 예외처리
-    if temp_user_info == 1:
-        messages.error(request, '⚠️ 세종대학교 포털 비밀번호를 다시 확인하세요. (Caps Lock 확인)')
+    if temp_user_info == 'err_auth':
+        messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/mypage/')
-    elif temp_user_info == 2:
+    elif temp_user_info == 'err_enter_mybook':
+        messages.error(request, '⚠️ 계약학과, 편입생, 재외국민전형 입학자는 회원가입이 불가능합니다.😥')
+        return redirect('/mypage/')
+    elif temp_user_info == 'err_all':
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/mypage/')
-
     # 기본 정보 -> 변수에 저장
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     year = user_id[:2]
@@ -628,14 +633,19 @@ def selenium_DHC(id, pw):
             driver.switch_to.frame(0)
         except:
             driver.quit()
-            return 1
+            return 'err_auth'
         # 팝업창 있을 경우 모두 닫아준다
         while 1:
             try:
                 driver.find_element_by_class_name("close").click()
             except:
                 break
-        driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+        # 고전독서 인증현황 페이지로 감, 실패시 재외국민/편입생/계약학과임
+        try:
+            driver.find_element_by_class_name("box02").click()  
+        except:
+            driver.quit()
+            return 'err_enter_mybook'
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
         # 독서 권수 리스트에 저장
         soup = BeautifulSoup(html, 'html.parser')
@@ -694,14 +704,20 @@ def selenium_DHC(id, pw):
             except:
                 driver.quit()
                 display.stop()
-                return 1
+                return 'err_auth'
             # 팝업창 있을 경우 모두 닫아준다
             while 1:
                 try:
                     driver.find_element_by_class_name("close").click()
                 except:
                     break
-            driver.find_element_by_class_name("box02").click()  # 고전독서 인증현황 페이지로 감
+            # 고전독서 인증현황 페이지로 감, 실패시 재외국민/편입생/계약학과임
+            try:
+                driver.find_element_by_class_name("box02").click()  
+            except:
+                driver.quit()
+                display.stop()
+                return 'err_enter_mybook'
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
             # 독서 권수 리스트에 저장
             soup = BeautifulSoup(html, 'html.parser')
@@ -734,7 +750,7 @@ def selenium_DHC(id, pw):
                 driver.quit()
             if 'display' in locals():
                 display.stop()
-            return 2
+            return 'err_all'
 
     # 크롤링으로 받아온 값 리턴
     context = {
@@ -761,10 +777,13 @@ def f_certify(request):
     temp_user_info = selenium_DHC(id, pw)
 
     # 예외처리
-    if temp_user_info == 1:
+    if temp_user_info == 'err_auth':
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
         return redirect('/agree/')
-    elif temp_user_info == 2:
+    elif temp_user_info == 'err_enter_mybook':
+        messages.error(request, '⚠️ 계약학과, 편입생, 재외국민전형 입학자는 회원가입이 불가능합니다.😥')
+        return redirect('/agree/')
+    elif temp_user_info == 'err_all':
         messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요. \\n\\n ❓❓ 계속 시도해도 오류가 발생한다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/agree/')
 
