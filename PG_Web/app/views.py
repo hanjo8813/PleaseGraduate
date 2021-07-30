@@ -1214,7 +1214,6 @@ def f_result(user_id):
         other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
-
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)
         pass_cs_part, pass_cs_num, pass_cs_ess, pass_cs= 0, 0, 0, 0
         if not recom_cs_part:
@@ -1387,8 +1386,6 @@ def f_result(user_id):
         # 전공 부족학점 다시 계산
         result_context['major_essential']['lack'] = convert_to_int(new_standard_me - user_num_me)
         result_context['major_selection']['lack'] = convert_to_int(new_standard_ms - user_num_ms - remain)
-
-        
         # 복수전공일때
         if ui_row.major_status == '복수전공':
             user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()

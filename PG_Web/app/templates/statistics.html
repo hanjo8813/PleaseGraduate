@@ -193,7 +193,6 @@
                 data: formData,
                 // 성공시 받는 데이터
                 success: function (context) {
-
                     let zip_lecture_count = context['zip_lecture_count']
 
                     html = "<table class='grade_table' style='margin-top:0'>";
@@ -224,7 +223,10 @@
                     update_div.innerHTML = html;
                 },
                 // 에러시 설정
-                error: function (e) { }
+                error: function (err) { 
+                    console.log(err)
+                    alert('데이터를 가져오는 데 에러가 발생했습니다!');
+                }
             }
         );
     }
