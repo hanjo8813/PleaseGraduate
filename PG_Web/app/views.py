@@ -1681,7 +1681,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    update_json(user_id)
+    #update_json(user_id)
     
     return redirect('/mypage/')
 
@@ -1859,15 +1859,28 @@ def f_test(request):
     for major in user_major :
         if major in all_major:
             all_major.remove(major)
-    print(' @@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@ ')
+    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
     print()
     print(all_major)
     print()
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
+
+    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학과별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
+    print()
+    for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key = lambda x : x[1], reverse=True):
+        print(row)
     print()
 
-    for row in NewUserInfo.objects.values_list('major').annotate(count=Count('major')):
+    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학번별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
+    print()
+    for row in NewUserInfo.objects.values_list('year').annotate(count=Count('year')):
         print(row)
+    print()
+
+    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 일자별 가입횟수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
+    print()
+    for row in NewUserInfo.objects.values_list('register').annotate(count=Count('year')):
+        print(row)
+    print()
     
     return HttpResponse('테스트 완료, 터미널 확인')
 
