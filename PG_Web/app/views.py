@@ -1187,9 +1187,16 @@ def f_result(user_id):
         recom_essential_cs, check_cs = make_recommend_list(user_dic_cs, dic_cs)
         standard_essential_cs = to_zip_list(list_to_query(dic_cs.keys()), check_cs)
         # 16 17의 소기코 대체과목은 컴기코로 바꿔줌
-        if ui_row.year in [16, 17]:
-            if '9799' in recom_essential_cs:
-                recom_essential_cs.remove('9799')
+        if ui_row.year in [16, 17] and '9799' in recom_essential_cs:
+            # 일단 추천리스트에서 소기코는 삭제하고
+            recom_essential_cs.remove('9799')
+            # 만약 컴기코를 재수강 했다면 기준 딕셔너리에서 수강 체크해준다
+            if '10528' in user_dic_cs.keys():
+                for i, zipped in enumerate(standard_essential_cs):
+                    if zipped[0]['subject_num'] == '9799':
+                        standard_essential_cs[i][1] = 1
+            # 재수강 안했으면 추천리스트에 컴기코 학수번호 추가
+            else:
                 recom_essential_cs.append('10528')
 
         # 선택영역 검사
@@ -1674,7 +1681,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    #update_json(user_id)
+    update_json(user_id)
     
     return redirect('/mypage/')
 
