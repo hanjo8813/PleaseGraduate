@@ -1876,11 +1876,6 @@ def f_test(request):
         print(row)
     print()
 
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 일자별 가입횟수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    for row in NewUserInfo.objects.values_list('register').annotate(count=Count('year')):
-        print(row)
-    print()
     
     return HttpResponse('테스트 완료, 터미널 확인')
 
