@@ -546,7 +546,7 @@ def f_delete_account(request):
 @csrf_exempt
 def a_search(request):
     # AJAX 통신으로 넘어온 학수번호를 받는다
-    s_num = int(request.POST['back_s_num'])
+    s_num = request.POST['back_s_num']
     # 학수번호를 all_lecture 테이블에서 검색
     al = AllLecture.objects.filter(subject_num=s_num)
     # 존재한다면 
