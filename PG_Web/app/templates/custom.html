@@ -175,13 +175,22 @@
     var list_delete = []
 
     function ajax_conn() {
+        var input_s_num = $("#s_num").val();
+        // ELP1 이수면제 커맨드 입력시
+        if(input_s_num == '면제'){
+            show_table(['10352', 'English Listening Practice 1', '', '이수면제용', 0]);
+            var classification_input = document.getElementById('classification');
+            classification_input.value = '교필';
+            classification_input.disabled = true;
+            return;
+        }
         // ajax 통신 시작
         $.ajax(
             {
                 type: 'POST',
                 url: '/a_search/',
                 // views에는 back_s_num 이라는 이름으로 input에 있는 학수번호를 넘겨준다.
-                data: { back_s_num: $("#s_num").val() },
+                data: { back_s_num: input_s_num },
                 dataType: 'json',
                 // 성공시 백에서 result 변수가 넘어온다. 
                 success: function (context) {
@@ -220,7 +229,7 @@
 
         html += "<tr>";
         html += "<td class='grade_table_td'><input class='td_input' type='text' id='year' value='커스텀' readonly></td>";
-        html += "<td class='grade_table_td'><input class='td_input' type='text' id='semester' value='2학기' readonly></td>";
+        html += "<td class='grade_table_td'><input class='td_input' type='text' id='semester' value='커스텀' readonly></td>";
         html += "<td class='grade_table_td'><input class='td_input' type='text' id='subject_num' value='" + result[0] + "' readonly></td>";
         html += "<td class='grade_table_td'><input class='td_input' type='text' id='subject_name' value='" + result[1] + "' readonly></td>";
         html += "<td class='grade_table_td'>";

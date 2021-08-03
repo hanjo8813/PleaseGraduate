@@ -182,11 +182,11 @@
                 </span>
                 <div class="tooltip_text">
                     <p>&#183; 16년도부터 <span class='tooltip_span'>중핵필수 -> 교양필수</span>로 이수구분명이 변경되었습니다.</p>
-                    <p>&#183; 두 가지 조건을 만족했을 경우 통과합니다.</p>
-                    <p class='tooltip_sub_p'>1. 교양필수 과목으로 기준학점을 만족해야합니다.</p>
-                    <p class='tooltip_sub_p'>2. 교양필수 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
-                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
-                    </p>
+                    <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 교양필수 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- <span class='tooltip_span'>기준 학점과 상관없이</span> 필수과목만 모두 이수하면 됩니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 필수과목의 이수구분이 <span class='tooltip_span'>변경되어도</span> 필수과목을 이수한 것으로 인정됩니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
                 </div>
             </div>
             <div class="box">
@@ -225,11 +225,9 @@
                     <p>&#183; 교양선택2는 <span class='tooltip_span'>기준 학점에 인정되지 않습니다.</span></p>
                     <p>&#183; 세 가지 조건을 만족했을 경우 통과합니다.</p>
                     <p class='tooltip_sub_p'>1. 교양선택1 과목으로 기준학점을 만족해야합니다.</p>
-                    <p class='tooltip_sub_p'>2. 교양선택1 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
-                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
-                    </p>
+                    <p class='tooltip_sub_p'>2. 교양선택1 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
                     <p class='tooltip_sub_p'>3. 과목마다 '선택영역'이 존재하고, 5가지의 선택영역 중 3가지 이상 이수해야합니다.</p>
-
                 </div>
             </div>
             <div class="box">
@@ -268,11 +266,11 @@
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    <p>&#183; 두 가지 조건을 만족했을 경우 통과합니다.</p>
-                    <p class='tooltip_sub_p'>1. 학문기초교양 과목으로 기준학점을 만족해야합니다.</p>
-                    <p class='tooltip_sub_p'>2. 학문기초교양 영역에서 정해진 필수과목을 모두 이수해야합니다.<br>
-                        &nbsp;&nbsp;&nbsp;(해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.)
-                    </p>
+                    <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 학문기초교양 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- <span class='tooltip_span'>기준 학점과 상관없이</span> 필수과목만 모두 이수하면 됩니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 필수과목의 이수구분이 <span class='tooltip_span'>변경되어도</span> 필수과목을 이수한 것으로 인정됩니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
                     <p><span class='tooltip_span'>※ 화학과는 선택과목 조건이 추가로 존재합니다.</span></p>
                 </div>
             </div>
@@ -1202,6 +1200,7 @@
     var Ce_p;
     if ('{{core_essential.pass}}' == 1) {
         Ce_p = "Pass";
+        pernum3 = 100;
     }
     else {
         Ce_p = "NP";
@@ -1280,6 +1279,7 @@
 
     if (temp_p == 1) {
         B_p = "Pass";
+        pernum5 = 100;
     }
     else {
         B_p = "NP";

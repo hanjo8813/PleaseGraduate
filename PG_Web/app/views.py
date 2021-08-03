@@ -1151,7 +1151,7 @@ def f_result(user_id):
         user_num_ce = df_ce['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_ce = make_dic([s_num for s_num in standard_row.ce_list.split('/')])
-        user_dic_ce = make_dic(df_ce['학수번호'].tolist())
+        user_dic_ce = make_dic(data['학수번호'].tolist())  # * 수정 : 교필, 중필 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_ce, check_ce = make_recommend_list(user_dic_ce, dic_ce)
         standard_essential_ce = to_zip_list(list_to_query(dic_ce.keys()), check_ce)
@@ -1260,7 +1260,7 @@ def f_result(user_id):
         user_num_b = df_b['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_b = make_dic([s_num for s_num in standard_row.b_list.split('/')])
-        user_dic_b = make_dic(df_b['학수번호'].tolist())
+        user_dic_b = make_dic(data['학수번호'].tolist())     # * 수정 : 기교 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_b, check_b = make_recommend_list(user_dic_b, dic_b)
         standard_essential_b = to_zip_list(list_to_query(dic_b.keys()), check_b)
@@ -1666,6 +1666,8 @@ def r_admin_test(request):
     for row in NewUserInfo.objects.all():
         uid.append([row.last_update_time, row.register_time, row.major, row.student_id, row.name])
     
+    uid = sorted(uid, key= lambda x : x[1], reverse=True)
+
     context={
         'uid' : uid,
         'uid_num' : len(uid),
@@ -1681,7 +1683,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    #update_json(user_id)
+    update_json(user_id)
     
     return redirect('/mypage/')
 
