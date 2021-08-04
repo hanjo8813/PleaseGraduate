@@ -54,9 +54,6 @@ def r_head(request):
     }
     return render(request, "head.html", context)
 
-def r_information(request):
-    return render(request, "information.html")
-
 @csrf_exempt
 def a_statistics(request):
     # POST로 온 form 데이터 꺼내기
@@ -1683,7 +1680,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
     
-    update_json(user_id)
+    #update_json(user_id)
     
     return redirect('/mypage/')
 
