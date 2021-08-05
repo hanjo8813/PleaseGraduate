@@ -46,7 +46,7 @@ def r_head(request):
     sum_dict = VisitorCount.objects.aggregate(Sum('visit_count'))
     visit_total = sum_dict['visit_count__sum']
     # user_info 회원수 + new_user_info 회원수 합계
-    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
+    user_num = NewUserInfo.objects.count()
     context = {
         'visit_today' : visit_today,
         'visit_total' : visit_total,
@@ -80,7 +80,7 @@ def a_statistics(request):
     return JsonResponse(context)
 
 def r_statistics(request):
-    user_num = UserInfo.objects.count() + NewUserInfo.objects.count()
+    user_num = NewUserInfo.objects.count()
     major_num = NewUserInfo.objects.values('major').distinct().count()
     context = {
         'user_num' : user_num,
