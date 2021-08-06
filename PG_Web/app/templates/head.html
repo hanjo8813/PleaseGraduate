@@ -102,7 +102,7 @@
     */
    
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_2' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_3' + '=([^;]*)(;|$)');
     if(unlook_cookie == null){
         document.getElementById('myModal').style.display = 'block';
     }
@@ -117,7 +117,7 @@
                 var date = new Date();
                 // 유효기간 1일
                 date.setTime(date.getTime() + 1*24*60*60*1000);
-                document.cookie = 'is_unlook_2' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_3' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
