@@ -1,5 +1,5 @@
 <div align='center'>
-    <h3> version 2.0 배포! </h3>
+    <h3> ⭐ 누르기 ! </h3>
 </div>
 
 <br>
