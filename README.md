@@ -1,12 +1,12 @@
 <div align='center'>
-    <h3> ⭐ 누르기 ! </h3>
+    <h3> ⭐ 눌러주세요~! </h3>
 </div>
 
 <br>
 
 # Please Graduate
 
- ![pg](https://img.shields.io/badge/version-2.1-a3374f) 
+ ![pg](https://img.shields.io/badge/version-2.2-a3374f) 
 
 ## 관련 링크
 

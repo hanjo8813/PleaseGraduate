@@ -1390,19 +1390,26 @@ def f_result(user_id):
         # 전공 부족학점 다시 계산
         result_context['major_essential']['lack'] = convert_to_int(new_standard_me - user_num_me)
         result_context['major_selection']['lack'] = convert_to_int(new_standard_ms - user_num_ms - remain)
-        # 복수전공일때
+
+        # 복수/연계 전공 이수구분 설정
         if ui_row.major_status == '복수전공':
-            user_multi_me = data[data['이수구분'].isin(['복필'])]['학점'].sum()
-            user_multi_ms = data[data['이수구분'].isin(['복선'])]['학점'].sum()
-        # 연계전공일때
+            classification_me = '복필'
+            classification_ms = '복선'
         elif ui_row.major_status == '연계전공':
-            user_multi_me = data[data['이수구분'].isin(['연필'])]['학점'].sum()
-            user_multi_ms = data[data['이수구분'].isin(['연선'])]['학점'].sum()
+            classification_me = '연필'
+            classification_ms = '연선'
+        # 각각 X필, X선 학점 계산
+        user_multi_me = data[data['이수구분'].isin([classification_me])]['학점'].sum()
+        multi_remain = 0    # X필 초과시 X선으로 넘어가는 학점
+        if standard_multi_me < user_multi_me :
+            multi_remain = user_multi_me - standard_multi_me
+        user_multi_me -= multi_remain
+        user_multi_ms = data[data['이수구분'].isin([classification_ms])]['학점'].sum()
         # 복수/연계전공 pass 여부 검사
         pass_multi_me, pass_multi_ms = 0, 0
         if standard_multi_me <= user_multi_me:
             pass_multi_me = 1
-        if standard_multi_ms <= user_multi_ms:
+        if standard_multi_ms <= user_multi_ms + multi_remain:
             pass_multi_ms = 1
         # 복수/연계 전공 context 생성
         context_multi_major_essential = {
@@ -1413,6 +1420,7 @@ def f_result(user_id):
         context_multi_major_selection = {
             'standard_num' : standard_multi_ms,
             'user_num' : convert_to_int(user_multi_ms),
+            'remain' : convert_to_int(multi_remain),
             'pass' : pass_multi_ms,
         }
         result_context['multi_major_essential'] = context_multi_major_essential
@@ -1748,12 +1756,13 @@ def make_merge_df():
 
 
 def f_test_update(request):
-    df_merge, s_num_list = make_merge_df()
+    df_merge, s_num_list = make_merge_df() 
 
+    
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
     TestNewLecture.objects.all().delete()
-    time.sleep(5)   # 삭제하는 시간 기다리기
+    time.sleep(10)   # 삭제하는 시간 기다리기
 
     # 테이블에 최신 학수번호를 삽입
     for s_num in s_num_list:
@@ -1767,15 +1776,17 @@ def f_test_update(request):
     # df 칼럼명 바꾸기
     df_al.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
 
-    # 기존 테이블 df에서 학수번호 겹치는 것을 삭제
+    copy_df_al = df_al.copy()
+    
+    # 기존 테이블 df에서 학수번호 겹치는 것을 삭제 (과목정보 최신화)
     for i, row in df_al.iterrows():
         if int(row['학수번호']) in s_num_list:
-            df_al.drop(i, inplace=True)
+            copy_df_al.drop(i, inplace=True)
     # 삭제한 df에 최신 강의 df를 병합
-    df_new_al = pd.concat([df_al, df_merge])
+    df_new_al = pd.concat([copy_df_al, df_merge])
     # test_all_lecture 테이블 안 데이터 모두 삭제
     TestAllLecture.objects.all().delete()
-    time.sleep(5)
+    time.sleep(20)
 
     # 삭제 후에 최신 강의 DF를 한 행씩 테이블에 추가
     for i, row in df_new_al.iterrows():
@@ -1798,7 +1809,7 @@ def f_update(request):
 
     # 1. new_lecture 업데이트
     NewLecture.objects.all().delete()
-    time.sleep(5)  
+    time.sleep(10)  
     for s_num in s_num_list:
         new_nl = NewLecture()
         new_nl.subject_num = s_num
@@ -1812,7 +1823,7 @@ def f_update(request):
             df_al.drop(i, inplace=True)
     df_new_al = pd.concat([df_al, df_merge])
     AllLecture.objects.all().delete()
-    time.sleep(5)
+    time.sleep(10)
     for i, row in df_new_al.iterrows():
         new_al = AllLecture()
         new_al.subject_num = row['학수번호']

@@ -92,9 +92,19 @@
                         <span class="r" id="grade_multi_ms"></span>
                     </div>
                     <div class="gbox" style="margin-top:-3rem">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade" style="letter-spacing: -0.2px;">이수 학점</span>
                         <span class="r" id="my_grade_multi_ms"></span>
+                        <span class="tooltip" id="multi_remain" style="color:#d32f2f; margin-left:-0.5rem"></span>
+                        <div class="tooltip_text">
+                            {% if user_info.major_status == '복수전공' %}
+                            복필 영역에서 기준 학점 초과시 복선 학점으로 인정됩니다.
+                            {% else %}
+                            연필 영역에서 기준 학점 초과시 연선 학점으로 인정됩니다.
+                            {% endif %}
+                        </div>
                     </div>
+
+                    
                 </div>
             </div>
         </div>
@@ -160,9 +170,9 @@
                         <span class="r" id="grade2"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade" style="letter-spacing: -0.5px;">이수 학점</span>
+                        <span class="grade" style="letter-spacing: -0.2px;">이수 학점</span>
                         <span class="r" id="mygrade2"></span>
-                        <span class="tooltip" id="myremain" style="color:#d32f2f; "></span>
+                        <span class="tooltip" id="myremain" style="color:#d32f2f; margin-left:-0.5rem"></span>
                         <div class="tooltip_text">
                             전필 영역에서 기준 학점 초과시 전선 학점으로 인정됩니다.
                         </div>
@@ -1059,7 +1069,7 @@
     // 총 검사 결과
     if (pernum0 >= 100) {
         if ('{{total.pass}}' == 1) {
-            var Cangraduate = "축하합니다! 졸업 가능합니다!!";
+            var Cangraduate = "축하합니다! 졸업 가능합니다!";
             document.querySelector('.T').style.fontSize = '24px';
         }
         // 학점은 만족하나 조건이 안될 경우
@@ -1072,7 +1082,7 @@
     } else {
         document.querySelector('.cap').style.display = 'none';
         document.querySelector('.T').style.fontSize = '23px';
-        var Cangraduate = "졸업까지 " + (Totalgrade - Mytotalgrade) + "학점이 필요합니다!";
+        var Cangraduate = "총 기준학점보다 " + (Totalgrade - Mytotalgrade) + "학점이 부족합니다!";
     }
     // id값과 매핑
     document.getElementById("name").innerHTML = Name;
@@ -1335,12 +1345,16 @@
     var Grade_multi_ms = '{{multi_major_selection.standard_num}}';
     var Mygrade_multi_me = '{{multi_major_essential.user_num}}';
     var Mygrade_multi_ms = '{{multi_major_selection.user_num}}';
+    var multi_remain = '{{multi_major_selection.remain}}';
 
     var pernum_multi_me = to_percent(Mygrade_multi_me, Grade_multi_me);
-    var pernum_multi_ms = to_percent(Mygrade_multi_ms, Grade_multi_ms);
+    var pernum_multi_ms = to_percent(Number(Mygrade_multi_ms) + Number(multi_remain), Grade_multi_ms);
 
     document.getElementById("grade_multi_me").innerHTML = Grade_multi_me;
     document.getElementById("grade_multi_ms").innerHTML = Grade_multi_ms;
+    if (multi_remain != 0) {
+        document.getElementById("multi_remain").innerHTML = '+' + multi_remain;
+    }
     document.getElementById("my_grade_multi_me").innerHTML = Mygrade_multi_me;
     document.getElementById("my_grade_multi_ms").innerHTML = Mygrade_multi_ms;
 
