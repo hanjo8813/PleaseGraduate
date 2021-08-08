@@ -86,7 +86,20 @@ def r_statistics(request):
         'user_num' : user_num,
         'major_num' : major_num,
     }
-    return render(request, "statistics.html", context)
+    response = render(request, "statistics.html", context)
+    # 쿠키 추가로 설정
+    if request.COOKIES.get('is_visit') is None:
+        now_dt = datetime.datetime.now()
+        tommorow_dt = now_dt + datetime.timedelta(days=1)
+        tommorow_midnight_str = tommorow_dt.strftime('%Y-%m-%d') + ' 00:00:00'
+        tommorow_midnight_time = datetime.datetime.strptime(tommorow_midnight_str, '%Y-%m-%d %H:%M:%S')
+        diff_dt = (tommorow_midnight_time - now_dt).seconds
+        response.set_cookie('is_visit', 'visited', diff_dt)
+        today_date = now_dt.strftime('%Y-%m-%d')
+        vc = VisitorCount.objects.get(visit_date=today_date)
+        vc.visit_count += 1
+        vc.save()
+    return response
 
 def r_login(request):
     request.session.clear()
@@ -1757,8 +1770,6 @@ def make_merge_df():
 
 def f_test_update(request):
     df_merge, s_num_list = make_merge_df() 
-
-    
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
     TestNewLecture.objects.all().delete()
