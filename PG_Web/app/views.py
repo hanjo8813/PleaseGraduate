@@ -1712,12 +1712,12 @@ def f_insert_user(request):
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    student_id = '16010171'
+    student_id = '17010975'
     password = bcrypt.hashpw('1234'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')   
     year = student_id[:2]
-    major = '호텔관광경영학전공'
+    major = '건축학전공'
     major_status = '해당없음'
-    name = '오영탁'
+    name = '박정음'
     book = '고특통과'
     eng = '해당없음'
 
