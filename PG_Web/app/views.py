@@ -1711,13 +1711,17 @@ def f_insert_user(request):
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
+    # admin 페이지 입력데이터 검증
+    student_id = request.POST.get('student_id')
+    major = request.POST.get('major')
+    name = request.POST.get('name')
+    if '' in [student_id, major, name]:
+        return HttpResponse('❌❌❌ 세가지 데이터를 모두 입력해야 함 ❌❌❌')
+
     register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    student_id = '17010975'
     password = bcrypt.hashpw('1234'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')   
     year = student_id[:2]
-    major = '건축학전공'
     major_status = '해당없음'
-    name = '박정음'
     book = '고특통과'
     eng = '해당없음'
 
