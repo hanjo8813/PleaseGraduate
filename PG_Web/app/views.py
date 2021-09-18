@@ -979,7 +979,7 @@ def make_recommend_list_other(other_, user_lec_list):
         # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
         if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
             # AllLecture에서 이수구분이 교선일때만 리스트에 추가함
-            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전공필수', '전공선택', '교양선택(1영역)', '중핵필수선택', '전필', '전선', '교선1']).exists():
+            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전필', '전선', '교선1']).exists():
                 rank += 1
                 row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
                 recom.append( [row_dic[0], rank] )
