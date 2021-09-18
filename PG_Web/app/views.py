@@ -1763,7 +1763,8 @@ def make_merge_df():
     df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col]  , axis=1, inplace=True)     # 필요한 컬럼만 추출
 
     # 두 df를 병합, 중복제거
-    df_merge = pd.concat([df_sem_1, df_sem_2])
+    # ** 우선순위 학기의 df를 앞에다 두어야 함 **
+    df_merge = pd.concat([df_sem_2, df_sem_1])
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
     df_merge.fillna('', inplace = True)
@@ -1773,6 +1774,10 @@ def make_merge_df():
 
 
 def f_test_update(request):
+    # 로컬에서만 접근 가능하도록 하기
+    if platform.system() != 'Windows':
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        
     df_merge, s_num_list = make_merge_df() 
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
