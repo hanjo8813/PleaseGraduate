@@ -5,4 +5,8 @@ col_static
 update_lecture
 
 secret.json
+secret_old.json
+
 admin_test.html
+
+venv

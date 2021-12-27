@@ -3,33 +3,22 @@ import os
 import json
 import time
 import datetime
-import shutil
 import openpyxl
 import pandas as pd
-import numpy as np
 import platform
 import random
-import xlrd
 import bcrypt
-from collections import Counter
-from surprise import SVD, accuracy
-from surprise import Reader, Dataset
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 # 모델 참조
-from django.db import models
-from django.db.models import Value, Count, Sum
+from django.db.models import Count, Sum
 from .models import *
 # AJAX 통신관련 참조
 from django.views.decorators.csrf import csrf_exempt
