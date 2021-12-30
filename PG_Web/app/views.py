@@ -619,14 +619,12 @@ def selenium_DHC(id, pw):
     
     # 로컬 - 개발용 -------------------------------------------------------------------------------
     if platform.system() == 'Windows':
+        # 크롬 드라이버 열기
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
         driver.get(url)
-        # 크롤링시작
-        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-        if checked:
-            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-            alert = driver.switch_to_alert()
-            alert.dismiss()
+        # 키보드보안 해제
+        driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
+        driver.switch_to_alert().dismiss()
         # id , pw 입력할 곳 찾기
         tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
         tag_pw = driver.find_element_by_id("password")
@@ -691,12 +689,9 @@ def selenium_DHC(id, pw):
             # 크롬드라이버 열기
             driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
             driver.get(url)
-            # 고전독서인증센터 크롤링 
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
+            # 키보드보안 해제
+            driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
+            driver.switch_to_alert().dismiss()
             # id , pw 입력할 곳 찾기
             tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
             tag_pw = driver.find_element_by_id("password")
