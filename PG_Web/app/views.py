@@ -11,6 +11,8 @@ import bcrypt
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from pyvirtualdisplay import Display
 from django_pandas.io import read_frame
 # 장고 관련 참조
@@ -602,28 +604,51 @@ def f_add_custom(request):
 def selenium_DHC(id, pw):
     # 대양휴머니티칼리지 url
     url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+
     # 옵션 넣고 드라이버 생성
     options = webdriver.ChromeOptions()
+    # options.add_argument('headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     # 로컬 - 개발용 -------------------------------------------------------------------------------
     if platform.system() == 'Windows':
+
+        # driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME, options=options)
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
+        # driver = webdriver.Chrome('./chromedriver.exe')
+
         driver.get(url)
+
+
+        checked = driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span')
+        print(checked)
+        checked.click()
+        alert = driver.switch_to_alert()
+        alert.dismiss()
+
+        # checked.send_keys(Keys.ENTER)
+
         # 크롤링시작
-        checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-        if checked:
-            driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-            alert = driver.switch_to_alert()
-            alert.dismiss()
+        # checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
+        # if checked:
+        #     driver.find_element_by_xpath('//*[@id="chkNos"]').send_keys(Keys.ENTER) # 체크창 클릭
+        #     alert = driver.switch_to_alert()
+        #     alert.dismiss()
+
+
+        time.sleep(3)
+
+
         # id , pw 입력할 곳 찾기
         tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
         tag_pw = driver.find_element_by_id("password")
         tag_id.clear()
+
         # id , pw 보내기
         tag_id.send_keys(id)
         tag_pw.send_keys(pw)
         time.sleep(0.5)
+
         # 로그인버튼 클릭
         login_btn = driver.find_element_by_id('loginBtn')
         login_btn.click()
@@ -669,6 +694,7 @@ def selenium_DHC(id, pw):
                     continue
                 book.append(td.string.strip().strip().replace('권', ''))
             book = ''.join(book[:4]).replace(' ','')
+
         driver.quit()
 
     # 서버 - 배포용 -------------------------------------------------------------------------------
