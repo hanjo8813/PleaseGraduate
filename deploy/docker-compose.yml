@@ -8,7 +8,7 @@ services:
       - "4444:4444"
 
   django:
-    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG_DEV}
+    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
     container_name: django_con
     volumes:
       - ./:/srv/PleaseGraduate/deploy # 실행 후 외부에 PG.sock 생성
