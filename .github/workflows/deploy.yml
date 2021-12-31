@@ -74,5 +74,6 @@ jobs:
           cd /srv/deploy
           bash deploy.sh \
           ${{ secrets.DOCKER_USERNAME }} \
+          ${{ secrets.DOCKER_PASSWORD }} \
           ${{ secrets.DOCKER_REPOSITORY }} \
           ${{ secrets.DOCKER_TAG }}
