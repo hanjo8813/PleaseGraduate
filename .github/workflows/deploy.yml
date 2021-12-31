@@ -44,8 +44,7 @@ jobs:
     - name: Install Django
       run: |
         python -m pip install --upgrade pip
-        pip install Django==3.1.4
-        pip install python-decouple==3.5
+        pip pip install -r requirements.txt
 
     # deploy 폴더에 static 파일 모아주기
     - name: Collect static files to deploy
