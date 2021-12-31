@@ -40,8 +40,8 @@ jobs:
         docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }} .
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }}
 
-    # 장고 라이브러리 설치
-    - name: Install Django
+    # 라이브러리 설치
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -60,7 +60,7 @@ jobs:
         key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
         port: ${{ secrets.AWS_EC2_PORT }}
         source: "./deploy/*"
-        target: "/srv/deploy"
+        target: "/srv"
 
     # EC2에서 배포 스크립트 실행
     - name: Deploy to EC2
