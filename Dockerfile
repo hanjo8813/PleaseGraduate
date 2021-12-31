@@ -7,7 +7,7 @@ COPY . /srv/PleaseGraduate/
 RUN pip install -r requirements.txt
 RUN pip install uwsgi
 
-CMD ["uwsgi", "--ini", "deploy/uwsgi.ini"]
+CMD ["uwsgi", "--ini", "uwsgi.ini"]
 
 # local
 # docker build -t django_img .

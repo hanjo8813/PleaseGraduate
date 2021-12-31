@@ -8,12 +8,10 @@ services:
       - "4444:4444"
 
   django:
-    image: django_img
+    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG_DEV}
     container_name: django_con
-    ports:
-      - "8000:8000"
     volumes:
-      - ./deploy:/srv/PleaseGraduate/deploy
+      - ./:/srv/PleaseGraduate/deploy # 실행 후 외부에 PG.sock 생성
     depends_on:
       - chrome-driver
 

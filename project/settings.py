@@ -10,48 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-import platform, os, json
+import os
 from django.core.exceptions import ImproperlyConfigured
-from pathlib import Path
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
-
-# 장고 비밀키 + DB 접속 정보 분리
-secret_file = os.path.join(BASE_DIR, 'secret.json')
-
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
-
-def get_secret(setting, secrets=secrets):
-    # json을 읽고 값을 가져온다
-    try:
-        return secrets[setting]
-    # 오류났을 경우에 오류상황 명시
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-
-# json에서 장고 키 빼오기
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = config('SECRET_KEY')
 
 
 # 개발시엔 True로 디버그 확인, 배포시엔 False
-if platform.system() == 'Windows':
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = config('DEBUG')
 
 
 # 호스트 설정
 ALLOWED_HOSTS = [
-    # 개발용 호스트(모두 허용)
-    '*',
-    # 배포용 호스트
-    #'.ap-northeast-2.compute.amazonaws.com',
+    config('CORS'),
 ]
 
 
@@ -111,12 +88,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # DB접속 정보는 json secret 파일에서 빼옴
-        'NAME': get_secret("NAME"),
-        'USER': get_secret("USER"),
-        'PASSWORD': get_secret("PASSWORD"),
-        'HOST': get_secret("HOST"),
-        'PORT': get_secret("PORT"),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': 3306,
     }
 }
 
@@ -166,7 +142,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app', 'static')
 ]
 # 장고가 스태틱 모아줄때 폴더명 지정
-STATIC_ROOT = os.path.join(BASE_DIR, 'col_static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'deploy/col_static')
 # 요청 받는 이름
 STATIC_URL = '/static/'
 

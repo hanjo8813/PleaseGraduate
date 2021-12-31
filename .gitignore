@@ -10,3 +10,5 @@ secret_old.json
 admin_test.html
 
 .venv
+.env
+PG.sock
