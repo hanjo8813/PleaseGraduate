@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  chrome-driver:
+    image: selenium/standalone-chrome
+    container_name: chrome_driver_con
+    ports:
+      - "4444:4444"
+
+  django:
+    image: django_img
+    container_name: django_con
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./deploy:/srv/PleaseGraduate/deploy
+    depends_on:
+      - chrome-driver
+
+# docker-compose -p compose_dev up -d
+# docker-compose -p compose_dev down
