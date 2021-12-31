@@ -1,0 +1,3 @@
+[submodule "PleaseGraduate_sub"]
+	path = PleaseGraduate_sub
+	url = https://github.com/hanjo8813/PleaseGraduate_sub.git
