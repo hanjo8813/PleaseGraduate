@@ -11,26 +11,14 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
-from django.core.exceptions import ImproperlyConfigured
 from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 SECRET_KEY = config('SECRET_KEY')
-
-
-# 개발시엔 True로 디버그 확인, 배포시엔 False
-DEBUG = config('DEBUG')
-
-
-# 호스트 설정
-ALLOWED_HOSTS = [
-    config('CORS'),
-]
-
 
 # 세션 설정
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True      # 브라우저 종료시 세션 파괴
@@ -97,7 +85,6 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -122,42 +109,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+
 # Default 시간에서 서울 시간으로 변경했음
 TIME_ZONE = 'Asia/Seoul'
-
 # TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-
-# static file 경로 설정
-
-# 내가 쓰고있는 스태틱 경로 (collectstatic 할때 참조)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'app', 'static')
-]
-# 장고가 스태틱 모아줄때 폴더명 지정
-STATIC_ROOT = os.path.join(BASE_DIR, 'deploy/col_static')
-# 요청 받는 이름
-STATIC_URL = '/static/'
-
-
 # 크론탭 설정
-
 # 분 시 일 월 요일
 CRONJOBS = [
     ('0 15 * * *', 'app.crontab.insert_today'),
 ]
-
-
-'''
-# media root 추가
-#app폴더의 하위폴더로 루트 설정.
-MEDIA_ROOT = os.path.join(BASE_DIR , 'app/uploaded_media')
-MEDIA_URL = '/uploaded_media/'
-'''
