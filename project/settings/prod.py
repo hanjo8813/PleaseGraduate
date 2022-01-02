@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [ 'please-graduate.com' ]  # 배포전 변경
 
