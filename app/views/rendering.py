@@ -1,29 +1,13 @@
 # 파이썬 라이브러리
-import os
 import json
-import time
 import datetime
-import openpyxl
-import pandas as pd
-import platform
-import random
-import bcrypt
 from collections import defaultdict
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from pyvirtualdisplay import Display
-from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 # 모델 참조
 from django.db.models import Count, Sum
 from ..models import *
-# AJAX 통신관련 참조
-from django.views.decorators.csrf import csrf_exempt
 
 
 # ---------------------------------------------------- ( 렌더링 함수 ) ----------------------------------------------------------------

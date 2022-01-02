@@ -118,8 +118,3 @@ USE_L10N = True
 USE_TZ = True
 
 
-# 크론탭 설정
-# 분 시 일 월 요일
-CRONJOBS = [
-    ('0 15 * * *', 'app.crontab.insert_today'),
-]
