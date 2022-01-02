@@ -19,15 +19,14 @@ def selenium_DHC(id, pw):
     # 가상 디스플레이를 활용해 실행속도 단축
     display = Display(visible=0, size=(1024, 768))
     display.start()
-    time.sleep(0.5)
     # 옵션 추가
     options.add_argument('headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     # 크롬드라이버 열기
     driver = webdriver.Chrome('/srv/chromedriver', options=options)
+    driver.implicitly_wait(7)
     driver.get(url)
-    time.sleep(2)
     # 키보드 보안 해제
     driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
     driver.switch_to_alert().dismiss()
