@@ -2,7 +2,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = [ 'pg.hanjo.xyz' ]  # 배포전 변경
+ALLOWED_HOSTS = [ 'please-graduate.com' ]  # 배포전 변경
 
 # static file 경로 설정
 STATICFILES_DIRS = [
