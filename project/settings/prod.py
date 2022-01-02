@@ -15,3 +15,4 @@ STATIC_URL = '/static/'
 CRONJOBS = [
     ('0 15 * * *', 'app.crontab.insert_today'),
 ]
+CRONTAB_DJANGO_SETTINGS_MODULE = 'project.settings.prod'

@@ -1,12 +1,6 @@
 version: "3.9"
 
 services:
-  chrome-driver:
-    image: selenium/standalone-chrome
-    container_name: chrome_driver_con
-    ports:
-      - "4444:4444"
-
   django:
     build: ../
     container_name: django_con
@@ -16,8 +10,6 @@ services:
       - "8000:8000"
     volumes:
       - ../:/srv/PleaseGraduate/
-    depends_on:
-      - chrome-driver
     command: bash docker_cmd.sh dev
 
 # local -> 항상 root 경로에서 터미널 실행!
