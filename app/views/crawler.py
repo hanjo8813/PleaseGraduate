@@ -3,6 +3,7 @@ import time
 import platform
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from pyvirtualdisplay import Display
 # 모델 참조
 from ..models import *
 
@@ -14,13 +15,18 @@ def selenium_DHC(id, pw):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
+
+    # 가상 디스플레이를 활용해 실행속도 단축
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
+    # 옵션 추가
     options.add_argument('headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     # 크롬드라이버 열기
     driver = webdriver.Chrome('/srv/chromedriver', options=options)
     driver.get(url)
-    time.sleep(2)
+    time.sleep(1)
     # 키보드 보안 해제
     driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
     driver.switch_to_alert().dismiss()
@@ -39,6 +45,7 @@ def selenium_DHC(id, pw):
         driver.switch_to.frame(0)
     except:
         driver.quit()
+        display.stop()
         return 'err_auth'
     # 팝업창 있을 경우 모두 닫아준다
     while 1:
@@ -51,6 +58,7 @@ def selenium_DHC(id, pw):
         driver.find_element_by_class_name("box02").click()  
     except:
         driver.quit()
+        display.stop()
         return 'err_enter_mybook'
     html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
     # 독서 권수 리스트에 저장
@@ -77,13 +85,17 @@ def selenium_DHC(id, pw):
             book.append(td.string.strip().strip().replace('권', ''))
         book = ''.join(book[:4]).replace(' ','')
     driver.quit()
+    display.stop()
+
     
+
+
     # # 로컬 개발용
     # if platform.system() == 'Windows':
     #     # 크롬 드라이버 실행
     #     driver = webdriver.Chrome('./dev/chromedriver.exe', options=options)
     #     driver.get(url)
-    #     time.sleep(0.5)
+    #     time.sleep(4)
     #     # 키보드 보안 해제
     #     driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
     #     driver.switch_to_alert().dismiss()
@@ -146,6 +158,9 @@ def selenium_DHC(id, pw):
     #         options.add_argument('headless')
     #         options.add_argument('--no-sandbox')
     #         options.add_argument('--disable-dev-shm-usage')
+    #         # 가상 디스플레이를 활용해 실행속도 단축
+    #         display = Display(visible=0, size=(1024, 768))
+    #         display.start()
     #         # 크롬드라이버 열기
     #         driver = webdriver.Chrome('/srv/chromedriver', options=options)
     #         driver.get(url)
@@ -168,6 +183,7 @@ def selenium_DHC(id, pw):
     #             driver.switch_to.frame(0)
     #         except:
     #             driver.quit()
+    #             display.stop()
     #             return 'err_auth'
     #         # 팝업창 있을 경우 모두 닫아준다
     #         while 1:
@@ -180,6 +196,7 @@ def selenium_DHC(id, pw):
     #             driver.find_element_by_class_name("box02").click()  
     #         except:
     #             driver.quit()
+    #             display.stop()
     #             return 'err_enter_mybook'
     #         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
     #         # 독서 권수 리스트에 저장
@@ -206,10 +223,13 @@ def selenium_DHC(id, pw):
     #                 book.append(td.string.strip().strip().replace('권', ''))
     #             book = ''.join(book[:4]).replace(' ','')
     #         driver.quit()
+    #         display.stop()
     #     except:
     #         # 드라이버 종료
     #         if 'driver' in locals():
     #             driver.quit()
+    #         if 'display' in locals():
+    #             display.stop()
     #         return 'err_all'
 
     # 크롤링으로 받아온 값 리턴
