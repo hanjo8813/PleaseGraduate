@@ -15,7 +15,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'dev/col_static')
 STATIC_URL = '/static/'
 
 # # cron 설정
-# # 분 시 일 월 요일
 # CRONJOBS = [
 #     ('* * * * *', 'app.crontab.test'),
 # ]
