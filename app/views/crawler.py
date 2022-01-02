@@ -16,16 +16,13 @@ def selenium_DHC(id, pw):
 
     # 옵션 넣고 드라이버 생성
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
-    # 로컬 - 개발용 -------------------------------------------------------------------------------
+    # 로컬 개발용
     if platform.system() == 'Windows':
         # 크롬 드라이버 실행
-        driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME, options=options)
-        # driver = webdriver.Chrome('./chromedriver.exe', options=options)
+        driver = webdriver.Chrome('./dev/chromedriver.exe', options=options)
         driver.get(url)
-
         # 키보드 보안 해제
         driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
         driver.switch_to_alert().dismiss()
@@ -85,21 +82,18 @@ def selenium_DHC(id, pw):
 
         driver.quit()
 
-    # 서버 - 배포용 -------------------------------------------------------------------------------
     else:
         try:
+            options.add_argument('headless')
             # 가상 디스플레이를 활용해 실행속도 단축
             display = Display(visible=0, size=(1024, 768))
             display.start()
             # 크롬드라이버 열기
-            driver = webdriver.Chrome('/home/ubuntu/Downloads/chromedriver', options=options)
+            driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME, options=options)
             driver.get(url)
-            # 고전독서인증센터 크롤링 
-            checked = driver.find_element_by_xpath('//*[@id="chkNos"]').get_attribute('checked')
-            if checked:
-                driver.find_element_by_xpath('//*[@id="chkNos"]').click() # 체크창 클릭
-                alert = driver.switch_to_alert()
-                alert.dismiss()
+            # 키보드 보안 해제
+            driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
+            driver.switch_to_alert().dismiss()
             # id , pw 입력할 곳 찾기
             tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
             tag_pw = driver.find_element_by_id("password")
