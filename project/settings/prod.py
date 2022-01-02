@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [ 'pg.hanjo.xyz' ]  # 배포전 변경
 
