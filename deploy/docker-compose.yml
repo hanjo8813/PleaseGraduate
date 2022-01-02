@@ -8,4 +8,4 @@ services:
       TZ: "Asia/Seoul"
     volumes:
       - ./:/srv/PleaseGraduate/deploy # 실행 후 외부에 PG.sock 생성
-    command: bash docker_cmd.sh dev
+    command: bash docker_cmd.sh prod
