@@ -1,9 +1,3 @@
-<div align='center'>
-    <h3> 궁금한점 있으면 이슈 남겨주세요! </h3>
-</div>
-
-<br>
-
 # Please Graduate
 
  ![pg](https://img.shields.io/badge/version-2.1.4-a3374f) 
