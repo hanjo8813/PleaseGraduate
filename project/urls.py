@@ -54,7 +54,6 @@ urlpatterns = [
     path('a_statistics/', views.a_statistics),
     path('a_search/', views.a_search),
     
-
     # 테스트용
     path('admin_test/', views.r_admin_test),
     path('f_user_test/', views.f_user_test),
@@ -65,9 +64,4 @@ urlpatterns = [
     path('f_input_st/', views.f_input_st),
 ]
 
-urlpatterns += static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
-
-
-# 미디어 루트 설정
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  django:
+    build: ../
+    container_name: django_con
+    environment:
+      TZ: "Asia/Seoul"
+    ports: 
+      - "8000:8000"
+    volumes:
+      - ../:/srv/PleaseGraduate/
+    command: bash docker_cmd.sh dev
+
+# local -> 항상 root 경로에서 터미널 실행!
+# docker-compose -p dev_compose -f dev/docker-compose.yml up -d
