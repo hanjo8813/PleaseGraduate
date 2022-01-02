@@ -6,8 +6,10 @@
 
 ## 개발/업데이트 기록
 
-## 01/03
-- 서버 이전 및 CI/CD 파이프라인 구축 (v2.0.4 -> v2.1.4) ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/61))
+### 01/03
+- **version 2.1.4 배포**
+- 서버 이전 및 CI/CD 파이프라인 구축 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/61))
+- 파일 분리 리팩토링 및 환경별 settings(profile) 분리
 
 ### 12/30
 > 총 방문자 수 : `14261`  / 총 사용자 수 : `2668`   

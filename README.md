@@ -174,23 +174,24 @@
 <br>
 
 ## ⚙ 시스템 아키텍처
+    
+<image width="750" src="https://user-images.githubusercontent.com/71180414/147886640-57921cef-8cdd-4347-a659-cf49b1bc4c42.png"/>
 
-![PG 아키텍처](https://user-images.githubusercontent.com/71180414/125759854-a7b24966-b2ca-4da8-884d-0f419f86ad7f.png)
-
+- Github Actions를 사용하여 CI/CD 파이프라인을 구축하였습니다.
 - Django의 고유 패턴인 MVT(Model/View/Template)패턴을 사용하였습니다.
 - 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
 - 일일 방문자수 구현을 위해 django-crontab을 사용하였습니다.
-- AWS 로드 밸런서와 Nginx를 사용해 로드밸런싱 및 리다이렉팅을 구현하였습니다.
+- Nginx를 사용하여 리다이렉트 및 정적 파일을 제공합니다. 
 
 <br>
 
 ## 📜 기술 스택
 
 ### Front, Backend
-- Django
+- Python 3.9
+- Django 3.1.4
+- MySQL 8.0.25
 - AJAX 
-- MySQL
-
 
 ### Library
 - Selenium
@@ -201,11 +202,10 @@
 - django-crontab
 
 ### Infrastructure
-- AWS EC2
-- AWS Elastic Load Balancer
-- AWS Route 53
-- AWS Certificate Manager
+- Github Actions
+- AWS EC2, RDS
 - nginx
 - uwsgi
-
+- docker, docker-compose
+    
 <br>

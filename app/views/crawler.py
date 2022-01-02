@@ -19,6 +19,7 @@ def selenium_DHC(id, pw):
         # 크롬 드라이버 실행
         driver = webdriver.Chrome('./dev/chromedriver.exe', options=options)
         driver.get(url)
+        time.sleep(0.5)
         # 키보드 보안 해제
         driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
         driver.switch_to_alert().dismiss()
@@ -84,6 +85,7 @@ def selenium_DHC(id, pw):
             # 크롬드라이버 열기
             driver = webdriver.Chrome('/srv/chromedriver', options=options)
             driver.get(url)
+            time.sleep(0.5)
             # 키보드 보안 해제
             driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
             driver.switch_to_alert().dismiss()
