@@ -52,7 +52,7 @@ def f_find_pw(request):
         messages.error(request, '⚠️ 계약학과, 편입생, 재외국민전형 입학자는 회원가입이 불가능합니다.😥 \\n\\n ❓❓ 이에 해당하지 않는다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
         return redirect('/login/')
     elif temp_user_info == 'err_all':
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 학교관련 포털이 다른 창에서 로그인되어 있다면 로그아웃 후 다시 시도하세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도해주세요 😥')
         return redirect('/login/')
     # 임시 id를 세션에 넣어줌
     request.session['temp_user_id'] = user_id
