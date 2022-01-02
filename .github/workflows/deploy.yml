@@ -47,7 +47,7 @@ jobs:
     # deploy 폴더에 static 파일 모아주기
     - name: Collect static files to deploy
       run: |
-         python manage.py collectstatic
+         python manage.py collectstatic --settings=project.settings.prod
     
     # EC2로 배포 스크립트 전송
     - name: Send scripts to EC2

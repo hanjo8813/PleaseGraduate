@@ -1,16 +1,11 @@
 version: "3.9"
 
 services:
-  chrome-driver:
-    image: selenium/standalone-chrome
-    container_name: chrome_driver_con
-    ports:
-      - "4444:4444"
-
   django:
     image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
     container_name: django_con
+    environment:
+      TZ: "Asia/Seoul"
     volumes:
       - ./:/srv/PleaseGraduate/deploy # 실행 후 외부에 PG.sock 생성
-    depends_on:
-      - chrome-driver
+    command: bash docker_cmd.sh dev

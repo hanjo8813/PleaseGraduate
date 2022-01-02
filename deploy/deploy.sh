@@ -5,7 +5,7 @@ DOCKER_PASSWORD=$2
 DOCKER_REPOSITORY=$3
 DOCKER_TAG=$4
 
-echo "================== docker login =================="
+echo "================== docker login (private) =================="
 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
 echo "================== PULL docker image =================="
