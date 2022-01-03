@@ -6,6 +6,9 @@
 
 ## 개발/업데이트 기록
 
+### 01/04
+- 커스텀 기능 피드백 : 학수번호 검색 기능 개선 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/64))
+
 ### 01/03
 - **version 2.1.4 배포**
 - 서버 이전 및 CI/CD 파이프라인 구축 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/61))
