@@ -154,16 +154,27 @@
 
 <br>
 
-## 📁 DB 구조
+## 📜 기술 스택
 
-<image width="550" src="https://user-images.githubusercontent.com/71180414/125682617-94fcf596-7722-4d75-8f6a-a4199b98a859.png">
+### Front, Backend
+- Python 3.9
+- Django 3.1.4
+- MySQL 8.0.25
+- AJAX 
 
-- 과목 정보는 매학기 학교에서 제공하는 개설과목 엑셀 5개년치를  Dataframe으로 병합, 중복제거 후 DB에 저장하였습니다.
-- 이 중 폐강된 강의들도 존재하기에, 최근 1년 내 개설된 강의 테이블 `new_lecture`를 따로 유지합니다.
-- 각 과목은 고유한 **학수번호**(PK)를 통해 구분됩니다.
-- 학수번호가 다른 동일과목들이 존재하기에 `subject_group` 테이블에서 학수번호와 그룹번호를 매핑시켜줍니다.
-- 검사 기준은 학과 - 학번별로 모두 다르기 때문에, `standard` 테이블에서 모든 경우의 기준을 저장합니다.
-- `standard` 테이블에는 학과 - 학번별 각 영역의 기준 학점과 필수과목 학수번호 리스트를 저장합니다.
+### Library
+- Selenium, BeautifulSoup
+- Pandas, django-pandas
+- bcrypt
+- openpyxl
+- django-crontab
+
+### Infrastructure
+- Github Actions
+- AWS EC2, RDS
+- Nginx
+- Uwsgi
+- Docker, docker-compose
 
 <br>
 
@@ -179,27 +190,15 @@
 
 <br>
 
-## 📜 기술 스택
+## 📁 DB 구조
 
-### Front, Backend
-- Python 3.9
-- Django 3.1.4
-- MySQL 8.0.25
-- AJAX 
+<image width="550" src="https://user-images.githubusercontent.com/71180414/125682617-94fcf596-7722-4d75-8f6a-a4199b98a859.png">
 
-### Library
-- Selenium
-- BeautifulSoup
-- Pandas, django-pandas
-- bcrypt
-- openpyxl
-- django-crontab
+- 각 과목은 고유한 **학수번호**(PK)를 통해 구분됩니다.
+- `all_lecture` : 매학기 학교에서 제공하는 개설과목 엑셀 5개년치를 Dataframe으로 병합, 중복제거 후 저장한 모든 과목 정보 테이블
+- `new_lecture` : 최근 1년 내 개설된 학기 강의들의 학수번호 리스트 테이블
+- `subject_group` : 동일과목이 존재할 경우 그룹번호와 학수번호를 매핑해주는 테이블
+- `standard` : 학과 - 학번별 모든 경우의 졸업 기준을 저장하는 테이블
 
-### Infrastructure
-- Github Actions
-- AWS EC2, RDS
-- nginx
-- uwsgi
-- docker, docker-compose
     
 <br>

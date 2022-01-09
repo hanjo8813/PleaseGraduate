@@ -88,7 +88,7 @@ def selenium_DHC(id, pw):
             options.add_argument('--disable-dev-shm-usage')
             # 크롬드라이버 열기
             driver = webdriver.Chrome('/srv/chromedriver', options=options)
-            driver.implicitly_wait(7)   # 렌더링 미완료시 7초까지 대기
+            driver.implicitly_wait(3)   # 렌더링 미완료시 7초까지 대기
             driver.get(url)
             # 키보드 보안 해제
             driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
