@@ -57,7 +57,7 @@ input[type="button"]
 
 .navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     border-bottom : 0.001px solid rgb(216, 216, 216);
     background-color: white;
@@ -66,7 +66,6 @@ input[type="button"]
 
 .navbar_logo img {
     position: relative;
-    margin-left: 10rem;
     width: 110px;
     height: 52px;
 }
@@ -76,7 +75,8 @@ input[type="button"]
     font-size: 20px;
     list-style: none;
     padding-left: 0;
-    margin: 0 10rem 0 0;
+    margin: 0;
+    margin-left: min(50%, 800px);
 }
 
 .navbar_menu li {
@@ -162,14 +162,20 @@ input[type="button"]
 
 /* ---------------------------------( head - 메인 )---------------------------------------- */
 
+.bg_wrapper{
+    background-color: rgba(241, 241, 241, 0.575);
+}
+
 .main_bg {
     animation: fadein 2s;
     -webkit-animation: fadein 2s;
     width:100%;
+    max-width: 1600px;
     min-height:750px;
     background-image: url('../img/main_bg2.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
+    margin: 0 auto;
 }
 
 .sejong_logo{
@@ -461,7 +467,7 @@ input[type=checkbox] {
 .login_box{
     text-align:center;
     margin: 0 auto; 
-    width:60%;
+    width:700px;
     margin-top:1.5rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
@@ -480,27 +486,25 @@ input[type=checkbox] {
 }
 
 .textbox label{
-    font-size:1.2rem;
+    text-align: center;
+    font-size:1.1rem;
+    margin-top: 1rem;
     font-weight: bold;
-    padding:0.5rem;
 }
 
 .textbox input {
-    font-size: 1rem;;
+    font-size: 1rem;
     background: none;
-    border-style: solid;
-    border-color: lightgrey;
-    border-width: 3px;
-    padding: 10px 10px 10px 25px;
-    margin-bottom: 9px;
+    border:0.01px solid rgb(216, 216, 216);
+    padding: 10px 10px 10px 15px;
+    margin-top:0.5rem;
     outline: 0;
-    border-radius: 20px;
-    height:1rem;
+    height:1.5rem;
 }
 
 .login_btn {
     background: rgb(164, 26, 55);
-    width:15%;  
+    width:17%;  
     color: white;
     font-size: 1.2rem;
     font-weight: bold;
@@ -579,9 +583,16 @@ body:not(.device-touch) .suc_btn
 .info_box{
     margin: 0 auto; 
     width: 100%;
+    max-width: 1280px;
     margin-top:1rem;
     border:0.001px solid rgb(216, 216, 216);
     background-color: white; 
+}
+
+.info_box_wrapper{
+    margin: 0 auto; 
+    width: 100%;
+    max-width: 1280px;
 }
 
 .info_content{
@@ -680,8 +691,9 @@ body:not(.device-touch) .suc_btn
 /* ---------------------------------( register )---------------------------------------- */
 
 .regi_box {
+    text-align:center;
     margin: 0 auto; 
-    width: 38%;
+    width: 350px;
     height: auto;
     overflow: hidden;
     display: flex;
@@ -779,7 +791,7 @@ body:not(.device-touch) .suc_btn
 
 .suc_btn{
     background: rgb(164, 26, 55);
-    width:15%;  
+    width:230px;  
     color: white;
     font-size: 1.2rem;
     font-weight: bold;
@@ -804,7 +816,7 @@ body:not(.device-touch) .suc_btn
 
 .go_result_box{
     text-align: center;
-    width:13%;
+    width:200px;
 }
 
 .go_result_text{
@@ -1000,6 +1012,8 @@ body:not(.device-touch) .suc_btn
 .custom_box_wrap {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 auto;
+    max-width: 1280px;
     justify-content: center;
     align-content: center;
     margin-top: 1.5rem;
@@ -1179,9 +1193,10 @@ body:not(.device-touch) .suc_btn
     margin: 45px 35px 20px;
     border-color: black;
     border-style: solid;
-    border-width: 2px;
-    border-radius: 30px;
+    border-width: 1px;
+    border-radius: 20px;
     background-color: white;
+    border:1px solid rgb(216, 216, 216);
 }
 
 .container0 {
@@ -1496,6 +1511,7 @@ strong {
     padding: 5rem;
     border: 1px solid #888;
     width: 80%;
+    max-width: 1280px;
     height: auto;
 }
 
@@ -1522,6 +1538,7 @@ strong {
     padding: 2.5rem;
     border: 1px solid #888;
     width: 60%;
+    max-width: 900px;
     height: auto;
     margin:0;
     position:fixed;

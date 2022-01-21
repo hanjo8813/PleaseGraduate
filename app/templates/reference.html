@@ -33,10 +33,15 @@
     <nav class="navbar">
         <div class="navbar_logo">
             {% load static %}
-            <a href="/"><img src="{% static 'img/logo.png' %}"></a>
+            <a href="/"><img  src="{% static 'img/logo.png' %}"></a>
         </div>
         
         <ul class="navbar_menu">
+            
+            <!-- <div class="navbar_logo">
+                {% load static %}
+                <a href="/"><img src="{% static 'img/logo.png' %}"></a>
+            </div> -->
 
             <li>
                 <a href='https://forms.gle/f2vUqVg9wQFneBLf7'  target="_blank">피드백하기</a>
@@ -91,16 +96,15 @@
         </h2>
     </footer>
 
-    {% if request.session.id %}
+
+
+    {% if request.session.id  %}
     <!-- 주의사항 버튼 -->
     <div class="info_btn" onclick='pop_info_modal()'>
         <i  class="fas fa-question"></i>
     </div>
-    {% endif %}
-
 
     <!-- 주의사항 모달 -->
-    {% if request.session.id  %}
     <div id="info_modal" class="modal">
         <div class="modal-content" style='width:80%'>
             <span class="close" onclick='close_info_modal()'>&times;</span>
