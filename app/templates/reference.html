@@ -42,12 +42,6 @@
                 <a href='https://forms.gle/f2vUqVg9wQFneBLf7'  target="_blank">피드백하기</a>
             </li>
 
-            {% if request.session.id %}
-            <li>
-                <a onclick='pop_info_modal()'>주의사항</a>
-            </li>
-            {% endif %}
-
             <li>
                 <a href='/statistics/'>꿀교양찾기</a>
             </li>
@@ -97,20 +91,13 @@
         </h2>
     </footer>
 
+    {% if request.session.id %}
+    <!-- 주의사항 버튼 -->
+    <div class="info_btn" onclick='pop_info_modal()'>
+        <i  class="fas fa-question"></i>
+    </div>
+    {% endif %}
 
-    <!-- 사용금지 모달
-    <div id='myModal_stop' class="modal" style ="display: block;">
-        <div class="modal-content">
-            <div class="modal_div">
-                <div style="font-size:2.5rem; font-weight:bold; color : #d32f2f">
-                    ※ 사이트 점검 중입니다. ※
-                </div>
-                <div style="font-size:1.3rem; margin-top:3rem;">
-                    <p style="font-size:2rem; font-weight:bold;">~ 01:00 까지 점검 예정입니다.</p>
-                </div>
-            </div>
-        </div>
-    </div>-->
 
     <!-- 주의사항 모달 -->
     {% if request.session.id  %}
@@ -121,7 +108,7 @@
             <div class="container" style='padding:0 1rem 0 1rem; '>
 
                 <!-- 과목 관련 -->
-                <div class="info_title">추가 정보</div>
+                <div class="info_title">도움말</div>
                 <div class="info_box">
                     <div class="info_content">
                         <p>1. 각 영역별 졸업요건 만족 조건을 잘 모르겠다면 검사 결과창에서 <span class="caution_info">Tip</span> 버튼을 눌러보세요!</p>
@@ -215,6 +202,20 @@
     {% endif %}
     {% endfor %}
     {% endif %}
+
+    <!-- 사용금지 모달
+    <div id='myModal_stop' class="modal" style ="display: block;">
+        <div class="modal-content">
+            <div class="modal_div">
+                <div style="font-size:2.5rem; font-weight:bold; color : #d32f2f">
+                    ※ 사이트 점검 중입니다. ※
+                </div>
+                <div style="font-size:1.3rem; margin-top:3rem;">
+                    <p style="font-size:2rem; font-weight:bold;">~ 01:00 까지 점검 예정입니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>-->
 </body>
 
 

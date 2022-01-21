@@ -134,6 +134,32 @@ input[type="button"]
     margin-right: 150px;
 }
 
+.info_btn {
+    display: none;
+    z-index: 1;
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 35px;
+    line-height: 36px;
+    text-align: center;
+    color: #FFF;
+    top: auto;
+    left: auto;
+    right: 30px;
+    bottom: 35px;
+    cursor: pointer;
+    border-radius: 100%;
+    display:block; 
+    padding:10px;
+}
+
+.info_btn:hover {
+    background-color: rgba(164, 26, 56, 0.829);
+  }
+
 /* ---------------------------------( head - 메인 )---------------------------------------- */
 
 .main_bg {
@@ -515,7 +541,7 @@ input[type=checkbox] {
     font-weight: bold;
 }
 
-
+body:not(.device-touch) .info_btn,
 body:not(.device-touch) .filter_btn,
 body:not(.device-touch) .ajax_search_btn,
 body:not(.device-touch) .add_btn,
@@ -1453,7 +1479,7 @@ strong {
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 3; /* Sit on top */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
