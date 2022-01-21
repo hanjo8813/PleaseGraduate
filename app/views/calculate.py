@@ -496,10 +496,24 @@ def f_result(user_id):
     # 복수/연계 전공시 -> 전필,전선 : 기준 수정 + 복필(연필),복선(연선) : 기준과 내 학점계산 추가
     if multi_exists:
         result_context['user_info']['major_status'] = ui_row.major_status
+        # 복수/연계 전공 이수구분 + 기준학점 설정
         new_standard_me = 15
         new_standard_ms = 24
-        standard_multi_me = 15
-        standard_multi_ms = 24
+        if ui_row.major_status == '복수전공':
+            classification_me = '복필'
+            classification_ms = '복선'
+            standard_multi_me = 15
+            standard_multi_ms = 24
+        elif ui_row.major_status == '연계전공':
+            classification_me = '연필'
+            classification_ms = '연선'
+            standard_multi_me = 15
+            standard_multi_ms = 24
+        elif ui_row.major_status == 'AI연계전공':
+            classification_me = '연필'
+            classification_ms = '연선'
+            standard_multi_me = 18
+            standard_multi_ms = 21
         # 전공 기준 학점 수정
         result_context['major_essential']['standard_num'] = new_standard_me
         result_context['major_selection']['standard_num'] = new_standard_ms
@@ -521,14 +535,6 @@ def f_result(user_id):
         # 전공 부족학점 다시 계산
         result_context['major_essential']['lack'] = convert_to_int(new_standard_me - user_num_me)
         result_context['major_selection']['lack'] = convert_to_int(new_standard_ms - user_num_ms - remain)
-
-        # 복수/연계 전공 이수구분 설정
-        if ui_row.major_status == '복수전공':
-            classification_me = '복필'
-            classification_ms = '복선'
-        elif ui_row.major_status == '연계전공':
-            classification_me = '연필'
-            classification_ms = '연선'
         # 각각 X필, X선 학점 계산
         user_multi_me = data[data['이수구분'].isin([classification_me])]['학점'].sum()
         multi_remain = 0    # X필 초과시 X선으로 넘어가는 학점

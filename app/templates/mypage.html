@@ -195,14 +195,6 @@
     <div class="update_modal_content">
         <div id='c1' class="close">&times;</div>
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
-            <!--
-            <span class="tooltip">
-                <i class="fas fa-question-circle"></i>
-            </span>
-            <div class="my_tooltip_text">
-                <p>사용자의 대양휴머니티칼리지 사이트의 비밀번호는 업데이트시에만 사용되며 <span class="caution_info">저장되지 않습니다.</span></p>
-                <p><span class="caution_info">※ 학과/전공/이름이나 고전독서인증 현황이 변경되었을 때에만 업데이트하세요</span></p>
-            </div>-->
             내 정보 업데이트
         </div>
         <div style="margin-top:0.5rem; font-size:0.9rem; color:rgb(199, 199, 199)">
@@ -265,8 +257,9 @@
                 <label>전공상태</label>
                 <select name="major_status">
                     <option value="해당없음" selected>해당없음</option>
-                    <option value="연계전공">연계전공</option>
                     <option value="복수전공">복수전공</option>
+                    <option value="연계전공">연계·융합전공</option>
+                    <option value="AI연계전공">AI 연계·융합전공 (21년도 이후 신설)</option>
                 </select>
                 <label>영어인증</label>
                 {% if eng != '영어인증면제학과' %}
@@ -275,6 +268,7 @@
                         <option value="TOEIC">TOEIC</option>
                         <option value="TOEFL">TOEFL</option>
                         <option value="TEPS">TEPS</option>
+                        <option value="TEPS2">New TEPS</option>
                         <option value="OPIc">OPIc</option>
                         <option value="TOEIC_Speaking">TOEIC Speaking</option>
                         <option value="초과학기면제">초과학기 2학기이상 면제</option>
@@ -328,17 +322,6 @@
     <div class="update_modal_content">
         <div id='c4' class="close">&times;</div>
         <div class="login_title" style="font-size:2rem; margin-top:1.7rem;">
-            <!--
-            <span class="tooltip">
-                <i class="fas fa-question-circle"></i>
-            </span>
-            <div class="my_tooltip_text">
-                <p>1. 사용자가 업로드하는 기이수성적 엑셀파일은 <span class="caution_info">즉시 삭제됩니다.</span></p>
-                <p>2. 사용자가 들었던 과목 정보만이 머신러닝을 위한 용도로 데이터베이스로 변환하여 저장됩니다. </span></p>
-                <p>3. 저장 시 성적 중 학점이 F, NP인 과목은 인정되지 않고 자동 삭제됩니다.</p>
-                <p>4. 업로드시 현재 커스텀으로 추가한 과목들은 모두 삭제됩니다.</p>
-            </div>
-            -->
             기이수성적 업로드
         </div>
 
