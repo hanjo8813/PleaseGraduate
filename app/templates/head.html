@@ -43,24 +43,24 @@
         <span id='dd' class="close" style="font-size:3rem;">&times;</span>
         <div class='popup_content'>
             <div class='popup_title'>
-                Version 2.1.4 공지
+                Version 2.1.5 공지
             </div>
             <div class='popup_box'>
                 <ul>
                     <li>🎉 Happy New Year</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
-                    <li><b>2022.01.04 업데이트 내용</b></li>
-                    <li>커스텀 기능의 학수번호 검색 기능을 개선하였습니다.</li>
-                    <li>학생인증 및 내 정보 업데이트 오류를 수정하였습니다. (크롤링 오류)</li>
-                    <li>새로운 서버로 이전하였습니다.</li>
+                    <li><b>2022.01.22 업데이트 내용</b></li>
+                    <li>AI연계·융합전공 기준을 추가하였습니다.</li>
+                    <li>영어인증영역에 New TEPS 기준을 반영하였습니다.</li>
+                    <li>넓은 화면에 맞춰 UI를 개선하였습니다.</li>
                 </ul>
             </div>
             <div class="popup_check">
                 <label style='cursor:pointer'>
                     <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>
                     <label for='unlook'></label>
-                    &nbsp;하루동안 보지 않을래요
+                    &nbsp;더 이상 보지 않을래요
                 </label>
 
             </div>
@@ -101,7 +101,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_3' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_v215' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -115,8 +115,8 @@
             if (chk.checked) {
                 var date = new Date();
                 // 유효기간 1일
-                date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_3' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
+                document.cookie = 'is_unlook_v215' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }

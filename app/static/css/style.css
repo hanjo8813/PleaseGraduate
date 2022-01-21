@@ -1196,7 +1196,7 @@ body:not(.device-touch) .suc_btn
     border-width: 1px;
     border-radius: 20px;
     background-color: white;
-    border:1px solid rgb(216, 216, 216);
+    border:1.3px solid rgb(216, 216, 216);
 }
 
 .container0 {
