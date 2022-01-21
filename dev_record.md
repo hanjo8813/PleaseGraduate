@@ -6,6 +6,12 @@
 
 ## 개발/업데이트 기록
 
+### 01/22
+- **version 2.1.5 배포**
+- AI연계·융합전공 기준 추가 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/43))
+- 영어인증영역에 New TEPS 기준 반영 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/65))
+- UI 개선 (넓은 화면을 고려하여 변경)
+
 ### 01/04
 - 커스텀 기능 피드백 : 학수번호 검색 기능 개선 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/64))
 

@@ -1,67 +1,68 @@
 {% extends 'reference.html' %}
 
 {% block content %}
-
-<!-- 메인 -->
-<header class="main_bg">
-    <!-- 세종대 로고 -->
-    <div class="sejong_logo"></div>
-    <!-- 소개 문구 -->
-    <div class="bg_text_btn">
-        <div class="bg_small_text fadein_text">
-            세종인을 위한 간편한 졸업요건 검사 사이트
+<div class="bg_wrapper">
+    <!-- 메인 -->
+    <header class="main_bg">
+        <!-- 세종대 로고 -->
+        <div class="sejong_logo"></div>
+        <!-- 소개 문구 -->
+        <div class="bg_text_btn">
+            <div class="bg_small_text fadein_text">
+                세종인을 위한 간편한 졸업요건 검사 사이트
+            </div>
+            <div class="bg_big_text fadein_text">
+                Please Graduate
+            </div>
+            <div class="bg_btn">
+                {% if request.session.id %}
+                <button class="bg_btn_style" onclick="location.href='/mypage/'">검사하기</button>
+                {% else %}
+                <button class="bg_btn_style" onclick="location.href='/login/'">검사하기</button>
+                {% endif %}
+            </div>
         </div>
-        <div class="bg_big_text fadein_text">
-            Please Graduate
+        <!-- 방문자 + 검사횟수 -->
+        <div class="num_visit">
+            <div>
+                <i class="fas fa-calendar-day"></i>&nbsp;&nbsp;오늘 방문자 수 : {{visit_today}}
+            </div>
+            <div style="margin-top:0.4rem;">
+                <i class="fas fa-user"></i>&nbsp;&nbsp;총 방문자 수 : {{visit_total}}
+            </div>
+            <div style="margin-top:0.4rem;">
+                <i class="fas fa-mouse" style="margin-right:0.1rem;"></i>&nbsp;&nbsp;총 사용자 수 : {{user_num}}
+            </div>
         </div>
-        <div class="bg_btn">
-            {% if request.session.id %}
-            <button class="bg_btn_style" onclick="location.href='/mypage/'">검사하기</button>
-            {% else %}
-            <button class="bg_btn_style" onclick="location.href='/login/'">검사하기</button>
-            {% endif %}
-        </div>
-    </div>
-    <!-- 방문자 + 검사횟수 -->
-    <div class ="num_visit">
-        <div>
-            <i class="fas fa-calendar-day"></i>&nbsp;&nbsp;오늘 방문자 수 : {{visit_today}}
-        </div>
-        <div style="margin-top:0.4rem;">
-            <i class="fas fa-user"></i>&nbsp;&nbsp;총 방문자 수 : {{visit_total}}
-        </div>
-        <div style="margin-top:0.4rem;">
-            <i class="fas fa-mouse" style="margin-right:0.1rem;"></i>&nbsp;&nbsp;총 사용자 수 : {{user_num}}
-        </div>
-    </div>
-</header>
+    </header>
+</div>
 
 <!-- 업데이트 공지 -->
-<div id='myModal' class="modal" style ="display: none;">
+<div id='myModal' class="modal" style="display: none;">
     <div class="modal-content">
         <span id='dd' class="close" style="font-size:3rem;">&times;</span>
         <div class='popup_content'>
             <div class='popup_title'>
-                Version 2.1.4 공지
+                Version 2.1.5 공지
             </div>
             <div class='popup_box'>
                 <ul>
                     <li>🎉 Happy New Year</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
-                    <li><b>2022.01.04 업데이트 내용</b></li>
-                    <li>커스텀 기능의 학수번호 검색 기능을 개선하였습니다.</li>
-                    <li>학생인증 및 내 정보 업데이트 오류를 수정하였습니다. (크롤링 오류)</li>
-                    <li>새로운 서버로 이전하였습니다.</li>
+                    <li><b>2022.01.22 업데이트 내용</b></li>
+                    <li>AI연계·융합전공 기준을 추가하였습니다.</li>
+                    <li>영어인증영역에 New TEPS 기준을 반영하였습니다.</li>
+                    <li>넓은 화면에 맞춰 UI를 개선하였습니다.</li>
                 </ul>
             </div>
             <div class="popup_check">
                 <label style='cursor:pointer'>
                     <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>
                     <label for='unlook'></label>
-                    &nbsp;하루동안 보지 않을래요
+                    &nbsp;더 이상 보지 않을래요
                 </label>
-                
+
             </div>
         </div>
     </div>
@@ -98,10 +99,10 @@
         } 
     }
     */
-   
+
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_3' + '=([^;]*)(;|$)');
-    if(unlook_cookie == null){
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_v215' + '=([^;]*)(;|$)');
+    if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
 
@@ -111,11 +112,11 @@
             y.style.display = "none";
             var chk = document.getElementById('unlook');
             // 체크하고 누르면 쿠키 생성
-            if(chk.checked){
+            if (chk.checked) {
                 var date = new Date();
                 // 유효기간 1일
-                date.setTime(date.getTime() + 1*24*60*60*1000);
-                document.cookie = 'is_unlook_3' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
+                document.cookie = 'is_unlook_v215' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
