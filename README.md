@@ -183,10 +183,9 @@
 <image width="750" src="https://user-images.githubusercontent.com/71180414/147886640-57921cef-8cdd-4347-a659-cf49b1bc4c42.png"/>
 
 - Github Actions를 사용하여 CI/CD 파이프라인을 구축하였습니다.
-- Django의 고유 패턴인 MVT(Model/View/Template)패턴을 사용하였습니다.
+- Nginx를 사용하여 리다이렉트 및 HTTPS + HTTP2.0을 지원하고, 정적 파일을 제공합니다. 
 - 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
-- 일일 방문자수 구현을 위해 django-crontab을 사용하였습니다.
-- Nginx를 사용하여 리다이렉트 및 정적 파일을 제공합니다. 
+- 일일 방문자수 구현을 위해 django-crontab을 사용합니다.
 
 <br>
 
