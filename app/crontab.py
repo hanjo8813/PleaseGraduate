@@ -48,7 +48,7 @@ def daily_statistics():
 			    "type": "section",
 			    "text": {
 			    	"type": "mrkdwn",
-			    	"text": "*🚀 2022-01-27 통계*"
+			    	"text": "*🚀" + yesterday + "통계*"
 			    }
 		    },
             {
