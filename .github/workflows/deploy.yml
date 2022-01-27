@@ -29,6 +29,7 @@ jobs:
         envkey_DB_USER: ${{ secrets.DB_USER }}
         envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         envkey_DB_HOST: ${{ secrets.DB_HOST }}
+        envkey_SLACK_WEBHOOK_URL_ALARM : ${{ secrets.SLACK_WEBHOOK_URL_ALARM }}
         file_name: .env
 
     # 장고 docker 이미지 빌드
@@ -75,3 +76,13 @@ jobs:
           ${{ secrets.DOCKER_PASSWORD }} \
           ${{ secrets.DOCKER_REPOSITORY }} \
           ${{ secrets.DOCKER_TAG }}
+
+    # ci/cd 결과 슬랙 전송
+    - name: Send result to slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{job.status}}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CICD }}

@@ -24,17 +24,19 @@ def r_admin_test(request):
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
-        uid.append([row.last_update_time, row.register_time, row.major, row.student_id, row.name])
-    
-    uid = sorted(uid, key= lambda x : x[1], reverse=True)
+        uid.append([row.last_update_time, row.register_time,
+                   row.major, row.student_id, row.name])
 
-    context={
-        'uid' : uid,
-        'uid_num' : len(uid),
+    uid = sorted(uid, key=lambda x: x[1], reverse=True)
+
+    context = {
+        'uid': uid,
+        'uid_num': len(uid),
     }
     return render(request, "admin_test.html", context)
 
 #  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
+
 
 def f_user_test(request):
     if platform.system() != 'Windows':
@@ -42,12 +44,13 @@ def f_user_test(request):
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
-    
+
     #update_json(user_id)
-    
+
     return redirect('/mypage/')
 
 #  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
+
 
 def f_insert_user(request):
     if platform.system() != 'Windows':
@@ -61,7 +64,8 @@ def f_insert_user(request):
         return HttpResponse('❌❌❌ 세가지 데이터를 모두 입력해야 함 ❌❌❌')
 
     register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    password = bcrypt.hashpw('1234'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')   
+    password = bcrypt.hashpw('1234'.encode(
+        'utf-8'), bcrypt.gensalt()).decode('utf-8')
     year = student_id[:2]
     major_status = '해당없음'
     book = '고특통과'
@@ -78,10 +82,11 @@ def f_insert_user(request):
     new_ui.book = book
     new_ui.eng = eng
     new_ui.save()
-        
+
     return HttpResponse('삽입 완료, new_user_info 테이블 확인')
 
 #  -------------------------------------------- (강의정보 테이블 업데이트) ---------------------------------------------------------
+
 
 def make_merge_df():
     # 사용법
@@ -96,22 +101,26 @@ def make_merge_df():
     # 1학기 엑셀 불러오기
     file_path = './app/update_lecture/1st_semester/'
     file_name = os.listdir(file_path)[0]
-    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)                             # 해당 엑셀을 DF화 시킴
-    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col]  , axis=1, inplace=True)     # 필요한 컬럼만 추출
+    # 해당 엑셀을 DF화 시킴
+    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
+    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
+                  axis=1, inplace=True)     # 필요한 컬럼만 추출
     # 2학기 엑셀 불러오기
     file_path = './app/update_lecture/2nd_semester/'
     file_name = os.listdir(file_path)[0]
-    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)                             # 해당 엑셀을 DF화 시킴
-    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col]  , axis=1, inplace=True)     # 필요한 컬럼만 추출
+    # 해당 엑셀을 DF화 시킴
+    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
+    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col],
+                  axis=1, inplace=True)     # 필요한 컬럼만 추출
 
     # 두 df를 병합, 중복제거
     # ** 우선순위 학기의 df를 앞에다 두어야 함 **
     df_merge = pd.concat([df_sem_2, df_sem_1])
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
-    df_merge.fillna('', inplace = True)
+    df_merge.fillna('', inplace=True)
     # 최신강의 학수번호 리스트
-    s_num_list = df_merge['학수번호'].tolist()  
+    s_num_list = df_merge['학수번호'].tolist()
     return df_merge, s_num_list
 
 
@@ -119,8 +128,8 @@ def f_test_update(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
-        
-    df_merge, s_num_list = make_merge_df() 
+
+    df_merge, s_num_list = make_merge_df()
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
     TestNewLecture.objects.all().delete()
@@ -136,10 +145,11 @@ def f_test_update(request):
     # test_all_lecture 쿼리셋을 df로 변환
     df_al = read_frame(TestAllLecture.objects.all())
     # df 칼럼명 바꾸기
-    df_al.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    df_al.rename(columns={'subject_num': '학수번호', 'subject_name': '교과목명',
+                 'classification': '이수구분', 'selection': '선택영역', 'grade': '학점'}, inplace=True)
 
     copy_df_al = df_al.copy()
-    
+
     # 기존 테이블 df에서 학수번호 겹치는 것을 삭제 (과목정보 최신화)
     for i, row in df_al.iterrows():
         if int(row['학수번호']) in s_num_list:
@@ -162,6 +172,7 @@ def f_test_update(request):
 
     return HttpResponse('업데이트 완료, MySQL test_all_lecture / test_new_lecture 테이블 확인')
 
+
 def f_update(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
@@ -171,7 +182,7 @@ def f_update(request):
 
     # 1. new_lecture 업데이트
     NewLecture.objects.all().delete()
-    time.sleep(10)  
+    time.sleep(10)
     for s_num in s_num_list:
         new_nl = NewLecture()
         new_nl.subject_num = s_num
@@ -179,7 +190,8 @@ def f_update(request):
 
     # 2. all_lecture 업데이트
     df_al = read_frame(AllLecture.objects.all())
-    df_al.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    df_al.rename(columns={'subject_num': '학수번호', 'subject_name': '교과목명',
+                 'classification': '이수구분', 'selection': '선택영역', 'grade': '학점'}, inplace=True)
     for i, row in df_al.iterrows():
         if int(row['학수번호']) in s_num_list:
             df_al.drop(i, inplace=True)
@@ -194,10 +206,11 @@ def f_update(request):
         new_al.selection = row['선택영역']
         new_al.grade = row['학점']
         new_al.save()
- 
+
     return HttpResponse('업데이트 완료, MySQL all_lecture / new_lecture 테이블 확인')
 
 #  -------------------------------------------- (학과-학번 기준 엑셀 DB에 넣기) ---------------------------------------------------------
+
 
 def f_input_st(request):
     # 사용법
@@ -212,13 +225,13 @@ def f_input_st(request):
     file_path = './app/update_lecture/input_standard/'
     file_name = os.listdir(file_path)[0]
     df = pd.read_excel(file_path + file_name, index_col=None)
-    df.fillna(0, inplace = True)
-    
+    df.fillna(0, inplace=True)
+
     # 테이블 데이터 삭제
     Standard.objects.all().delete()
     time.sleep(5)   # 삭제하는 시간 기다리기
 
-    for i, row in df.iterrows():        
+    for i, row in df.iterrows():
         new_st = Standard()
         new_st.index = i
         new_st.user_year = row['user_year']
@@ -248,21 +261,19 @@ def f_input_st(request):
         new_st.save()
 
     return HttpResponse('삽입완료 standard 테이블 확인')
-    
+
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
-
-
 
 
 def f_test(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
-    
-    user_major = list(NewUserInfo.objects.values_list('major').distinct())    
+
+    user_major = list(NewUserInfo.objects.values_list('major').distinct())
     all_major = list(Standard.objects.values_list('user_dep').distinct())
-    for major in user_major :
+    for major in user_major:
         if major in all_major:
             all_major.remove(major)
     print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
@@ -272,7 +283,7 @@ def f_test(request):
 
     print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학과별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
     print()
-    for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key = lambda x : x[1], reverse=True):
+    for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key=lambda x: x[1], reverse=True):
         print(row)
     print()
 
@@ -282,6 +293,4 @@ def f_test(request):
         print(row)
     print()
 
-    
     return HttpResponse('테스트 완료, 터미널 확인')
-

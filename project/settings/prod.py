@@ -14,5 +14,7 @@ STATIC_URL = '/static/'
 # cron 설정
 CRONJOBS = [
     ('0 15 * * *', 'app.crontab.insert_today'),
+    ('1 15 * * *', 'app.crontab.daily_statistics'),
+
 ]
 CRONTAB_DJANGO_SETTINGS_MODULE = 'project.settings.prod'
