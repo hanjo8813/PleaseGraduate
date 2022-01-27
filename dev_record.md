@@ -6,6 +6,9 @@
 
 ## 개발/업데이트 기록
 
+### 01/28
+- Slack 알림 기능 추가 - 일일 통계 및 CI/CD 결과 전송 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/67))
+
 ### 01/22
 - **version 2.1.5 배포**
 - AI연계·융합전공 기준 추가 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/43))
