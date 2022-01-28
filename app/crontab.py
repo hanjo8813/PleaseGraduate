@@ -14,6 +14,7 @@ def insert_today():
     new_vc.visit_count = 1
     new_vc.save()
 
+
 def daily_statistics():
     # 통계 날짜
     yesterday = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
@@ -48,7 +49,7 @@ def daily_statistics():
 			    "type": "section",
 			    "text": {
 			    	"type": "mrkdwn",
-			    	"text": "*🚀" + yesterday + "통계*"
+			    	"text": "*🚀" + yesterday + " 통계*"
 			    }
 		    },
             {
@@ -117,6 +118,3 @@ def test():
     new_tt = TestTable()
     new_tt.text = now
     new_tt.save()
-
-    
-    

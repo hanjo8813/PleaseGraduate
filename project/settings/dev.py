@@ -14,8 +14,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'dev/col_static')
 # 요청 받는 이름
 STATIC_URL = '/static/'
 
-# # cron 설정
+# cron 설정
 # CRONJOBS = [
 #     ('* * * * *', 'app.crontab.test'),
+#     ('* * * * *', 'app.crontab.daily_statistics'),
 # ]
 # CRONTAB_DJANGO_SETTINGS_MODULE = 'project.settings.dev'
