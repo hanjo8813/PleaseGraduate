@@ -47,8 +47,8 @@
             </div>
             <div class='popup_box'>
                 <ul>
-                    <li>🎉 Happy New Year</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
+                    <li>22.1.29 기준 수강편람이 변경되었으나, 본 사이트에는 적용되지 않았습니다.(추후 반영 예정)</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
                     <li><b>2022.01.22 업데이트 내용</b></li>
                     <li>AI연계·융합전공 기준을 추가하였습니다.</li>
@@ -101,7 +101,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_v215' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0130' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -116,7 +116,7 @@
                 var date = new Date();
                 // 유효기간 1일
                 date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_v215' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0130' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
