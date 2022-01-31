@@ -24,20 +24,20 @@
 - 파일 분리 리팩토링 및 환경별 settings(profile) 분리
 
 ### 12/30
-- **v2.0.3 -> v2.0.4**
 > 총 방문자 수 : `14261`  / 총 사용자 수 : `2668`   
+- **v2.0.3 -> v2.0.4**
 - 세종대학교 포털 회원인증 크롤링 오류 수정 
 
 ### 09/19
-- **v2.0.2 -> v2.0.3**
 > 총 방문자 수 : `10062`  / 총 사용자 수 : `2281`   
+- **v2.0.2 -> v2.0.3**
 - 2021-2학기 강의정보 업데이트
 - 기계항공우주공학부와 경제학과(20학번)의 회원가입 오류 수정
 - 관리자페이지 기능추가 (재외국민입학자용 회원삽입)
 
 ### 08/07
-- **v2.0.0 -> v2.0.2**
 > 총 방문자 수 : `6001`  / 총 사용자 수 : `1700`   
+- **v2.0.0 -> v2.0.2**
 - 영화예술학과 세부전공 기준 추가
 - 복수/연계 전공 전필학점 초과시 오류 수정
 
@@ -50,8 +50,8 @@
 - 주의사항 업데이트 및 UI 디자인 수정
 
 ### 08/04
-- **v2.0.0 -> v2.0.1**
 > 총 방문자 수 : `3914`  / 총 사용자 수 : `1332`   
+- **v2.0.0 -> v2.0.1**
 - 교필, 기교 검사방식 변경
 - ELP1 이수면제자용 커스텀 기능 추가
 
@@ -173,18 +173,3 @@
 - ubuntu에 git clone, 연동
 
 <br>
-
-## 설치한 라이브러리 목록
-> venv를 사용하지 않기 때문에 기록
-
-- `pip install pylint-django` (vs코드용)
-- `pip install django`
-- `pip install django-pandas`
-- `pip install django-crontab`
-- `pip install mysqlclient`
-- `pip install pandas`
-- `pip install xlrd`
-- `pip install selenium`
-- `pip install beautifulsoup4`
-- `pip install surprise`
-- `pip install openpyxl`
