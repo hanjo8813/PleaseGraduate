@@ -39,8 +39,8 @@ def f_certify(request):
 
 # ***********************************************************************************
     
-    # temp_user_info['major'] = ''
-    # year = 
+    temp_user_info['major'] = '지능기전공학부'
+    year = 18
     
 # ***********************************************************************************
 
@@ -48,7 +48,7 @@ def f_certify(request):
     # 학부로 뜨는 경우(1학년에 해당)
     if temp_user_info['major'][-2:] == '학부':
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = MajorDepartment.objects.filter(department = temp_user_info['major'])
+        md = Major.objects.filter(department = temp_user_info['major'])
         for m in md:
             major_select.append(m.major)
         # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 

@@ -17,8 +17,15 @@ from ..models import *
 
 #  -------------------------------------------- (테스트 페이지 렌더링) ---------------------------------------------------------
 
-def r_admin_test(request):
+def r_admin_home(request):
     # 로컬에서만 접근 가능하도록 하기
+    if platform.system() != 'Windows':
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+    request.session.clear()
+    return render(request, "admin/home.html")
+    
+
+def r_admin_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
     request.session.clear()
@@ -33,7 +40,7 @@ def r_admin_test(request):
         'uid': uid,
         'uid_num': len(uid),
     }
-    return render(request, "admin_test.html", context)
+    return render(request, "admin/user_test.html", context)
 
 #  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
 
@@ -99,14 +106,14 @@ def make_merge_df():
 
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
     # 1학기 엑셀 불러오기
-    file_path = './app/update_lecture/1st_semester/'
+    file_path = './dev/update_table/1st_semester/'
     file_name = os.listdir(file_path)[0]
     # 해당 엑셀을 DF화 시킴
     df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
     df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
                   axis=1, inplace=True)     # 필요한 컬럼만 추출
     # 2학기 엑셀 불러오기
-    file_path = './app/update_lecture/2nd_semester/'
+    file_path = './dev/update_table/2nd_semester/'
     file_name = os.listdir(file_path)[0]
     # 해당 엑셀을 DF화 시킴
     df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
@@ -124,7 +131,7 @@ def make_merge_df():
     return df_merge, s_num_list
 
 
-def f_test_update(request):
+def f_test_update_lecture(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
@@ -173,7 +180,7 @@ def f_test_update(request):
     return HttpResponse('업데이트 완료, MySQL test_all_lecture / test_new_lecture 테이블 확인')
 
 
-def f_update(request):
+def f_update_lecture(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
@@ -209,10 +216,10 @@ def f_update(request):
 
     return HttpResponse('업데이트 완료, MySQL all_lecture / new_lecture 테이블 확인')
 
-#  -------------------------------------------- (학과-학번 기준 엑셀 DB에 넣기) ---------------------------------------------------------
+#  -------------------------------------------- ( standard 테이블 업데이트 ) ---------------------------------------------------------
 
 
-def f_input_st(request):
+def f_update_standard(request):
     # 사용법
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경 -> 첫 행 삭제
@@ -222,7 +229,7 @@ def f_input_st(request):
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
     # 엑셀 불러오기
-    file_path = './app/update_lecture/input_standard/'
+    file_path = './dev/update_table/standard/'
     file_name = os.listdir(file_path)[0]
     df = pd.read_excel(file_path + file_name, index_col=None)
     df.fillna(0, inplace=True)
@@ -261,6 +268,36 @@ def f_input_st(request):
         new_st.save()
 
     return HttpResponse('삽입완료 standard 테이블 확인')
+
+#  -------------------------------------------- ( major 테이블 업데이트 ) ---------------------------------------------------------
+
+
+def f_update_major(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+
+    if platform.system() != 'Windows':
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+
+    # 엑셀 불러오기
+    file_path = './dev/update_table/major/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    Major.objects.all().delete()
+    time.sleep(5)   # 삭제하는 시간 기다리기
+
+    for i, row in df.iterrows():
+        new_m = Major()
+        new_m.college = row['college']
+        new_m.major = row['major']
+        new_m.department = row['department']
+        new_m.save()
+
+    return HttpResponse('삽입완료 major 테이블 확인')
 
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------

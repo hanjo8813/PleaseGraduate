@@ -186,6 +186,16 @@ class MajorDepartment(models.Model):
         db_table = 'major_department'
 
 
+class Major(models.Model):
+    college = models.CharField(max_length=45)
+    major = models.CharField(primary_key=True, max_length=45)
+    department = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'major'
+
+
 class SubjectGroup(models.Model):
     subject_num = models.CharField(primary_key=True, max_length=10)
     group_num = models.CharField(max_length=10)

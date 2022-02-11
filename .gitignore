@@ -2,12 +2,12 @@ __pycache__
 *.exe
 
 col_static
-update_lecture
+update_table
 
 secret.json
 secret_old.json
 
-admin_test.html
+admin
 
 .venv
 .env

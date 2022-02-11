@@ -58,7 +58,7 @@ def f_mod_info(request):
     # 전공이 학부로 뜨는 경우(1학년에 해당)
     if getted_major[-2:] == '학부':
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = MajorDepartment.objects.filter(department = getted_major)
+        md = Major.objects.filter(department = getted_major)
         major_select = [row.major for row in md]
         # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
         if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
@@ -172,15 +172,21 @@ def f_mod_grade(request):
     for i, row in df.iterrows():
         if row['등급'] in ['F', 'FA', 'NP']:
             df.drop(i, inplace=True)
-            
+    # 불필요 컬럼 삭제
     df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
+
     # 추가 전 user_grade DB에 이미 데이터가 있는지 확인 후 삭제
     user_id = request.session.get('id')
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     ug = UserGrade.objects.filter(student_id = user_id)
     if ug.exists() : ug.delete()
+
     # DF를 테이블에 추가
     for i, row in df.iterrows():
+
+        # 학번벌 이수구분 검사 후 변경
+
+        # 저장
         new_ug = UserGrade()
         new_ug.student_id = user_id
         new_ug.major = ui_row.major

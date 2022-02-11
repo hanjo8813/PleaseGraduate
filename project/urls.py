@@ -55,13 +55,16 @@ urlpatterns = [
     path('a_search/', views.a_search),
     
     # 테스트용
+    path('admin_home/', views.r_admin_home),
     path('admin_test/', views.r_admin_test),
+
     path('f_user_test/', views.f_user_test),
-    path('f_insert_user/', views.f_insert_user),
     path('f_test/', views.f_test),
-    path('f_update/', views.f_update),
-    path('f_test_update/', views.f_test_update),
-    path('f_input_st/', views.f_input_st),
+    path('f_insert_user/', views.f_insert_user),
+    path('f_update_lecture/', views.f_update_lecture),
+    path('f_test_update_lecture/', views.f_test_update_lecture),
+    path('f_update_standard/', views.f_update_standard),
+    path('f_update_major/', views.f_update_major),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
