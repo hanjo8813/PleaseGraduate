@@ -314,6 +314,7 @@ def f_result(user_id):
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_cs, check_cs = make_recommend_list(user_dic_cs, dic_cs)
         standard_essential_cs = to_zip_list(list_to_query(dic_cs.keys()), check_cs)
+        
         # 16 17의 소기코 대체과목은 컴기코로 바꿔줌
         if ui_row.year in [16, 17] and '9799' in recom_essential_cs:
             # 일단 추천리스트에서 소기코는 삭제하고
@@ -499,21 +500,14 @@ def f_result(user_id):
         # 복수/연계 전공 이수구분 + 기준학점 설정
         new_standard_me = 15
         new_standard_ms = 24
+        standard_multi_me = 15
+        standard_multi_ms = 24
         if ui_row.major_status == '복수전공':
             classification_me = '복필'
             classification_ms = '복선'
-            standard_multi_me = 15
-            standard_multi_ms = 24
         elif ui_row.major_status == '연계전공':
             classification_me = '연필'
             classification_ms = '연선'
-            standard_multi_me = 15
-            standard_multi_ms = 24
-        elif ui_row.major_status == 'AI연계전공':
-            classification_me = '연필'
-            classification_ms = '연선'
-            standard_multi_me = 18
-            standard_multi_ms = 21
         # 전공 기준 학점 수정
         result_context['major_essential']['standard_num'] = new_standard_me
         result_context['major_selection']['standard_num'] = new_standard_ms
