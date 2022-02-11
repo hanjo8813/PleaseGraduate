@@ -304,30 +304,12 @@ def f_update_major(request):
 
 
 def f_test(request):
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
-    user_major = list(NewUserInfo.objects.values_list('major').distinct())
-    all_major = list(Standard.objects.values_list('user_dep').distinct())
-    for major in user_major:
-        if major in all_major:
-            all_major.remove(major)
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    print(all_major)
-    print()
+    qs = Major.objects.get(major = "국어국문학과")
 
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학과별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key=lambda x: x[1], reverse=True):
-        print(row)
-    print()
+    print(qs.college)
 
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학번별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    for row in NewUserInfo.objects.values_list('year').annotate(count=Count('year')):
-        print(row)
-    print()
-
+    
     return HttpResponse('테스트 완료, 터미널 확인')

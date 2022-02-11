@@ -176,16 +176,6 @@ class VisitorCount(models.Model):
 
 # ------------------------------------- ( 매핑 테이블 ) -------------------------------------
 
-
-class MajorDepartment(models.Model):
-    major = models.CharField(primary_key=True, max_length=45)
-    department = models.CharField(max_length=45)
-
-    class Meta:
-        managed = False
-        db_table = 'major_department'
-
-
 class Major(models.Model):
     college = models.CharField(max_length=45)
     major = models.CharField(primary_key=True, max_length=45)

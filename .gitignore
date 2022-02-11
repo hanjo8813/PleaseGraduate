@@ -1,16 +1,12 @@
 __pycache__
-*.exe
-
-col_static
-update_table
-
-secret.json
-secret_old.json
-
-admin
 
 .venv
-.env
-PG.sock
 
+*.exe
+col_static
+update_table
+PG.sock
 cmd
+
+admin
+.env

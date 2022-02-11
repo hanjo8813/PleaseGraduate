@@ -16,7 +16,7 @@
     <div class="container">
         <form action="/f_register/" method="post" name='regi_form' onsubmit="return check_up()">
             {% csrf_token %}
-            <div class="regi_box">
+            <div class="regi_box" style="width:400px">
 
                 <label>이름</label>
                 <input type="text" name="name" placeholder="{{ request.session.temp_user_info.name }}" style="background-color:rgb(248,249,250);" disabled>
