@@ -56,7 +56,7 @@ def f_user_test(request):
 
     return redirect('/mypage/')
 
-#  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
+#  -------------------------------------------- (사용자 삽입) ---------------------------------------------------------
 
 
 def f_insert_user(request):
@@ -132,7 +132,6 @@ def make_merge_df():
 
 
 def f_test_update_lecture(request):
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
@@ -181,7 +180,6 @@ def f_test_update_lecture(request):
 
 
 def f_update_lecture(request):
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
@@ -224,7 +222,6 @@ def f_update_standard(request):
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경 -> 첫 행 삭제
 
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
@@ -271,7 +268,6 @@ def f_update_standard(request):
 
 #  -------------------------------------------- ( major 테이블 업데이트 ) ---------------------------------------------------------
 
-
 def f_update_major(request):
     # 사용법
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
@@ -298,6 +294,35 @@ def f_update_major(request):
         new_m.save()
 
     return HttpResponse('삽입완료 major 테이블 확인')
+
+#  -------------------------------------------- ( subject_group 테이블 업데이트 ) ---------------------------------------------------------
+
+def f_update_subject_group(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+    if platform.system() != 'Windows':
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+
+    # 엑셀 -> df
+    need_col = ['group_num', 'subject_num']
+    file_path = './dev/update_table/subject_group/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.drop([d for d in list(df) if d not in need_col], axis=1, inplace=True)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    SubjectGroup.objects.all().delete()
+    time.sleep(5)
+
+    for i, row in df.iterrows():
+        new_sg = SubjectGroup()
+        new_sg.group_num = row['group_num']
+        new_sg.subject_num = row['subject_num']
+        new_sg.save()
+
+    return HttpResponse('삽입완료 subject_group 테이블 확인')
 
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
