@@ -109,6 +109,16 @@ def convert_to_int(num):
         num = int(num)
     return num
 
+def convert_classification(classification):
+    if "→" in classification:
+        return classification.split("→")[1]
+    return classification
+
+def convert_selection(selection):
+    if selection == "융합과창업":
+        return "자기계발과진로"
+    return selection
+
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
 def f_result(user_id):
@@ -118,6 +128,8 @@ def f_result(user_id):
     user_qs = UserGrade.objects.filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
     data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    # 이수구분변경 과목 변경 결과로 수정
+    data["이수구분"] = data["이수구분"].apply(convert_classification)
     # 사용자에게 맞는 기준 row 뽑아내기
     standard_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
 
@@ -303,7 +315,7 @@ def f_result(user_id):
     ################################################
     if cs_exists :
         # 성적표에서 고선 추출
-        df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
+        df_cs = data[data['이수구분'].isin(['교선', '교선1', '중선'])]
         df_cs.reset_index(inplace=True,drop=True)
         # 기준학점 & 사용자학점합계 추출
         standard_num_cs = standard_row.core_selection
@@ -331,14 +343,16 @@ def f_result(user_id):
                 recom_essential_cs.append('10528')
 
         # 선택영역 검사
-        standard_cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
+        standard_cs_part =["사상과역사","사회와문화","자연과과학기술","세계와지구촌","예술과체육","자기계발과진로"]   # 기준 영역 6개
+        # 융합과창업 -> 자기계발과진로 변경
+        df_cs["선택영역"] = df_cs["선택영역"].apply(convert_selection)
         user_cs_part = list(set(df_cs[df_cs['선택영역'].isin(standard_cs_part)]['선택영역'].tolist()))
         # 사용자가 안들은 영역 추출
         recom_cs_part = []
         if len(user_cs_part) < 3:
             recom_cs_part = list(set(standard_cs_part) - set(user_cs_part))
         # 사용자의 부족 영역 체크
-        part_check = ['이수' for _ in range(5)]
+        part_check = ['이수' for _ in range(len(standard_cs_part))]
         for i, c in enumerate(standard_cs_part):
             if c not in user_cs_part:
                 part_check[i] = '미이수'
@@ -349,7 +363,7 @@ def f_result(user_id):
             cs_part_for_recom = standard_cs_part
         else:                   # 만족 못했으면 영역 recom 리스트 그대로
             cs_part_for_recom = recom_cs_part
-        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
+        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선', '교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)

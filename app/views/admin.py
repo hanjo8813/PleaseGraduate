@@ -10,6 +10,7 @@ from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib import messages
 # 모델 참조
 from django.db.models import Count
 from ..models import *
@@ -20,14 +21,16 @@ from ..models import *
 def r_admin_home(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
     request.session.clear()
     return render(request, "admin/home.html")
     
 
 def r_admin_test(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
@@ -47,7 +50,8 @@ def r_admin_test(request):
 
 def f_user_test(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
@@ -61,7 +65,8 @@ def f_user_test(request):
 
 def f_insert_user(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # admin 페이지 입력데이터 검증
     student_id = request.POST.get('student_id')
@@ -133,8 +138,8 @@ def make_merge_df():
 
 def f_test_update_lecture(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
-
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
     df_merge, s_num_list = make_merge_df()
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
@@ -181,7 +186,8 @@ def f_test_update_lecture(request):
 
 def f_update_lecture(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     df_merge, s_num_list = make_merge_df()
 
@@ -223,7 +229,8 @@ def f_update_standard(request):
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경 -> 첫 행 삭제
 
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # 엑셀 불러오기
     file_path = './dev/update_table/standard/'
@@ -274,7 +281,8 @@ def f_update_major(request):
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
 
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # 엑셀 불러오기
     file_path = './dev/update_table/major/'
@@ -302,7 +310,8 @@ def f_update_subject_group(request):
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # 엑셀 -> df
     need_col = ['group_num', 'subject_num']
@@ -331,7 +340,8 @@ def f_update_changed_classification(request):
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # 엑셀 -> df
     need_col = ['subject_num','year','classification']
@@ -361,7 +371,8 @@ def f_update_changed_classification(request):
 
 def f_test(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # case = ["교선1→교필", "교필→교선", "기필→교필", "교선"]
 
@@ -371,13 +382,9 @@ def f_test(request):
     #     print(c)
 
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    user_qs = UserGrade.objects.filter(student_id = "15011164")
+    user_qs = UserGrade.objects.filter(student_id = "15011187")
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
     data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
-    
-    print(data)
 
-    
 
-    
     return HttpResponse('테스트 완료, 터미널 확인')

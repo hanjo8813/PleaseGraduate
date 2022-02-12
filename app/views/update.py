@@ -190,7 +190,7 @@ def f_mod_grade(request):
         # 변경내역 있는 이수구분 조회-> 자신에게 맞지않으면 변경
         if cc_qs.exists():
             cc = cc_qs[0].classification
-            if classification[:2] == cc:
+            if classification[:2] != cc:
                 classification += "→" + cc
         # 저장
         new_ug = UserGrade()
