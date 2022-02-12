@@ -109,25 +109,44 @@ def make_merge_df():
     # 5. 엑셀파일에서 칼럼명이 살짝 이상할때가 있으므로 (한칸띄우기 등등) 검토가 필요함.
     # 6. DB 변경하는 시간이 1분정도 걸림
 
+    # *** 매우중요 ***
+    # 업데이트 전에 반드시 확인하고 업데이트해야함
+    # first와 second의 파일 경로를 우선순위에 맞게 바꿔주자
+    first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
+
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
-    # 1학기 엑셀 불러오기
-    file_path = './dev/update_table/1st_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
+    
+    file_name = os.listdir(first)[0]
+    df_1 = pd.read_excel(first + file_name, index_col=None)
+    df_1.drop([d for d in list(df_1) if d not in need_col],
                   axis=1, inplace=True)     # 필요한 컬럼만 추출
-    # 2학기 엑셀 불러오기
-    file_path = './dev/update_table/2nd_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col],
+    df_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+
+    file_name = os.listdir(second)[0]
+    df_2 = pd.read_excel(second + file_name, index_col=None)
+    df_2.drop([d for d in list(df_2) if d not in need_col],
                   axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_2.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+
+    # 동일과목 제거 -> 1번이 우선순위 더 높음. 2번을 삭제한다
+    # 동일과목에 해당하는 학수번호 리스트 추출
+    group_snum = []
+    for row in SubjectGroup.objects.all():
+        group_snum.append(int(row.subject_num))
+    # 삭제할 과목 추출
+    delete_candidate = []
+    for s_num in df_1[df_1["학수번호"].isin(group_snum)]["학수번호"].to_list():
+        g_num = SubjectGroup.objects.get(subject_num = s_num).group_num
+        sg_qs = SubjectGroup.objects.filter(group_num = g_num)
+        for row in sg_qs:
+            delete_candidate.append(int(row.subject_num))
+    # df2에서 동일과목을 삭제해준다
+    df_2 = df_2[~df_2["학수번호"].isin(delete_candidate)]
+    df_2.reset_index(inplace=True,drop=True)
 
     # 두 df를 병합, 중복제거
-    # ** 우선순위 학기의 df를 앞에다 두어야 함 **
-    df_merge = pd.concat([df_sem_1, df_sem_2])
+    df_merge = pd.concat([df_1, df_2])
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
     df_merge.fillna('', inplace=True)
@@ -327,8 +346,8 @@ def f_update_subject_group(request):
 
     for i, row in df.iterrows():
         new_sg = SubjectGroup()
-        new_sg.group_num = row['group_num']
-        new_sg.subject_num = row['subject_num']
+        new_sg.group_num = int(row['group_num'])
+        new_sg.subject_num = int(row['subject_num'])
         new_sg.save()
 
     return HttpResponse('삽입완료 subject_group 테이블 확인')
@@ -374,17 +393,40 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
-    # case = ["교선1→교필", "교필→교선", "기필→교필", "교선"]
+    need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
+    # 1학기 엑셀 불러오기
+    file_path = './dev/update_table/1st_semester/'
+    file_name = os.listdir(file_path)[0]
+    # 해당 엑셀을 DF화 시킴
+    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
+    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
+                  axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_sem_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
 
-    # for c in case:
-    #     if "→" in c:
-    #         c = c.split("→") 
-    #     print(c)
+    # 2학기 엑셀 불러오기
+    file_path = './dev/update_table/2nd_semester/'
+    file_name = os.listdir(file_path)[0]
+    # 해당 엑셀을 DF화 시킴
+    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
+    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col],
+                  axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_sem_2.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
 
-    # # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    # user_qs = UserGrade.objects.filter(student_id = "15011187")
-    # data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
-    # data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    # 동일과목 제거 -> 1번이 우선순위 더 높음. 2번을 삭제한다
+    # 동일과목에 해당하는 학수번호 리스트 추출
+    group_snum = []
+    for row in SubjectGroup.objects.all():
+        group_snum.append(int(row.subject_num))
+    # 삭제할 과목 추출
+    delete_candidate = []
+    for s_num in df_sem_1[df_sem_1["학수번호"].isin(group_snum)]["학수번호"].to_list():
+        g_num = SubjectGroup.objects.get(subject_num = s_num).group_num
+        sg_qs = SubjectGroup.objects.filter(group_num = g_num)
+        for row in sg_qs:
+            delete_candidate.append(int(row.subject_num))
+    # df2에서 동일과목을 삭제해준다
+    df_sem_2 = df_sem_2[~df_sem_2["학수번호"].isin(delete_candidate)]
+    df_sem_2.reset_index(inplace=True,drop=True)
 
 
     return HttpResponse('테스트 완료, 터미널 확인')
