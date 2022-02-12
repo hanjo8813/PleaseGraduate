@@ -183,18 +183,24 @@ def f_mod_grade(request):
 
     # DF를 테이블에 추가
     for i, row in df.iterrows():
-
-        # 학번벌 이수구분 검사 후 변경
-
+        # 학번벌 이수구분 변경 검사
+        subject_num = str(row['학수번호']).lstrip('0')
+        classification = row['이수구분']
+        cc_qs = ChangedClassification.objects.filter(year = ui_row.year, subject_num = subject_num)
+        # 변경내역 있는 이수구분 조회-> 자신에게 맞지않으면 변경
+        if cc_qs.exists():
+            cc = cc_qs[0].classification
+            if classification[:2] == cc:
+                classification += "→" + cc
         # 저장
         new_ug = UserGrade()
         new_ug.student_id = user_id
         new_ug.major = ui_row.major
         new_ug.year = row['년도']
         new_ug.semester = row['학기']
-        new_ug.subject_num = str(row['학수번호']).lstrip('0')
+        new_ug.subject_num = subject_num
         new_ug.subject_name = row['교과목명']
-        new_ug.classification = row['이수구분']
+        new_ug.classification = classification
         new_ug.selection = row['선택영역']
         new_ug.grade = row['학점']
         new_ug.save()

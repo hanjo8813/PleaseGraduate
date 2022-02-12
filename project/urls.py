@@ -66,6 +66,7 @@ urlpatterns = [
     path('f_update_standard/', views.f_update_standard),
     path('f_update_major/', views.f_update_major),
     path('f_update_subject_group/', views.f_update_subject_group),
+    path('f_update_changed_classification/', views.f_update_changed_classification),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

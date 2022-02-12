@@ -38,9 +38,11 @@ def f_certify(request):
         return redirect('/agree/')
 
 # ***********************************************************************************
-    
-    temp_user_info['major'] = '지능기전공학부'
-    year = 18
+
+    import platform
+    if platform.system() == 'Windows':
+        temp_user_info['major'] = '기계공학전공'
+        year = 16
     
 # ***********************************************************************************
 

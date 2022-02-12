@@ -122,7 +122,7 @@ def f_result(user_id):
     standard_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
 
     # 아래 로직을 거치며 채워질 데이터바인딩용 context 선언
-    result_context = {}     
+    result_context = {}
 
     ####################################################
     ################### 예외처리 여부 ###################

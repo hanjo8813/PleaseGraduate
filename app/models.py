@@ -193,3 +193,14 @@ class SubjectGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'subject_group'
+
+
+class ChangedClassification(models.Model):
+    index = models.IntegerField(primary_key=True)
+    subject_num = models.CharField(max_length=10)
+    year = models.IntegerField()
+    classification = models.CharField(max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'changed_classification'

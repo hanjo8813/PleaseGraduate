@@ -324,6 +324,37 @@ def f_update_subject_group(request):
 
     return HttpResponse('삽입완료 subject_group 테이블 확인')
 
+#  -------------------------------------------- ( changed_classification 테이블 업데이트 ) ---------------------------------------------------------
+
+def f_update_changed_classification(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+    if platform.system() != 'Windows':
+        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+
+    # 엑셀 -> df
+    need_col = ['subject_num','year','classification']
+    file_path = './dev/update_table/changed_classification/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.drop([d for d in list(df) if d not in need_col], axis=1, inplace=True)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    ChangedClassification.objects.all().delete()
+    time.sleep(5)
+
+    for i, row in df.iterrows():
+        new_cc = ChangedClassification()
+        new_cc.index = i
+        new_cc.subject_num = row['subject_num']
+        new_cc.year = int(row['year'])
+        new_cc.classification = row['classification']
+        new_cc.save()
+
+    return HttpResponse('삽입완료 changed_classification 테이블 확인')
+
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
@@ -332,9 +363,21 @@ def f_test(request):
     if platform.system() != 'Windows':
         return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
 
-    qs = Major.objects.get(major = "국어국문학과")
+    # case = ["교선1→교필", "교필→교선", "기필→교필", "교선"]
 
-    print(qs.college)
+    # for c in case:
+    #     if "→" in c:
+    #         c = c.split("→") 
+    #     print(c)
+
+    # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
+    user_qs = UserGrade.objects.filter(student_id = "15011164")
+    data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
+    data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    
+    print(data)
+
+    
 
     
     return HttpResponse('테스트 완료, 터미널 확인')
