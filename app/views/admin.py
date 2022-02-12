@@ -127,7 +127,7 @@ def make_merge_df():
 
     # 두 df를 병합, 중복제거
     # ** 우선순위 학기의 df를 앞에다 두어야 함 **
-    df_merge = pd.concat([df_sem_2, df_sem_1])
+    df_merge = pd.concat([df_sem_1, df_sem_2])
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
     df_merge.fillna('', inplace=True)
@@ -381,10 +381,10 @@ def f_test(request):
     #         c = c.split("→") 
     #     print(c)
 
-    # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    user_qs = UserGrade.objects.filter(student_id = "15011187")
-    data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
-    data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    # # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
+    # user_qs = UserGrade.objects.filter(student_id = "15011187")
+    # data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
+    # data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
 
 
     return HttpResponse('테스트 완료, 터미널 확인')

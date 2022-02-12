@@ -345,7 +345,7 @@ input[type="button"]
     flex-direction: column;
     justify-content: center;
     width: 10rem;
-    height: 12rem;
+    height: 10rem;
     margin: 0.5rem 1rem 1rem 1rem;
     padding: 1rem;
     border: 1px solid rgb(216, 216, 216);
@@ -355,6 +355,13 @@ input[type="button"]
 .filter_select_title {
     font-size: 1.3rem;
     font-weight: bold;
+}
+
+.filter_select_chk_wrap{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
 }
 
 .filter_select_chk {
