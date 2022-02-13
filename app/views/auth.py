@@ -62,8 +62,14 @@ def f_mypage(user_id):
     ui_row = NewUserInfo.objects.get(student_id=user_id)
     ug = UserGrade.objects.filter(student_id=user_id)
     # 성적표 띄울땐 커스텀과 찐 성적 구분한다
-    grade = ug.exclude(year='커스텀')
-    custom_grade = ug.filter(year='커스텀')
+    grade = list(ug.exclude(year='커스텀').values())
+    custom_grade = list(ug.filter(year='커스텀').values())
+    # 성적표 리스트에서 이수구분 변경됐을 경우 표시해줌
+    for i, g in enumerate(grade):
+        is_changed_classification = 0
+        if "→" in g["classification"]:
+            is_changed_classification = 1
+        grade[i]["is_changed_classification"] = is_changed_classification
     # 공학인증 없는학과 
     user_en = Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng
     # 공학인증 해당학과 아니라면
@@ -86,8 +92,8 @@ def f_mypage(user_id):
         'major_status' : ui_row.major_status,
         'name' : ui_row.name,
         'eng' : ui_row.eng,
-        'grade' : list(grade.values()),
-        'custom_grade' : list(custom_grade.values()),
+        'grade' : grade,
+        'custom_grade' : custom_grade,
         'is_grade' : is_grade,
         'is_engine' : is_engine,
     }

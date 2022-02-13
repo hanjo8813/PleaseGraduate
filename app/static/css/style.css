@@ -1208,13 +1208,8 @@ body:not(.device-touch) .suc_btn
 
 .name {
     background-color: none;
-    /* margin-bottom: 0; */
-    /* margin-top: 30px; */
     position: relative;
     padding: 15px 0 15px 0;
-
-    /* top: -20px; */
-
     font-size: 22px;
     font-weight: 600;
     text-align: center;
@@ -1238,7 +1233,6 @@ body:not(.device-touch) .suc_btn
 .chart_box{
     margin-left : 20px;
     margin-right : 25px;
-    /* padding: 0 40px 0 40px; */
 }
 
 
@@ -1277,7 +1271,7 @@ body:not(.device-touch) .suc_btn
     margin:10px 0 0 0;
 }
 
-.tooltip:hover,
+
 .rbutton:hover {
     background-color: white;
     color: #272727;
@@ -1285,11 +1279,10 @@ body:not(.device-touch) .suc_btn
 
 
 .Sbox {
-    /* margin: 0; */
-
     width: 350px;
     height: 280px;
 }
+
 .gbox {
     display: flex;
     font-size: 18px;
@@ -1299,8 +1292,6 @@ body:not(.device-touch) .suc_btn
     letter-spacing: 2px;
     justify-content: space-around;
     flex-direction: row;
-
-    /* margin: 8px 8px 5px 8px; */
 }
 
 .total_gbox{
@@ -1608,6 +1599,12 @@ strong {
     cursor: pointer;
 }
 
+.tooltip_info {
+    cursor: pointer;
+    color:#d32f2f; 
+    text-decoration : underline
+}
+
 .tooltip_text {
     text-align: left;
     background-color: white;
@@ -1629,6 +1626,37 @@ strong {
     white-space: nowrap;
 }
 
+.tooltip_text2 {
+    text-align: left;
+    background-color: white;
+    /* bottom: -250px; */
+    margin-top:-205px;
+    margin-left:-205px;
+    /* left : 750px; */
+    width: auto;
+    height: auto;
+    box-shadow: 1px 1px 2px black;
+    padding: 10px 35px 10px 35px;
+    color: black;
+    border-color: lightgrey;
+    border-style: solid;
+    border-width: 0.5px;
+    display: none;
+    letter-spacing: 0.7px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.my_tooltip_text.active,
+.tooltip_text.active,
+.tooltip_text2.active {
+    display: block;
+}
+
+
 .tooltip_span{
     color : #d32f2f;
 }
@@ -1646,10 +1674,6 @@ strong {
     right: 4%;
 }
 
-.my_tooltip_text.active,
-.tooltip_text.active {
-    display: block;
-}
 
 .my_tooltip_text{
     background-color: white;

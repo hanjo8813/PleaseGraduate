@@ -135,7 +135,23 @@
                         <td class="grade_table_td">{{ g.semester }}</td>
                         <td class="grade_table_td">{{ g.subject_num }}</td>
                         <td class="grade_table_td">{{ g.subject_name }}</td>
-                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td" >
+                            {% if g.is_changed_classification %}
+                                <span class="tooltip tooltip_info">{{ g.classification }}</span>
+                                <div class="tooltip_text2">
+                                    <p>&#183; 해당 과목의 이수구분이 자신의 학년에 맞도록 자동으로 변경되었습니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 특정 과목은 학년마다 인정되는 이수구분이 다릅니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 
+                                        <a class="link_site" target="_blank"
+                                        href="http://board.sejong.ac.kr/boardview.do?bbsConfigFK=335&pkid=146645&siteGubun=19">
+                                        수강편람</a> -> 22p -> "교과목 수강안내"를 참고해주세요. 
+                                    </p>
+                                    <p>&#183; 졸업요건 검사시 <span class='tooltip_span'>변경된 이수구분</span>으로 검사합니다.</p>
+                                </div>
+                            {% else %}
+                                {{ g.classification }}
+                            {% endif %}
+                        </td>
                         <td class="grade_table_td">{{ g.selection }}</td>
                         <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
                     </tr>
@@ -657,18 +673,20 @@
         }
     }
 
-    // 툴팁
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.my_tooltip_text');
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y
-                .classList
-                .toggle('active');
-        });
-    }
-    for (i = 0; i < 8; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
+    // 툴팁 함수
+    let tooltip_btn = document.querySelectorAll('.tooltip');
+    let tooltip_box = document.querySelectorAll('.tooltip_text2');
+    window.onload = function(){
+
+        for (i = 0; i < tooltip_btn.length; i++) {
+            Tooltipeb(tooltip_btn[i], tooltip_box[i]);
+        }
+
+        function Tooltipeb(btn, box) {
+            btn.addEventListener('click', () => {
+                box.classList.toggle('active');
+            });
+        }
     }
 
 </script>

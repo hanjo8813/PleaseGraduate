@@ -39,10 +39,10 @@ def f_certify(request):
 
 # ***********************************************************************************
 
-    import platform
-    if platform.system() == 'Windows':
-        temp_user_info['major'] = '데이터사이언스학과'
-        year = 18
+    # import platform
+    # if platform.system() == 'Windows':
+    #     temp_user_info['major'] = '데이터사이언스학과'
+    #     year = 18
     
 # ***********************************************************************************
 
