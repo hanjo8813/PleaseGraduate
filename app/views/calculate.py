@@ -394,12 +394,6 @@ def f_result(user_id):
     ################### 기교 영역 ###################
     ################################################
     if b_exists :
-        # # 성적표에서 기교 추출
-        # df_b = data[data['이수구분'].isin(['기교'])]
-        # df_b.reset_index(inplace=True,drop=True)
-        # # 기준학점 & 사용자학점합계 추출
-        # standard_num_b = standard_row.basic
-        # user_num_b = df_b['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_b = make_dic([s_num for s_num in standard_row.b_list.split('/')])
         user_dic_b = make_dic(data['학수번호'].tolist())     # * 수정 : 기교 영역만 비교하지 않고 전체를 대상으로 비교
@@ -407,8 +401,8 @@ def f_result(user_id):
         recom_essential_b, check_b = make_recommend_list(user_dic_b, dic_b)
         standard_essential_b = to_zip_list(list_to_query(dic_b.keys()), check_b)
         # 필수과목, 이수과목 개수 저장
-        standard_num_b = len(dic_ce)
-        user_num_b = sum(check_ce)
+        standard_num_b = len(dic_b)
+        user_num_b = sum(check_b)
         # 패스여부 검사
         pass_b = 0
         if standard_num_b == user_num_b :
@@ -462,8 +456,10 @@ def f_result(user_id):
                     context_basic['recom_chemy_B'] =list_to_query(recom_chemy_B)
                 context_basic['standard_chemy_B'] = standard_chemy_B
                 context_basic['pass_chemy_B'] = pass_chemy_B
+
             context_basic['chemy_B_exists'] = chemy_B_exists
             context_basic['pass_chemy_all'] = pass_chemy_all
+
         result_context['basic'] = context_basic
 
 

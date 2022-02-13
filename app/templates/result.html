@@ -170,9 +170,9 @@
                         <span class="r" id="grade2"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade" style="letter-spacing: -0.2px;">이수 학점</span>
+                        <span class="grade" >이수 학점</span>
                         <span class="r" id="mygrade2"></span>
-                        <span class="tooltip" id="myremain" style="color:#d32f2f; margin-left:-0.5rem"></span>
+                        <span class="tooltip" id="myremain" style="color:#d32f2f; margin-left:-0.5rem; text-decoration : underline"></span>
                         <div class="tooltip_text">
                             전필 영역에서 기준 학점 초과시 전선 학점으로 인정됩니다.
                         </div>
@@ -1191,6 +1191,8 @@
     
     // 모달 밖 클릭시 꺼짐 함수
     window.onclick = function (event) {
+        console.log("dddddd")
+
         if (event.target == modal1) {
             modal1.style.display = "none";
         }
@@ -1303,8 +1305,8 @@
         }
     }
     
-    document.getElementById("grade5").innerHTML = Grade5;
-    document.getElementById("mygrade5").innerHTML = Mygrade5;
+    document.getElementById("grade5").innerHTML = Grade5 + "개";
+    document.getElementById("mygrade5").innerHTML = Mygrade5 + "개";
     var modal5 = document.getElementById('myModal5');
     var btn5 = document.getElementById("myBtn5");
     var span5 = document.getElementById("close5");
@@ -1367,22 +1369,63 @@
 
 <script>
     // 토글함수
-    const toggleb = document.querySelector('.navbar_toggle');
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.tooltip_text');
+    // const toggleb = document.querySelector('.navbar_toggle');
+    
 
-    toggleb.addEventListener('click', () => {
-        menu.classList.toggle('active');
-    });
+    // toggleb.addEventListener('click', () => {
+    //     menu.classList.toggle('active');
+    // });
 
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y.classList.toggle('active');
+    let tooltip_btn = document.querySelectorAll('.tooltip');
+    let tooltip_box = document.querySelectorAll('.tooltip_text');
+
+    for (i = 0; i < 10; i++) {
+        Tooltipeb(tooltip_btn[i], tooltip_box[i]);
+    }
+
+    function Tooltipeb(btn, box) {
+        btn.addEventListener('click', () => {
+            box.classList.toggle('active');
         });
     }
 
-    for (i = 0; i < 10; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
+
+    // 토글 끄기 (마우스 이벤트)
+    window.onclick = function (event) {
+
+        console.log("dddddd")
+        console.log(event.target)
+
+        text.forEach((t) => {
+            t.style.display = "none";
+        });
+
+        // if (event.target == modal1) {
+        //     modal1.style.display = "none";
+        // }
+        // if (event.target == modal2) {
+        //     modal2.style.display = "none";
+        // }
+        // if (typeof modal3 !== 'undefined') {
+        //     if (event.target == modal3) {
+        //         modal3.style.display = "none";
+        //     }
+        // }
+        // if (typeof modal4 !== 'undefined') {
+        //     if (event.target == modal4) {
+        //         modal4.style.display = "none";
+        //     }
+        // }
+        // if (typeof modal5 !== 'undefined') {
+        //     if (event.target == modal5) {
+        //         modal5.style.display = "none";
+        //     }
+        // }
+        // if (typeof modal8 !== 'undefined') {
+        //     if (event.target == modal8) {
+        //         modal8.style.display = "none";
+        //     }
+        // }
     }
 </script>
 
