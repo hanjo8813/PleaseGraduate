@@ -283,21 +283,18 @@ def f_result(user_id):
     ################### 교필 영역 ###################
     ################################################
     if ce_exists :
-        # 성적표에서 교필 추출
-        df_ce = data[data['이수구분'].isin(['교필', '중필'])]
-        df_ce.reset_index(inplace=True,drop=True)
-        # 기준학점 & 사용자학점합계 추출
-        standard_num_ce = standard_row.core_essential
-        user_num_ce = df_ce['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_ce = make_dic([s_num for s_num in standard_row.ce_list.split('/')])
         user_dic_ce = make_dic(data['학수번호'].tolist())  # * 수정 : 교필, 중필 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_ce, check_ce = make_recommend_list(user_dic_ce, dic_ce)
         standard_essential_ce = to_zip_list(list_to_query(dic_ce.keys()), check_ce)
+        # 필수과목, 이수과목 개수 저장
+        standard_num_ce = len(dic_ce)
+        user_num_ce = sum(check_ce)
         # 패스여부 검사
         pass_ce = 0
-        if not recom_essential_ce :
+        if standard_num_ce == user_num_ce :
             pass_ce = 1
         # context 생성
         context_core_essential = {
@@ -397,21 +394,24 @@ def f_result(user_id):
     ################### 기교 영역 ###################
     ################################################
     if b_exists :
-        # 성적표에서 기교 추출
-        df_b = data[data['이수구분'].isin(['기교'])]
-        df_b.reset_index(inplace=True,drop=True)
-        # 기준학점 & 사용자학점합계 추출
-        standard_num_b = standard_row.basic
-        user_num_b = df_b['학점'].sum()
+        # # 성적표에서 기교 추출
+        # df_b = data[data['이수구분'].isin(['기교'])]
+        # df_b.reset_index(inplace=True,drop=True)
+        # # 기준학점 & 사용자학점합계 추출
+        # standard_num_b = standard_row.basic
+        # user_num_b = df_b['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_b = make_dic([s_num for s_num in standard_row.b_list.split('/')])
         user_dic_b = make_dic(data['학수번호'].tolist())     # * 수정 : 기교 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_b, check_b = make_recommend_list(user_dic_b, dic_b)
         standard_essential_b = to_zip_list(list_to_query(dic_b.keys()), check_b)
+        # 필수과목, 이수과목 개수 저장
+        standard_num_b = len(dic_ce)
+        user_num_b = sum(check_ce)
         # 패스여부 검사
         pass_b = 0
-        if not recom_essential_b :
+        if standard_num_b == user_num_b :
             pass_b = 1
         # context 생성
         context_basic = {

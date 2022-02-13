@@ -9,25 +9,25 @@
                 Total
             </div>
             <div class="box">
-                <div id="chart0">
+                <div class="chart_box" id="chart0">
                     <strong class="total_strong"></strong>
                 </div>
                 <div class="Sbox">
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">학번</span>
                         <span class="t" id="studentnumber"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">이름</span>
                         <span class="t" id="name"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">총 기준 학점
                         </span>
                         <span class="t" id="totalgrade"></span>
                     </div>
                     <div>
-                        <div class="gbox">
+                        <div class="gbox total_gbox">
                             <span class="grade Grade">총 이수 학점
                             </span>
 
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="gbox Gbox">
+                        <div class="gbox Gbox total_gbox">
                             <span class="cap"><i class="fas fa-graduation-cap"></i></span>
 
                             <div class="T" id="cangraduate"> </div>
@@ -111,9 +111,9 @@
         {% endif %}
 
         <!-- 전필 -->
-        <div class="resultbox container1">
+        <div class="resultbox">
             <!-- 타이틀 -->
-            <div class="name name1">
+            <div class="name">
                 전공 필수
                 <span class="tooltip t1">
                     <span class='tip_div'>Tip</span>
@@ -148,8 +148,8 @@
         </div>
 
         <!-- 전선 -->
-        <div class="resultbox container2">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 전공 선택
                 <span class="tooltip t2">
                     <span class='tip_div'>Tip</span>
@@ -184,8 +184,8 @@
 
         <!-- 교필/중필 -->
         {% if exists.ce %}
-        <div class="resultbox container3">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 교양(중핵) 필수
                 <span class="tooltip t3">
                     <span class='tip_div'>Tip</span>
@@ -205,16 +205,12 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade">기준 학점</span>
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="grade3"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade">이수 과목</span>
                         <span class="r" id="mygrade3"></span>
-                    </div>
-                    <div class="gbox">
-                        <span class="grade">필수 과목</span>
-                        <span class="r" id="ce_p"></span>
                     </div>
                     <button class="rbutton" id="myBtn3">Recommend</button>
                 </div>
@@ -224,8 +220,8 @@
 
         <!-- 교선/중선 -->
         {% if exists.cs %}
-        <div class="resultbox container4">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 교양(중핵) 선택
                 <span class="tooltip">
                     <span class='tip_div'>Tip</span>
@@ -246,19 +242,19 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade l">기준 학점</span>
-                        <span class="r l" id="grade4"></span>
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade4"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade l">이수 학점</span>
-                        <span class="r l" id="mygrade4"></span>
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="mygrade4"></span>
                     </div>
-                    <div class="gbox l">
-                        <span class="grade l">필수 과목</span>
+                    <div class="gbox">
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="cs_p"></span>
                     </div>
-                    <div class="gbox l">
-                        <span class="grade l">이수 영역</span>
+                    <div class="gbox">
+                        <span class="grade">이수 영역</span>
                         <span class="r" id="myarea1"></span>
                     </div>
                     <button class="rbutton" id="myBtn4">Recommend</button>
@@ -269,8 +265,8 @@
 
         <!-- 기교 -->
         {% if exists.b %}
-        <div class="resultbox container5">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 학문 기초 교양
                 <span class="tooltip t5">
                     <span class='tip_div'>Tip</span>
@@ -290,17 +286,33 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade">기준 학점</span>
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="grade5"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade">이수 과목</span>
                         <span class="r" id="mygrade5"></span>
                     </div>
-                    <div class="gbox">
-                        <span class="grade">필수 과목</span>
-                        <span class="r" id="b_p"></span>
-                    </div>
+                    {% if user_info.major == '화학과' %}
+                        <div class="gbox">
+                            <span class="grade">선택과목A</span>
+                            {% if basic.pass_chemy_A %}
+                            <span>Pass</span>
+                            {% else %}
+                            <span>NP</span>
+                            {% endif %}
+                        </div>
+                        {% if basic.chemy_B_exists %}
+                        <div class="gbox">
+                            <span class="grade">선택과목B</span>
+                            {% if basic.pass_chemy_B %}
+                            <span>Pass</span>
+                            {% else %}
+                            <span>NP</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endif %}
                     <button class="rbutton" id="myBtn5">Recommend</button>
                 </div>
             </div>
@@ -309,7 +321,7 @@
 
         <!-- 영어 -->
         {% if exists.english %}
-        <div class="resultbox container8">
+        <div class="resultbox">
             <div class="name name8">
                 영어졸업인증
                 <span class="tooltip t8">
@@ -343,8 +355,8 @@
         {% endif %}
 
         <!-- 고전독서 -->
-        <div class="resultbox container7">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 고전독서인증
                 <span class="tooltip t7">
                     <span class='tip_div'>Tip</span>
@@ -1216,21 +1228,9 @@
     var Grade3 = '{{core_essential.standard_num}}';
     var Mygrade3 = '{{core_essential.user_num}}';
     var pernum3 = to_percent(Mygrade3, Grade3);
-    // 필수과목 패스여부
-    var Ce_p;
-    if ('{{core_essential.pass}}' == 1) {
-        Ce_p = "Pass";
-        pernum3 = 100;
-    }
-    else {
-        Ce_p = "NP";
-        if (pernum3 == 100) {
-            pernum3 -= 1;
-        }
-    }
-    document.getElementById("grade3").innerHTML = Grade3;
-    document.getElementById("mygrade3").innerHTML = Mygrade3;
-    document.getElementById("ce_p").innerHTML = Ce_p;
+
+    document.getElementById("grade3").innerHTML = Grade3 + "개";
+    document.getElementById("mygrade3").innerHTML = Mygrade3 + "개";
     var modal3 = document.getElementById('myModal3');
     var btn3 = document.getElementById("myBtn3");
     var span3 = document.getElementById("close3");
@@ -1289,27 +1289,22 @@
     var Grade5 = '{{basic.standard_num}}';
     var Mygrade5 = '{{basic.user_num}}';
     var pernum5 = to_percent(Mygrade5, Grade5);
-    // 필수과목 패스여부
-    var B_p;
-    // 화학과 기교 걸러내기
-    var temp_p = '{{basic.pass}}';
-    if ('{{user_info.major}}' == '화학과') {
-        temp_p = '{{basic.pass_chemy_all}}'
-    }
 
-    if (temp_p == 1) {
-        B_p = "Pass";
-        pernum5 = 100;
-    }
-    else {
-        B_p = "NP";
-        if (pernum5 == 100) {
-            pernum5 -= 1;
+    // 화학과 기교 걸러내기
+    if ('{{user_info.major}}' == '화학과') {
+        b_p = '{{basic.pass_chemy_all}}'
+        if (b_p == 1) {
+            pernum5 = 100;
+        }
+        else {
+            if (pernum5 == 100) {
+                pernum5 -= 1;
+            }
         }
     }
+    
     document.getElementById("grade5").innerHTML = Grade5;
     document.getElementById("mygrade5").innerHTML = Mygrade5;
-    document.getElementById("b_p").innerHTML = B_p;
     var modal5 = document.getElementById('myModal5');
     var btn5 = document.getElementById("myBtn5");
     var span5 = document.getElementById("close5");

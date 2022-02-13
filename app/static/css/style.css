@@ -1192,9 +1192,11 @@ body:not(.device-touch) .suc_btn
 
 .resultbox {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
     text-align: center;
     width: 405px;
     height: 285px;
@@ -1214,11 +1216,12 @@ body:not(.device-touch) .suc_btn
 
 .name {
     background-color: none;
-    margin-bottom: 0;
-    margin-top: 30px;
+    /* margin-bottom: 0; */
+    /* margin-top: 30px; */
     position: relative;
+    padding: 15px 0 15px 0;
 
-    top: -20px;
+    /* top: -20px; */
 
     font-size: 22px;
     font-weight: 600;
@@ -1226,29 +1229,37 @@ body:not(.device-touch) .suc_btn
 
     border-width: 10px;
 }
+
 .box {
     display: flex;
     flex-direction: row;
-    width: 100%;
     background-color: none;
     justify-content: space-evenly;
     align-content: center;
-    border-radius: 30px;
     align-items: center;
     position: relative;
+
+    width: 100%;
+    border-radius: 30px;
 }
+
+.chart_box{
+    margin-left : 20px;
+    margin-right : 25px;
+    /* padding: 0 40px 0 40px; */
+}
+
+
 .sbox {
-    margin: 0;
+    margin: 0 -25px 0 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: nowrap;
-    font-size: 18px;
+    font-size: 17px;
     border-radius: 15px;
-    margin-right: 0;
-    margin-left: 0;
     border-style: solid;
     border-width: 0;
     position: relative;
@@ -1256,6 +1267,7 @@ body:not(.device-touch) .suc_btn
     width: 180px;
     height: 220px;
 }
+
 .rbutton {
     width: 150px;
     position: relative;
@@ -1266,8 +1278,8 @@ body:not(.device-touch) .suc_btn
     border-style: solid;
     border-width: 2.5px;
     border-radius: 18px;
-    margin-bottom: 18px;
-    margin-top: 17px;
+    /* margin-bottom: 18px;
+    margin-top: 17px; */
     font-size: 17px;
     font-weight: 700;
     height: 40px;
@@ -1282,7 +1294,7 @@ body:not(.device-touch) .suc_btn
 
 
 .Sbox {
-    margin: 0;
+    /* margin: 0; */
 
     width: 350px;
     height: 280px;
@@ -1291,14 +1303,19 @@ body:not(.device-touch) .suc_btn
     display: flex;
     font-size: 20px;
     font-weight: 600;
-    margin: 8px;
     position: relative;
     top: 0;
     letter-spacing: 2px;
-    margin-bottom: 5px;
     justify-content: space-around;
     flex-direction: row;
+
+    /* margin: 8px 8px 5px 8px; */
 }
+
+.total_gbox{
+    margin: 8px 8px 5px 8px;
+}
+
 .q {
     position: relative;
     top: -10px;
@@ -1346,6 +1363,10 @@ strong {
 .r {
     width: 50px;
 }
+.l{
+    font-size:17px;
+}
+
 .grade {
     color: #424242;
     font-weight: 500;
@@ -1416,10 +1437,6 @@ strong {
     left: -55px;
     margin: 0;
     font-size: 35px;
-}
-
-.l{
-    font-size:17px;
 }
 
 .p_div {

@@ -43,26 +43,7 @@
                         <form method="post" id='filter_form' name='filter_form'>
                             <!-- 내부 박스 -->
                             <div class='filter_select_wrap'>
-                                <!-- 이수구분 박스 -->
-                                <!-- <div class='filter_select_div'>
-                                    <div class='filter_select_title'>이수구분</div>
-                                    <div class='filter_select_box'>
-                                        <div class='filter_select_chk'>
-                                            <label>
-                                                <input type="radio" id='cs_1' name="classification" value="교선1" onclick='show_box()' checked>
-                                                <label for='cs_1'></label>
-                                                교양선택(1영역)
-                                            </label>
-                                            <br>
-                                            <label>
-                                                <input type="radio" id='cs_2' name="classification" value="교선2" onclick='hide_box()'>
-                                                <label for='cs_2'></label>
-                                                교양선택(2영역)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> -->
-
+                                
                                 <!-- 학점 박스 -->
                                 <div class='filter_select_div'>
                                     <div class='filter_select_title'>학점</div>
@@ -117,7 +98,7 @@
                                                 <label>
                                                     <input type="checkbox" name="selection[]" value="자기계발과진로" checked>
                                                     <label></label>
-                                                    &nbsp;자기계발과진로<br><span style="margin-left: 1.5rem; font-size: 1rem;">(융합과창업)</span>
+                                                    &nbsp;자기계발과진로<div style="margin: -0.5rem 0 0 1.6rem; font-size: 0.9rem;">(융합과창업)</div>
                                                 </label>                      
                                             </div>
 
@@ -148,12 +129,8 @@
                                                 
                                             </div>
 
-
                                         </div>
                                         
-
-                                        
-
                                     </div>
                                 </div>
                             </div>
@@ -178,14 +155,11 @@
         </div>
     </div>
 </div>
-
-
 {% endblock %}
 
 
 
 {% block js_section %}
-
 <script>
 
     ajax_get_data();
@@ -244,10 +218,5 @@
         );
     }
 
-
-
 </script>
-
-
-
 {% endblock %}
