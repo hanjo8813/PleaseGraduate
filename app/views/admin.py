@@ -14,7 +14,7 @@ from django.contrib import messages
 # 모델 참조
 from django.db.models import Count
 from ..models import *
-
+from .auth import *
 
 #  -------------------------------------------- (테스트 페이지 렌더링) ---------------------------------------------------------
 
@@ -56,7 +56,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
 
-    #update_json(user_id)
+    update_json(user_id)
 
     return redirect('/mypage/')
 
@@ -393,40 +393,31 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
-    need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
-    # 1학기 엑셀 불러오기
-    file_path = './dev/update_table/1st_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
-                  axis=1, inplace=True)     # 필요한 컬럼만 추출
-    df_sem_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
 
-    # 2학기 엑셀 불러오기
-    file_path = './dev/update_table/2nd_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col],
-                  axis=1, inplace=True)     # 필요한 컬럼만 추출
-    df_sem_2.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+    # 세사봉
+    ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
+    for row in ug_qs1:
+        year = int(row.student_id[:2])
+        real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
+        user_classification = row.classification[:2]
+        if user_classification != real_classification:
+            row.classification = user_classification + "→" + real_classification
+            print(row.classification)
+        row.save()
 
-    # 동일과목 제거 -> 1번이 우선순위 더 높음. 2번을 삭제한다
-    # 동일과목에 해당하는 학수번호 리스트 추출
-    group_snum = []
-    for row in SubjectGroup.objects.all():
-        group_snum.append(int(row.subject_num))
-    # 삭제할 과목 추출
-    delete_candidate = []
-    for s_num in df_sem_1[df_sem_1["학수번호"].isin(group_snum)]["학수번호"].to_list():
-        g_num = SubjectGroup.objects.get(subject_num = s_num).group_num
-        sg_qs = SubjectGroup.objects.filter(group_num = g_num)
-        for row in sg_qs:
-            delete_candidate.append(int(row.subject_num))
-    # df2에서 동일과목을 삭제해준다
-    df_sem_2 = df_sem_2[~df_sem_2["학수번호"].isin(delete_candidate)]
-    df_sem_2.reset_index(inplace=True,drop=True)
+    # 창기
+    ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
+    for row in ug_qs2:
+        year = int(row.student_id[:2])
+        real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
+        user_classification = row.classification[:2]
+        if user_classification != real_classification:
+            row.classification = user_classification + "→" + real_classification
+            print(row.classification)
+        row.save()
 
+    # for row in TestTable.objects.all():
+    #     row.text = "hi"
+    #     row.save()
 
     return HttpResponse('테스트 완료, 터미널 확인')
