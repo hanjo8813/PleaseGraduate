@@ -135,7 +135,23 @@
                         <td class="grade_table_td">{{ g.semester }}</td>
                         <td class="grade_table_td">{{ g.subject_num }}</td>
                         <td class="grade_table_td">{{ g.subject_name }}</td>
-                        <td class="grade_table_td">{{ g.classification }}</td>
+                        <td class="grade_table_td" >
+                            {% if g.is_changed_classification %}
+                                <span class="tooltip tooltip_info">{{ g.classification }}</span>
+                                <div class="tooltip_text2">
+                                    <p>&#183; 해당 과목의 이수구분이 자신의 학년에 맞도록 자동으로 변경되었습니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 특정 과목은 학년마다 인정되는 이수구분이 다릅니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 
+                                        <a class="link_site" target="_blank"
+                                        href="http://board.sejong.ac.kr/boardview.do?bbsConfigFK=335&pkid=146645&siteGubun=19">
+                                        수강편람</a> -> 22p -> "교과목 수강안내"를 참고해주세요. 
+                                    </p>
+                                    <p>&#183; 졸업요건 검사시 <span class='tooltip_span'>변경된 이수구분</span>으로 검사합니다.</p>
+                                </div>
+                            {% else %}
+                                {{ g.classification }}
+                            {% endif %}
+                        </td>
                         <td class="grade_table_td">{{ g.selection }}</td>
                         <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
                     </tr>
@@ -171,8 +187,23 @@
                         <td class="grade_table_td">{{ g.semester }}</td>
                         <td class="grade_table_td">{{ g.subject_num }}</td>
                         <td class="grade_table_td">{{ g.subject_name }}</td>
-                        <td class="grade_table_td">{{ g.classification }}</td>
-                        <td class="grade_table_td">{{ g.selection }}</td>
+                        <td class="grade_table_td" >
+                            {% if g.is_changed_classification %}
+                                <span class="tooltip tooltip_info">{{ g.classification }}</span>
+                                <div class="tooltip_text2">
+                                    <p>&#183; 해당 과목의 이수구분이 자신의 학년에 맞도록 자동으로 변경되었습니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 특정 과목은 학년마다 인정되는 이수구분이 다릅니다.</p>
+                                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 
+                                        <a class="link_site" target="_blank"
+                                        href="http://board.sejong.ac.kr/boardview.do?bbsConfigFK=335&pkid=146645&siteGubun=19">
+                                        수강편람</a> -> 22p -> "교과목 수강안내"를 참고해주세요. 
+                                    </p>
+                                    <p>&#183; 졸업요건 검사시 <span class='tooltip_span'>변경된 이수구분</span>으로 검사합니다.</p>
+                                </div>
+                            {% else %}
+                                {{ g.classification }}
+                            {% endif %}
+                        </td>                        <td class="grade_table_td">{{ g.selection }}</td>
                         <td class="grade_table_td" style="border-right :0px">{{ g.grade | floatformat }}</td>
                     </tr>
                     {% endfor %}
@@ -429,6 +460,33 @@
         </div>
     </div>
 </div>
+
+<!-- 수강편람 개편 주의사항 모달-->
+<div id='caution_modal' class="modal" style="display: none;">
+    <div class="update_modal_content" style="width:40%">
+        <div style="color:rgb(164, 26, 55); font-size:7rem; margin:1rem 0 1rem 0">
+            <i class="fa fa-exclamation"></i>
+        </div>
+        <p style="font-size:1.5rem; font-weight: bold;">22년도 수강편람 내용이 많이 변경되었습니다.</p>
+        <p style="font-size:1.5rem; font-weight: bold;">반드시 수강편람을 확인하고 졸업요건 2차 검증을 해주세요!</p>
+        <p style="font-size:1.1rem; font-weight: lighter;">(검사결과가 잘못되었다면 피드백 부탁드립니다 😇)</p>
+        <button onclick="close_caution()" class='login_btn' style="padding: 0.5rem 0.9rem 0.5rem 0.9rem; width:auto; margin:2rem 0 2rem 0;">확인했어요</button>
+    </div>
+</div>
+<script>
+    var caution_cookie = document.cookie.match('(^|;) ?' + 'is_caution_0214' + '=([^;]*)(;|$)');
+    if (caution_cookie == null) {
+        document.getElementById('caution_modal').style.display = 'block';
+    }
+
+    function close_caution(){
+        document.getElementById('caution_modal').style.display = "none";
+        var date = new Date();
+        date.setTime(date.getTime() + 5 * 24 * 60 * 60 * 1000);
+        document.cookie = 'is_caution_0214' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+    }
+</script>
+
 {% endblock %}
 
 
@@ -657,18 +715,20 @@
         }
     }
 
-    // 툴팁
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.my_tooltip_text');
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y
-                .classList
-                .toggle('active');
-        });
-    }
-    for (i = 0; i < 8; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
+    // 툴팁 함수
+    let tooltip_btn = document.querySelectorAll('.tooltip');
+    let tooltip_box = document.querySelectorAll('.tooltip_text2');
+    window.onload = function(){
+
+        for (i = 0; i < tooltip_btn.length; i++) {
+            Tooltipeb(tooltip_btn[i], tooltip_box[i]);
+        }
+
+        function Tooltipeb(btn, box) {
+            btn.addEventListener('click', () => {
+                box.classList.toggle('active');
+            });
+        }
     }
 
 </script>

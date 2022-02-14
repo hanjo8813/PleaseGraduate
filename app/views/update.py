@@ -58,7 +58,7 @@ def f_mod_info(request):
     # 전공이 학부로 뜨는 경우(1학년에 해당)
     if getted_major[-2:] == '학부':
         # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = MajorDepartment.objects.filter(department = getted_major)
+        md = Major.objects.filter(department = getted_major)
         major_select = [row.major for row in md]
         # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
         if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
@@ -172,23 +172,35 @@ def f_mod_grade(request):
     for i, row in df.iterrows():
         if row['등급'] in ['F', 'FA', 'NP']:
             df.drop(i, inplace=True)
-            
+    # 불필요 컬럼 삭제
     df.drop(['교직영역', '평가방식','등급', '평점', '개설학과코드'], axis=1, inplace=True)
+
     # 추가 전 user_grade DB에 이미 데이터가 있는지 확인 후 삭제
     user_id = request.session.get('id')
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     ug = UserGrade.objects.filter(student_id = user_id)
     if ug.exists() : ug.delete()
+
     # DF를 테이블에 추가
     for i, row in df.iterrows():
+        # 학번벌 이수구분 변경 검사
+        subject_num = str(row['학수번호']).lstrip('0')
+        classification = row['이수구분']
+        cc_qs = ChangedClassification.objects.filter(year = ui_row.year, subject_num = subject_num)
+        # 변경내역 있는 이수구분 조회-> 자신에게 맞지않으면 변경
+        if cc_qs.exists():
+            cc = cc_qs[0].classification
+            if classification[:2] != cc:
+                classification += "→" + cc
+        # 저장
         new_ug = UserGrade()
         new_ug.student_id = user_id
         new_ug.major = ui_row.major
         new_ug.year = row['년도']
         new_ug.semester = row['학기']
-        new_ug.subject_num = str(row['학수번호']).lstrip('0')
+        new_ug.subject_num = subject_num
         new_ug.subject_name = row['교과목명']
-        new_ug.classification = row['이수구분']
+        new_ug.classification = classification
         new_ug.selection = row['선택영역']
         new_ug.grade = row['학점']
         new_ug.save()

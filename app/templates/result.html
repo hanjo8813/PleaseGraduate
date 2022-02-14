@@ -9,25 +9,25 @@
                 Total
             </div>
             <div class="box">
-                <div id="chart0">
+                <div class="chart_box" id="chart0">
                     <strong class="total_strong"></strong>
                 </div>
                 <div class="Sbox">
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">학번</span>
                         <span class="t" id="studentnumber"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">이름</span>
                         <span class="t" id="name"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">총 기준 학점
                         </span>
                         <span class="t" id="totalgrade"></span>
                     </div>
                     <div>
-                        <div class="gbox">
+                        <div class="gbox total_gbox">
                             <span class="grade Grade">총 이수 학점
                             </span>
 
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="gbox Gbox">
+                        <div class="gbox Gbox total_gbox">
                             <span class="cap"><i class="fas fa-graduation-cap"></i></span>
 
                             <div class="T" id="cangraduate"> </div>
@@ -111,11 +111,11 @@
         {% endif %}
 
         <!-- 전필 -->
-        <div class="resultbox container1">
+        <div class="resultbox">
             <!-- 타이틀 -->
-            <div class="name name1">
+            <div class="name">
                 전공 필수
-                <span class="tooltip t1">
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <!-- 클릭시 툴팁 -->
@@ -148,13 +148,13 @@
         </div>
 
         <!-- 전선 -->
-        <div class="resultbox container2">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 전공 선택
-                <span class="tooltip t2">
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
-                <div class="tooltip_text text2">
+                <div class="tooltip_text">
                     <p>&#183; 학점 계산시 <span class='tooltip_span'>초과된 전필 학점</span>이 있다면 전선 학점에 더해진 뒤 계산됩니다.</p>
                     <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
                     <p class='tooltip_sub_p'>1. 전공선택 과목으로 기준학점을 만족해야합니다.</p>
@@ -170,9 +170,9 @@
                         <span class="r" id="grade2"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade" style="letter-spacing: -0.2px;">이수 학점</span>
+                        <span class="grade" >이수 학점</span>
                         <span class="r" id="mygrade2"></span>
-                        <span class="tooltip" id="myremain" style="color:#d32f2f; margin-left:-0.5rem"></span>
+                        <span class="tooltip tooltip_info" id="myremain" style="margin-left:-0.5rem;"></span>
                         <div class="tooltip_text">
                             전필 영역에서 기준 학점 초과시 전선 학점으로 인정됩니다.
                         </div>
@@ -184,16 +184,16 @@
 
         <!-- 교필/중필 -->
         {% if exists.ce %}
-        <div class="resultbox container3">
-            <div class="name name1">
-                교양(중핵) 필수
-                <span class="tooltip t3">
+        <div class="resultbox">
+            <div class="name">
+                공통교양필수
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    <p>&#183; 16년도부터 <span class='tooltip_span'>중핵필수 -> 교양필수</span>로 이수구분명이 변경되었습니다.</p>
+                    <p>&#183; 22년도부터 <span class='tooltip_span'>교양필수(교필) -> 공통교양필수(공필)</span>로 이수구분명이 변경되었습니다.</p>
                     <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
-                    <p class='tooltip_sub_p'>1. 교양필수 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>1. 해당 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- <span class='tooltip_span'>기준 학점과 상관없이</span> 필수과목만 모두 이수하면 됩니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 필수과목의 이수구분이 <span class='tooltip_span'>변경되어도</span> 필수과목을 이수한 것으로 인정됩니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
@@ -205,16 +205,12 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade">기준 학점</span>
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="grade3"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade">이수 과목</span>
                         <span class="r" id="mygrade3"></span>
-                    </div>
-                    <div class="gbox">
-                        <span class="grade">필수 과목</span>
-                        <span class="r" id="ce_p"></span>
                     </div>
                     <button class="rbutton" id="myBtn3">Recommend</button>
                 </div>
@@ -224,20 +220,21 @@
 
         <!-- 교선/중선 -->
         {% if exists.cs %}
-        <div class="resultbox container4">
-            <div class="name name1">
-                교양(중핵) 선택
+        <div class="resultbox">
+            <div class="name">
+                교양 선택
                 <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    <p>&#183; 16년도부터 <span class='tooltip_span'>중핵선택 -> 교양선택1</span>로 이수구분명이 변경되었습니다.</p>
-                    <p>&#183; 교양선택2는 <span class='tooltip_span'>기준 학점에 인정되지 않습니다.</span></p>
+                    <p>&#183; 22년도부터 교선1, 교선2가 통합되었습니다.</p>
+                    <p class='tooltip_sub_p'>- 단, 통합 이전에 수강한 교선2는 <span class='tooltip_span'>인정되지 않습니다.</span></p>
+                    <p class='tooltip_sub_p'>- 선택영역도 5개 영역 -> 6개 영역으로 통합되었습니다.</p>
                     <p>&#183; 세 가지 조건을 만족했을 경우 통과합니다.</p>
-                    <p class='tooltip_sub_p'>1. 교양선택1 과목으로 기준학점을 만족해야합니다.</p>
-                    <p class='tooltip_sub_p'>2. 교양선택1 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>1. 교양선택 과목으로 기준학점을 만족해야합니다.</p>
+                    <p class='tooltip_sub_p'>2. 교양선택 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
-                    <p class='tooltip_sub_p'>3. 과목마다 '선택영역'이 존재하고, 5가지의 선택영역 중 3가지 이상 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>3. 과목마다 '선택영역'이 존재하고, 6가지의 선택영역 중 3가지 이상 이수해야합니다.</p>
                 </div>
             </div>
             <div class="box">
@@ -246,19 +243,19 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade l">기준 학점</span>
-                        <span class="r l" id="grade4"></span>
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade4"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade l">이수 학점</span>
-                        <span class="r l" id="mygrade4"></span>
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="mygrade4"></span>
                     </div>
-                    <div class="gbox l">
-                        <span class="grade l">필수 과목</span>
+                    <div class="gbox">
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="cs_p"></span>
                     </div>
-                    <div class="gbox l">
-                        <span class="grade l">이수 영역</span>
+                    <div class="gbox">
+                        <span class="grade">이수 영역</span>
                         <span class="r" id="myarea1"></span>
                     </div>
                     <button class="rbutton" id="myBtn4">Recommend</button>
@@ -269,15 +266,16 @@
 
         <!-- 기교 -->
         {% if exists.b %}
-        <div class="resultbox container5">
-            <div class="name name1">
-                학문 기초 교양
-                <span class="tooltip t5">
+        <div class="resultbox">
+            <div class="name">
+                학문기초교양필수
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
+                    <p>&#183; 22년도부터 <span class='tooltip_span'>학문기초교양(기교) -> 학문기초교양필수(기필)</span>로 이수구분명이 변경되었습니다.</p>
                     <p>&#183; 한 가지 조건을 만족했을 경우 통과합니다.</p>
-                    <p class='tooltip_sub_p'>1. 학문기초교양 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>1. 해당 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- <span class='tooltip_span'>기준 학점과 상관없이</span> 필수과목만 모두 이수하면 됩니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 필수과목의 이수구분이 <span class='tooltip_span'>변경되어도</span> 필수과목을 이수한 것으로 인정됩니다.</p>
                     <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
@@ -290,17 +288,33 @@
                 </div>
                 <div class="sbox">
                     <div class="gbox">
-                        <span class="grade">기준 학점</span>
+                        <span class="grade">필수 과목</span>
                         <span class="r" id="grade5"></span>
                     </div>
                     <div class="gbox">
-                        <span class="grade">이수 학점</span>
+                        <span class="grade">이수 과목</span>
                         <span class="r" id="mygrade5"></span>
                     </div>
-                    <div class="gbox">
-                        <span class="grade">필수 과목</span>
-                        <span class="r" id="b_p"></span>
-                    </div>
+                    {% if user_info.major == '화학과' %}
+                        <div class="gbox">
+                            <span class="grade">선택과목A</span>
+                            {% if basic.pass_chemy_A %}
+                            <span>Pass</span>
+                            {% else %}
+                            <span>NP</span>
+                            {% endif %}
+                        </div>
+                        {% if basic.chemy_B_exists %}
+                        <div class="gbox">
+                            <span class="grade">선택과목B</span>
+                            {% if basic.pass_chemy_B %}
+                            <span>Pass</span>
+                            {% else %}
+                            <span>NP</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endif %}
                     <button class="rbutton" id="myBtn5">Recommend</button>
                 </div>
             </div>
@@ -309,10 +323,10 @@
 
         <!-- 영어 -->
         {% if exists.english %}
-        <div class="resultbox container8">
+        <div class="resultbox">
             <div class="name name8">
                 영어졸업인증
-                <span class="tooltip t8">
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text" style='left: -230px;'>
@@ -343,13 +357,13 @@
         {% endif %}
 
         <!-- 고전독서 -->
-        <div class="resultbox container7">
-            <div class="name name1">
+        <div class="resultbox">
+            <div class="name">
                 고전독서인증
-                <span class="tooltip t7">
+                <span class="tooltip">
                     <span class='tip_div'>Tip</span>
                 </span>
-                <div class="tooltip_text text7">
+                <div class="tooltip_text">
                     <p>&#183; 각 4개 영역에서의 기준 권수를 만족하면 통과합니다. (총 10권)</p>
                     <p>&#183; 7학기를 기점으로 인증 방법이 나뉘며, 다양한 방법으로 권수를 채울 수 있습니다.</p>
 
@@ -604,15 +618,20 @@
                 <hr>
                 <table class="mytable" style="padding-bottom:1rem">
                     <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.0}}
+                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.0}}
                         </th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.1}}
+                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.1}}
                         </th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.2}}
+                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.2}}
                         </th>
-                        <th style="border-right :1px solid #cccccc; width:20%">{{core_selection.standard_cs_part.3}}
+                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.3}}
                         </th>
-                        <th style="width:20%">{{core_selection.standard_cs_part.4}}</th>
+                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.4}}
+                        </th>
+                        <th style="width:16%">
+                            {{core_selection.standard_cs_part.5}}<br>
+                            <span style="font-size: 1rem;">(융합과창업)</span>
+                        </th>
                     </tr>
                     <tr class="mytr">
                         {% for check in core_selection.part_check %}
@@ -1171,9 +1190,26 @@
 
     Spanclick(span1, modal1);
     Spanclick(span2, modal2);
+
+    // 툴팁 함수
+    let tooltip_btn = document.querySelectorAll('.tooltip');
+    let tooltip_box = document.querySelectorAll('.tooltip_text');
+    window.onload = function(){
+
+        for (i = 0; i < tooltip_btn.length; i++) {
+            Tooltipeb(tooltip_btn[i], tooltip_box[i]);
+        }
+
+        function Tooltipeb(btn, box) {
+            btn.addEventListener('click', () => {
+                box.classList.toggle('active');
+            });
+        }
+    }
     
     // 모달 밖 클릭시 꺼짐 함수
     window.onclick = function (event) {
+
         if (event.target == modal1) {
             modal1.style.display = "none";
         }
@@ -1211,21 +1247,9 @@
     var Grade3 = '{{core_essential.standard_num}}';
     var Mygrade3 = '{{core_essential.user_num}}';
     var pernum3 = to_percent(Mygrade3, Grade3);
-    // 필수과목 패스여부
-    var Ce_p;
-    if ('{{core_essential.pass}}' == 1) {
-        Ce_p = "Pass";
-        pernum3 = 100;
-    }
-    else {
-        Ce_p = "NP";
-        if (pernum3 == 100) {
-            pernum3 -= 1;
-        }
-    }
-    document.getElementById("grade3").innerHTML = Grade3;
-    document.getElementById("mygrade3").innerHTML = Mygrade3;
-    document.getElementById("ce_p").innerHTML = Ce_p;
+
+    document.getElementById("grade3").innerHTML = Grade3 + "개";
+    document.getElementById("mygrade3").innerHTML = Mygrade3 + "개";
     var modal3 = document.getElementById('myModal3');
     var btn3 = document.getElementById("myBtn3");
     var span3 = document.getElementById("close3");
@@ -1284,27 +1308,22 @@
     var Grade5 = '{{basic.standard_num}}';
     var Mygrade5 = '{{basic.user_num}}';
     var pernum5 = to_percent(Mygrade5, Grade5);
-    // 필수과목 패스여부
-    var B_p;
-    // 화학과 기교 걸러내기
-    var temp_p = '{{basic.pass}}';
-    if ('{{user_info.major}}' == '화학과') {
-        temp_p = '{{basic.pass_chemy_all}}'
-    }
 
-    if (temp_p == 1) {
-        B_p = "Pass";
-        pernum5 = 100;
-    }
-    else {
-        B_p = "NP";
-        if (pernum5 == 100) {
-            pernum5 -= 1;
+    // 화학과 기교 걸러내기
+    if ('{{user_info.major}}' == '화학과') {
+        b_p = '{{basic.pass_chemy_all}}'
+        if (b_p == 1) {
+            pernum5 = 100;
+        }
+        else {
+            if (pernum5 == 100) {
+                pernum5 -= 1;
+            }
         }
     }
-    document.getElementById("grade5").innerHTML = Grade5;
-    document.getElementById("mygrade5").innerHTML = Mygrade5;
-    document.getElementById("b_p").innerHTML = B_p;
+    
+    document.getElementById("grade5").innerHTML = Grade5 + "개";
+    document.getElementById("mygrade5").innerHTML = Mygrade5 + "개";
     var modal5 = document.getElementById('myModal5');
     var btn5 = document.getElementById("myBtn5");
     var span5 = document.getElementById("close5");
@@ -1365,25 +1384,5 @@
 </script>
 {% endif %}
 
-<script>
-    // 토글함수
-    const toggleb = document.querySelector('.navbar_toggle');
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.tooltip_text');
-
-    toggleb.addEventListener('click', () => {
-        menu.classList.toggle('active');
-    });
-
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y.classList.toggle('active');
-        });
-    }
-
-    for (i = 0; i < 10; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
-    }
-</script>
 
 {% endblock %}

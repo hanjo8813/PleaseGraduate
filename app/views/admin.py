@@ -10,17 +10,27 @@ from django_pandas.io import read_frame
 # 장고 관련 참조
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib import messages
 # 모델 참조
 from django.db.models import Count
 from ..models import *
-
+from .auth import *
 
 #  -------------------------------------------- (테스트 페이지 렌더링) ---------------------------------------------------------
 
-def r_admin_test(request):
+def r_admin_home(request):
     # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
+    request.session.clear()
+    return render(request, "admin/home.html")
+    
+
+def r_admin_test(request):
+    if platform.system() != 'Windows':
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
     request.session.clear()
     uid = []
     for row in NewUserInfo.objects.all():
@@ -33,28 +43,30 @@ def r_admin_test(request):
         'uid': uid,
         'uid_num': len(uid),
     }
-    return render(request, "admin_test.html", context)
+    return render(request, "admin/user_test.html", context)
 
 #  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
 
 
 def f_user_test(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     user_id = request.POST['user_id']
     request.session['id'] = user_id
 
-    #update_json(user_id)
+    update_json(user_id)
 
     return redirect('/mypage/')
 
-#  -------------------------------------------- (사용자 테스트) ---------------------------------------------------------
+#  -------------------------------------------- (사용자 삽입) ---------------------------------------------------------
 
 
 def f_insert_user(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # admin 페이지 입력데이터 검증
     student_id = request.POST.get('student_id')
@@ -97,25 +109,44 @@ def make_merge_df():
     # 5. 엑셀파일에서 칼럼명이 살짝 이상할때가 있으므로 (한칸띄우기 등등) 검토가 필요함.
     # 6. DB 변경하는 시간이 1분정도 걸림
 
+    # *** 매우중요 ***
+    # 업데이트 전에 반드시 확인하고 업데이트해야함
+    # first와 second의 파일 경로를 우선순위에 맞게 바꿔주자
+    first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
+
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
-    # 1학기 엑셀 불러오기
-    file_path = './app/update_lecture/1st_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_1 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_1.drop([d for d in list(df_sem_1) if d not in need_col],
+    
+    file_name = os.listdir(first)[0]
+    df_1 = pd.read_excel(first + file_name, index_col=None)
+    df_1.drop([d for d in list(df_1) if d not in need_col],
                   axis=1, inplace=True)     # 필요한 컬럼만 추출
-    # 2학기 엑셀 불러오기
-    file_path = './app/update_lecture/2nd_semester/'
-    file_name = os.listdir(file_path)[0]
-    # 해당 엑셀을 DF화 시킴
-    df_sem_2 = pd.read_excel(file_path + file_name, index_col=None)
-    df_sem_2.drop([d for d in list(df_sem_2) if d not in need_col],
+    df_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+
+    file_name = os.listdir(second)[0]
+    df_2 = pd.read_excel(second + file_name, index_col=None)
+    df_2.drop([d for d in list(df_2) if d not in need_col],
                   axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_2.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+
+    # 동일과목 제거 -> 1번이 우선순위 더 높음. 2번을 삭제한다
+    # 동일과목에 해당하는 학수번호 리스트 추출
+    group_snum = []
+    for row in SubjectGroup.objects.all():
+        group_snum.append(int(row.subject_num))
+    # 삭제할 과목 추출
+    delete_candidate = []
+    for s_num in df_1[df_1["학수번호"].isin(group_snum)]["학수번호"].to_list():
+        g_num = SubjectGroup.objects.get(subject_num = s_num).group_num
+        sg_qs = SubjectGroup.objects.filter(group_num = g_num)
+        for row in sg_qs:
+            delete_candidate.append(int(row.subject_num))
+    # df2에서 동일과목을 삭제해준다
+    df_2 = df_2[~df_2["학수번호"].isin(delete_candidate)]
+    df_2.reset_index(inplace=True,drop=True)
 
     # 두 df를 병합, 중복제거
-    # ** 우선순위 학기의 df를 앞에다 두어야 함 **
-    df_merge = pd.concat([df_sem_2, df_sem_1])
+    df_merge = pd.concat([df_1, df_2])
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
     df_merge.fillna('', inplace=True)
@@ -124,11 +155,10 @@ def make_merge_df():
     return df_merge, s_num_list
 
 
-def f_test_update(request):
-    # 로컬에서만 접근 가능하도록 하기
+def f_test_update_lecture(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
-
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
     df_merge, s_num_list = make_merge_df()
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
@@ -173,10 +203,10 @@ def f_test_update(request):
     return HttpResponse('업데이트 완료, MySQL test_all_lecture / test_new_lecture 테이블 확인')
 
 
-def f_update(request):
-    # 로컬에서만 접근 가능하도록 하기
+def f_update_lecture(request):
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     df_merge, s_num_list = make_merge_df()
 
@@ -209,20 +239,20 @@ def f_update(request):
 
     return HttpResponse('업데이트 완료, MySQL all_lecture / new_lecture 테이블 확인')
 
-#  -------------------------------------------- (학과-학번 기준 엑셀 DB에 넣기) ---------------------------------------------------------
+#  -------------------------------------------- ( standard 테이블 업데이트 ) ---------------------------------------------------------
 
 
-def f_input_st(request):
+def f_update_standard(request):
     # 사용법
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
     # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경 -> 첫 행 삭제
 
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
     # 엑셀 불러오기
-    file_path = './app/update_lecture/input_standard/'
+    file_path = './dev/update_table/standard/'
     file_name = os.listdir(file_path)[0]
     df = pd.read_excel(file_path + file_name, index_col=None)
     df.fillna(0, inplace=True)
@@ -262,35 +292,132 @@ def f_input_st(request):
 
     return HttpResponse('삽입완료 standard 테이블 확인')
 
+#  -------------------------------------------- ( major 테이블 업데이트 ) ---------------------------------------------------------
+
+def f_update_major(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+
+    if platform.system() != 'Windows':
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
+
+    # 엑셀 불러오기
+    file_path = './dev/update_table/major/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    Major.objects.all().delete()
+    time.sleep(5)   # 삭제하는 시간 기다리기
+
+    for i, row in df.iterrows():
+        new_m = Major()
+        new_m.college = row['college']
+        new_m.major = row['major']
+        new_m.department = row['department']
+        new_m.save()
+
+    return HttpResponse('삽입완료 major 테이블 확인')
+
+#  -------------------------------------------- ( subject_group 테이블 업데이트 ) ---------------------------------------------------------
+
+def f_update_subject_group(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+    if platform.system() != 'Windows':
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
+
+    # 엑셀 -> df
+    need_col = ['group_num', 'subject_num']
+    file_path = './dev/update_table/subject_group/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.drop([d for d in list(df) if d not in need_col], axis=1, inplace=True)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    SubjectGroup.objects.all().delete()
+    time.sleep(5)
+
+    for i, row in df.iterrows():
+        new_sg = SubjectGroup()
+        new_sg.group_num = int(row['group_num'])
+        new_sg.subject_num = int(row['subject_num'])
+        new_sg.save()
+
+    return HttpResponse('삽입완료 subject_group 테이블 확인')
+
+#  -------------------------------------------- ( changed_classification 테이블 업데이트 ) ---------------------------------------------------------
+
+def f_update_changed_classification(request):
+    # 사용법
+    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
+    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
+    if platform.system() != 'Windows':
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
+
+    # 엑셀 -> df
+    need_col = ['subject_num','year','classification']
+    file_path = './dev/update_table/changed_classification/'
+    file_name = os.listdir(file_path)[0]
+    df = pd.read_excel(file_path + file_name, index_col=None)
+    df.drop([d for d in list(df) if d not in need_col], axis=1, inplace=True)
+    df.fillna('', inplace=True)
+
+    # 테이블 데이터 삭제
+    ChangedClassification.objects.all().delete()
+    time.sleep(5)
+
+    for i, row in df.iterrows():
+        new_cc = ChangedClassification()
+        new_cc.index = i
+        new_cc.subject_num = row['subject_num']
+        new_cc.year = int(row['year'])
+        new_cc.classification = row['classification']
+        new_cc.save()
+
+    return HttpResponse('삽입완료 changed_classification 테이블 확인')
+
 
 #  -------------------------------------------- (터미널 테스트) ---------------------------------------------------------
 
 
 def f_test(request):
-    # 로컬에서만 접근 가능하도록 하기
     if platform.system() != 'Windows':
-        return HttpResponse('관리자 페이지엔 접근할 수 없습니다!')
+        messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
+        return redirect('/')
 
-    user_major = list(NewUserInfo.objects.values_list('major').distinct())
-    all_major = list(Standard.objects.values_list('user_dep').distinct())
-    for major in user_major:
-        if major in all_major:
-            all_major.remove(major)
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아직 가입 안한 학과 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    print(all_major)
-    print()
 
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학과별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key=lambda x: x[1], reverse=True):
-        print(row)
-    print()
+    # 세사봉
+    ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
+    for row in ug_qs1:
+        year = int(row.student_id[:2])
+        real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
+        user_classification = row.classification[:2]
+        if user_classification != real_classification:
+            row.classification = user_classification + "→" + real_classification
+            print(row.classification)
+        row.save()
 
-    print(' @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 학번별 회원수 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ')
-    print()
-    for row in NewUserInfo.objects.values_list('year').annotate(count=Count('year')):
-        print(row)
-    print()
+    # 창기
+    ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
+    for row in ug_qs2:
+        year = int(row.student_id[:2])
+        real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
+        user_classification = row.classification[:2]
+        if user_classification != real_classification:
+            row.classification = user_classification + "→" + real_classification
+            print(row.classification)
+        row.save()
+
+    # for row in TestTable.objects.all():
+    #     row.text = "hi"
+    #     row.save()
 
     return HttpResponse('테스트 완료, 터미널 확인')

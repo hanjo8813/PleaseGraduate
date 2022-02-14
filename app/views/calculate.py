@@ -109,6 +109,16 @@ def convert_to_int(num):
         num = int(num)
     return num
 
+def convert_classification(classification):
+    if "→" in classification:
+        return classification.split("→")[1]
+    return classification
+
+def convert_selection(selection):
+    if selection == "융합과창업":
+        return "자기계발과진로"
+    return selection
+
 # ---------------------------------------------------- (졸업요건 검사 파트) ----------------------------------------------------------------
 
 def f_result(user_id):
@@ -118,11 +128,13 @@ def f_result(user_id):
     user_qs = UserGrade.objects.filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
     data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
+    # 이수구분변경 과목 변경 결과로 수정
+    data["이수구분"] = data["이수구분"].apply(convert_classification)
     # 사용자에게 맞는 기준 row 뽑아내기
     standard_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
 
     # 아래 로직을 거치며 채워질 데이터바인딩용 context 선언
-    result_context = {}     
+    result_context = {}
 
     ####################################################
     ################### 예외처리 여부 ###################
@@ -271,21 +283,18 @@ def f_result(user_id):
     ################### 교필 영역 ###################
     ################################################
     if ce_exists :
-        # 성적표에서 교필 추출
-        df_ce = data[data['이수구분'].isin(['교필', '중필'])]
-        df_ce.reset_index(inplace=True,drop=True)
-        # 기준학점 & 사용자학점합계 추출
-        standard_num_ce = standard_row.core_essential
-        user_num_ce = df_ce['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_ce = make_dic([s_num for s_num in standard_row.ce_list.split('/')])
         user_dic_ce = make_dic(data['학수번호'].tolist())  # * 수정 : 교필, 중필 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_ce, check_ce = make_recommend_list(user_dic_ce, dic_ce)
         standard_essential_ce = to_zip_list(list_to_query(dic_ce.keys()), check_ce)
+        # 필수과목, 이수과목 개수 저장
+        standard_num_ce = len(dic_ce)
+        user_num_ce = sum(check_ce)
         # 패스여부 검사
         pass_ce = 0
-        if not recom_essential_ce :
+        if standard_num_ce == user_num_ce :
             pass_ce = 1
         # context 생성
         context_core_essential = {
@@ -303,7 +312,7 @@ def f_result(user_id):
     ################################################
     if cs_exists :
         # 성적표에서 고선 추출
-        df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
+        df_cs = data[data['이수구분'].isin(['교선', '교선1', '중선'])]
         df_cs.reset_index(inplace=True,drop=True)
         # 기준학점 & 사용자학점합계 추출
         standard_num_cs = standard_row.core_selection
@@ -315,8 +324,10 @@ def f_result(user_id):
         recom_essential_cs, check_cs = make_recommend_list(user_dic_cs, dic_cs)
         standard_essential_cs = to_zip_list(list_to_query(dic_cs.keys()), check_cs)
         
-        # 16 17의 소기코 대체과목은 컴기코로 바꿔줌
-        if ui_row.year in [16, 17] and '9799' in recom_essential_cs:
+        # 인문/예체능대학의 16,17 학번의 소기코 대체과목은 컴기코로 바꿔줌
+        if ui_row.year in [16, 17] \
+            and Major.objects.get(major = ui_row.major).college in ["예체능대학", "인문과학대학"] \
+            and '9799' in recom_essential_cs :
             # 일단 추천리스트에서 소기코는 삭제하고
             recom_essential_cs.remove('9799')
             # 만약 컴기코를 재수강 했다면 기준 딕셔너리에서 수강 체크해준다
@@ -329,14 +340,16 @@ def f_result(user_id):
                 recom_essential_cs.append('10528')
 
         # 선택영역 검사
-        standard_cs_part =["사상과역사","사회와문화","융합과창업","자연과과학기술","세계와지구촌"]   # 기준 영역 5개
+        standard_cs_part =["사상과역사","사회와문화","자연과과학기술","세계와지구촌","예술과체육","자기계발과진로"]   # 기준 영역 6개
+        # 융합과창업 -> 자기계발과진로 변경
+        df_cs["선택영역"] = df_cs["선택영역"].apply(convert_selection)
         user_cs_part = list(set(df_cs[df_cs['선택영역'].isin(standard_cs_part)]['선택영역'].tolist()))
         # 사용자가 안들은 영역 추출
         recom_cs_part = []
         if len(user_cs_part) < 3:
             recom_cs_part = list(set(standard_cs_part) - set(user_cs_part))
         # 사용자의 부족 영역 체크
-        part_check = ['이수' for _ in range(5)]
+        part_check = ['이수' for _ in range(len(standard_cs_part))]
         for i, c in enumerate(standard_cs_part):
             if c not in user_cs_part:
                 part_check[i] = '미이수'
@@ -347,7 +360,7 @@ def f_result(user_id):
             cs_part_for_recom = standard_cs_part
         else:                   # 만족 못했으면 영역 recom 리스트 그대로
             cs_part_for_recom = recom_cs_part
-        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
+        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선', '교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)
@@ -381,21 +394,18 @@ def f_result(user_id):
     ################### 기교 영역 ###################
     ################################################
     if b_exists :
-        # 성적표에서 기교 추출
-        df_b = data[data['이수구분'].isin(['기교'])]
-        df_b.reset_index(inplace=True,drop=True)
-        # 기준학점 & 사용자학점합계 추출
-        standard_num_b = standard_row.basic
-        user_num_b = df_b['학점'].sum()
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
         dic_b = make_dic([s_num for s_num in standard_row.b_list.split('/')])
         user_dic_b = make_dic(data['학수번호'].tolist())     # * 수정 : 기교 영역만 비교하지 않고 전체를 대상으로 비교
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_b, check_b = make_recommend_list(user_dic_b, dic_b)
         standard_essential_b = to_zip_list(list_to_query(dic_b.keys()), check_b)
+        # 필수과목, 이수과목 개수 저장
+        standard_num_b = len(dic_b)
+        user_num_b = sum(check_b)
         # 패스여부 검사
         pass_b = 0
-        if not recom_essential_b :
+        if standard_num_b == user_num_b :
             pass_b = 1
         # context 생성
         context_basic = {
@@ -446,8 +456,10 @@ def f_result(user_id):
                     context_basic['recom_chemy_B'] =list_to_query(recom_chemy_B)
                 context_basic['standard_chemy_B'] = standard_chemy_B
                 context_basic['pass_chemy_B'] = pass_chemy_B
+
             context_basic['chemy_B_exists'] = chemy_B_exists
             context_basic['pass_chemy_all'] = pass_chemy_all
+
         result_context['basic'] = context_basic
 
 

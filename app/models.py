@@ -176,14 +176,14 @@ class VisitorCount(models.Model):
 
 # ------------------------------------- ( 매핑 테이블 ) -------------------------------------
 
-
-class MajorDepartment(models.Model):
+class Major(models.Model):
+    college = models.CharField(max_length=45)
     major = models.CharField(primary_key=True, max_length=45)
-    department = models.CharField(max_length=45)
+    department = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'major_department'
+        db_table = 'major'
 
 
 class SubjectGroup(models.Model):
@@ -193,3 +193,14 @@ class SubjectGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'subject_group'
+
+
+class ChangedClassification(models.Model):
+    index = models.IntegerField(primary_key=True)
+    subject_num = models.CharField(max_length=10)
+    year = models.IntegerField()
+    classification = models.CharField(max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'changed_classification'
