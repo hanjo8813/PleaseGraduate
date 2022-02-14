@@ -482,7 +482,7 @@
     function close_caution(){
         document.getElementById('caution_modal').style.display = "none";
         var date = new Date();
-        date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000);
+        date.setTime(date.getTime() + 5 * 24 * 60 * 60 * 1000);
         document.cookie = 'is_caution_0214' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
     }
 </script>
