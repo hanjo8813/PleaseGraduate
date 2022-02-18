@@ -9,7 +9,7 @@ from ..models import *
 
 def selenium_DHC(id, pw):
     # 대양휴머니티칼리지 url
-    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=classic.sejong.ac.kr/ssoLogin.do'
+    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=https://classic.sejong.ac.kr/ssoLogin.do'
 
     # 옵션 넣고 드라이버 생성
     options = webdriver.ChromeOptions()

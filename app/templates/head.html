@@ -49,7 +49,8 @@
                 <ul>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
-                    <li><b>2022.02.14 업데이트 내용</b></li>
+                    <li><b>2022.02.18 업데이트 내용</b></li>
+                    <li>회원가입 오류가 수정되었습니다.</li>
                     <li>22-1학기 수강편람 변경사항이 업데이트되었습니다.</li>
                     <li style="margin-left:1.2rem; font-size:1rem;">
                         행정학과, 미디어커뮤니케이션학과, 경영학과, 호텔관광외식경영학부, 식품생명공학전공, 체육학과 기교 지정해제
@@ -104,7 +105,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0214' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0218' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -119,7 +120,7 @@
                 var date = new Date();
                 // 유효기간 1일
                 date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0214' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0218' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
