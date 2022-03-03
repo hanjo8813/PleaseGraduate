@@ -243,7 +243,7 @@ input[type="button"]
     margin-top:2rem;
     font-size:2.5rem; 
     font-weight:bold; 
-    color : #d32f2f
+    color : rgb(164, 26, 55)
 }
 .popup_box{
     margin:0 auto;
