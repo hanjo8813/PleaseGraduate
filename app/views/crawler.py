@@ -9,7 +9,7 @@ from ..models import *
 
 def selenium_DHC(id, pw):
     # 대양휴머니티칼리지 url
-    url = 'https://portal.sejong.ac.kr/jsp/login/loginSSL.jsp?rtUrl=https://classic.sejong.ac.kr/ssoLogin.do'
+    url = 'https://classic.sejong.ac.kr/userLoginPage.do'
 
     # 옵션 넣고 드라이버 생성
     options = webdriver.ChromeOptions()
@@ -21,25 +21,16 @@ def selenium_DHC(id, pw):
         driver = webdriver.Chrome('./dev/chromedriver.exe', options=options)
         driver.get(url)
         time.sleep(0.5)
-        # 키보드 보안 해제
-        driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
-        driver.switch_to_alert().dismiss()
         # id , pw 입력할 곳 찾기
-        tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-        tag_pw = driver.find_element_by_id("password")
+        tag_id = driver.find_element_by_name("userId") 
+        tag_pw = driver.find_element_by_name("password")
         # id , pw 보내기
         tag_id.send_keys(id)
         tag_pw.send_keys(pw)
         time.sleep(0.5)
         # 로그인버튼 클릭
-        login_btn = driver.find_element_by_id('loginBtn')
+        login_btn = driver.find_element_by_name("go")
         login_btn.click()
-        # ID/PW 틀렸을 때 예외처리 ***
-        try:
-            driver.switch_to.frame(0)
-        except:
-            driver.quit()
-            return 'err_auth'
         # 팝업창 있을 경우 모두 닫아준다
         while 1:
             try:
@@ -52,6 +43,13 @@ def selenium_DHC(id, pw):
         except:
             driver.quit()
             return 'err_enter_mybook'
+        # ID/PW 틀렸을 때 예외처리 ***
+        try:
+            driver.find_element_by_class_name("page_none")
+            driver.quit()
+            return 'err_auth'
+        except:
+            pass
         html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
         # 독서 권수 리스트에 저장
         soup = BeautifulSoup(html, 'html.parser')
@@ -89,29 +87,19 @@ def selenium_DHC(id, pw):
             options.add_argument('--disable-dev-shm-usage')
             # 크롬드라이버 열기
             driver = webdriver.Chrome('/srv/chromedriver', options=options)
-            driver.implicitly_wait(3)   # 렌더링 미완료시 7초까지 대기
+            # driver.implicitly_wait(3)   # 렌더링 미완료시 7초까지 대기
             driver.get(url)
-            # 키보드 보안 해제
-            driver.find_element_by_xpath('//*[@id="login_form"]/div[2]/div/div[2]/div[3]/label/span').click()
-            driver.switch_to_alert().dismiss()
             # id , pw 입력할 곳 찾기
             time.sleep(1)
-            tag_id = driver.find_element_by_id("id")  # id 입력할곳 찾기 변수는 id태그
-            tag_pw = driver.find_element_by_id("password")
+            tag_id = driver.find_element_by_name("userId") 
+            tag_pw = driver.find_element_by_name("password")
             # id , pw 보내기
             tag_id.send_keys(id)
             tag_pw.send_keys(pw)
             time.sleep(0.5)
             # 로그인버튼 클릭
-            login_btn = driver.find_element_by_id('loginBtn')
+            login_btn = driver.find_element_by_name("go")
             login_btn.click()
-            # ID/PW 틀렸을 때 예외처리 ***
-            try:
-                driver.switch_to.frame(0)
-            except:
-                driver.quit()
-                display.stop()
-                return 'err_auth'
             # 팝업창 있을 경우 모두 닫아준다
             while 1:
                 try:
@@ -125,6 +113,14 @@ def selenium_DHC(id, pw):
                 driver.quit()
                 display.stop()
                 return 'err_enter_mybook'
+            # ID/PW 틀렸을 때 예외처리 ***
+            try:
+                driver.find_element_by_class_name("page_none")
+                driver.quit()
+                display.stop()
+                return 'err_auth'
+            except:
+                pass
             html = driver.page_source  # 페이지 소스 가져오기 , -> 고전독서 인증현황 페이지 html 가져오는것
             # 독서 권수 리스트에 저장
             soup = BeautifulSoup(html, 'html.parser')

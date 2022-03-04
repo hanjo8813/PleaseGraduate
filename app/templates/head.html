@@ -47,10 +47,7 @@
             </div>
             <div class='popup_box'>
                 <ul>
-                    <li>현재 대양휴머니티칼리지 사이트 점검으로 인해 <span class="caution_info">회원가입이 불가능합니다.</span></li>
-                    <li style="margin-left:1.2rem; font-size:1rem;">
-                        (임시) 회원가입을 원하시는 분께서는 사이트 하단에 기재된 메일로 문의주시기 바랍니다.
-                    </li>
+                    <li>현재 회원가입이 가능합니다!</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
                     <li>
@@ -109,7 +106,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0304' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0305' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -124,7 +121,7 @@
                 var date = new Date();
                 // 유효기간 1일
                 date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0304' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0305' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
