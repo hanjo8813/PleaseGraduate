@@ -26,16 +26,13 @@ def f_mod_info(request):
     user_id = request.session.get('id')
     pw = request.POST.get('pw')
     # 대휴칼 셀레니움 돌리기(이름, 전공, 고독현황)
-    temp_user_info = selenium_DHC(user_id, pw)
+    temp_user_info = get_user_info(user_id, pw)
     # 예외처리
     if temp_user_info == 'err_auth':
-        messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인)')
+        messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인) \\n\\n (재외국민전형 입학자는 업데이트가 불가능합니다.)')
         return redirect('/mypage/')
-    elif temp_user_info == 'err_enter_mybook':
-        messages.error(request, '⚠️ 계약학과, 편입생, 재외국민전형 입학자는 회원가입이 불가능합니다.😥 \\n\\n ❓❓ 이에 해당하지 않는다면 세종포털사이트에서의 설정을 확인하세요.\\n https://portal.sejong.ac.kr 로그인 👉 정보수정 👉 개인정보수집동의 모두 동의')
-        return redirect('/mypage/')
-    elif temp_user_info == 'err_all':
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 다시 시도해주세요 😥')
+    elif temp_user_info == 'err_server':
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 대양휴머니티칼리지 사이트의 서버 문제일 수 있으니 잠시 후 시도해주세요.')
         return redirect('/mypage/')
     # 기본 정보 -> 변수에 저장
     ui_row = NewUserInfo.objects.get(student_id = user_id)

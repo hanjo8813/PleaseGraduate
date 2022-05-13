@@ -11,6 +11,3 @@ services:
     volumes:
       - ../:/srv/PleaseGraduate/
     command: bash docker_cmd.sh dev
-
-# local -> 항상 root 경로에서 터미널 실행!
-# docker-compose -p dev_compose -f dev/docker-compose.yml up -d

@@ -55,7 +55,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
 
-    update_json(user_id)
+    # update_json(user_id)
 
     return redirect('/mypage/')
 
