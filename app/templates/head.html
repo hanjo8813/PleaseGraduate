@@ -43,22 +43,23 @@
         <span id='dd' class="close" style="font-size:3rem;">&times;</span>
         <div class='popup_content'>
             <div class='popup_title'>
-                공지사항 (22.03.04)
+                공지사항 (22.05.14)
             </div>
             <div class='popup_box'>
                 <ul>
-                    <li>현재 회원가입이 가능합니다!</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
                     <li>
-                        <b>version 2.2.1 업데이트 내용</b>&nbsp;&nbsp;
+                        <b>version 2.2.2 업데이트 내용</b>&nbsp;&nbsp;
                         <a class="link_site" target="_blank" href="https://github.com/hanjo8813/PleaseGraduate/blob/master/dev_record.md">업데이트 기록 보기</a>
                     </li>
-                    <li>22-1학기 동일과목 정보가 업데이트 되었습니다.</li>
+                    <li>학생인증 방식이 개선되었습니다.</li>
                     <li style="margin-left:1.2rem; font-size:1rem;">
-                        이수구분이 변경된 공필(교필), 교선, 기필(기교) 필수과목이 이에 해당됩니다.
+                        기존 크롤링 방식을 http 통신 방식으로 변경했습니다. (10초 -> 2초)
                     </li>
-                    <li>22-1학기 수강편람 및 강의정보가 업데이트되었습니다.</li>
+                    <li style="margin-left:1.2rem; font-size:1rem;">
+                        재학생 분이 기여해주신 인증 라이브러리를 사용했습니다. <a class="link_site"  target="_blank" href="https://github.com/iml1111/sejong-univ-auth">링크</a>
+                    </li>
                 </ul>
             </div>
             <div class="popup_check">
@@ -106,7 +107,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0305' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0514' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -119,9 +120,8 @@
             // 체크하고 누르면 쿠키 생성
             if (chk.checked) {
                 var date = new Date();
-                // 유효기간 1일
-                date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0305' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
+                document.cookie = 'is_unlook_0514' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
