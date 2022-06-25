@@ -55,7 +55,7 @@ def f_user_test(request):
     user_id = request.POST['user_id']
     request.session['id'] = user_id
 
-    # update_json(user_id)
+    update_json(user_id)
 
     return redirect('/mypage/')
 
@@ -392,31 +392,96 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
+    # # 세사봉
+    # ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
+    # for row in ug_qs1:
+    #     year = int(row.student_id[:2])
+    #     real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
+    #     user_classification = row.classification[:2]
+    #     if user_classification != real_classification:
+    #         row.classification = user_classification + "→" + real_classification
+    #         print(row.classification)
+    #     row.save()
 
-    # 세사봉
-    ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
-    for row in ug_qs1:
-        year = int(row.student_id[:2])
-        real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
-        user_classification = row.classification[:2]
-        if user_classification != real_classification:
-            row.classification = user_classification + "→" + real_classification
-            print(row.classification)
-        row.save()
-
-    # 창기
-    ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
-    for row in ug_qs2:
-        year = int(row.student_id[:2])
-        real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
-        user_classification = row.classification[:2]
-        if user_classification != real_classification:
-            row.classification = user_classification + "→" + real_classification
-            print(row.classification)
-        row.save()
+    # # 창기
+    # ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
+    # for row in ug_qs2:
+    #     year = int(row.student_id[:2])
+    #     real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
+    #     user_classification = row.classification[:2]
+    #     if user_classification != real_classification:
+    #         row.classification = user_classification + "→" + real_classification
+    #         print(row.classification)
+    #     row.save()
 
     # for row in TestTable.objects.all():
     #     row.text = "hi"
     #     row.save()
+
+
+    music = ["성악", "오보에", "플룻", "클라리넷", "콘트라베이스", "첼로", "비올라", "바이올린", "피아노"]
+    dance = ["현대무용", "한국무용", "발레"]
+    act = ["연출제작", "연기예술"]
+    art = ["서양화", "한국화"]
+    design = ["공업디자인", "시각디자인"]
+
+    # target_list = music + dance + act + art + design
+
+    # qs = NewUserInfo.objects.filter(major__in = target_list)
+    # for q in qs:
+    #     q.sub_major = q.major
+    #     q.save()
+
+    # qs = NewUserInfo.objects.filter(major__in = music)
+    # for q in qs:
+    #     q.major = "음악과"
+    #     q.save()
+
+    # qs = NewUserInfo.objects.filter(major__in = dance)
+    # for q in qs:
+    #     q.major = "무용과"
+    #     q.save()
+
+    # qs = NewUserInfo.objects.filter(major__in = act)
+    # for q in qs:
+    #     q.major = "영화예술학과"
+    #     q.save()
+
+    # qs = NewUserInfo.objects.filter(major__in = art)
+    # for q in qs:
+    #     q.major = "회화과"
+    #     q.save()
+
+    # qs = NewUserInfo.objects.filter(major__in = design)
+    # for q in qs:
+    #     q.major = "산업디자인학과"
+    #     q.save()
+
+    qs = UserGrade.objects.filter(major__in = music)
+    for q in qs:
+        q.major = "음악과"
+        q.save()
+
+    qs = UserGrade.objects.filter(major__in = dance)
+    for q in qs:
+        q.major = "무용과"
+        q.save()
+
+    qs = UserGrade.objects.filter(major__in = act)
+    for q in qs:
+        q.major = "영화예술학과"
+        q.save()
+
+    qs = UserGrade.objects.filter(major__in = art)
+    for q in qs:
+        q.major = "회화과"
+        q.save()
+
+    qs = UserGrade.objects.filter(major__in = design)
+    for q in qs:
+        q.major = "산업디자인학과"
+        q.save()
+
+
 
     return HttpResponse('테스트 완료, 터미널 확인')

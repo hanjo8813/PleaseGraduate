@@ -87,6 +87,7 @@ def f_mypage(user_id):
         'student_id' : ui_row.student_id,
         'year' : ui_row.year,
         'major' : ui_row.major,
+        'sub_major' : ui_row.sub_major,
         'major_status' : ui_row.major_status,
         'name' : ui_row.name,
         'eng' : ui_row.eng,
