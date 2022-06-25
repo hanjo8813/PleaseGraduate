@@ -177,9 +177,11 @@ class VisitorCount(models.Model):
 # ------------------------------------- ( 매핑 테이블 ) -------------------------------------
 
 class Major(models.Model):
+    index = models.AutoField(primary_key=True)
     college = models.CharField(max_length=45)
-    major = models.CharField(primary_key=True, max_length=45)
     department = models.CharField(max_length=45, blank=True, null=True)
+    major = models.CharField(max_length=45)
+    sub_major = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False

@@ -36,36 +36,45 @@ def f_certify(request):
 
 # ***********************************************************************************
 
-    # temp_user_info['major'] = '지능기전공학부'
-    # year = 18
+    temp_user_info['major'] = '바순'
+    year = 18
     
 # ***********************************************************************************
 
-    major_select = []
-    # 학부로 뜨는 경우(1학년에 해당)
-    if temp_user_info['major'][-2:] == '학부':
-        # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = Major.objects.filter(department = temp_user_info['major'])
-        for m in md:
-            major_select.append(m.major)
-        # 예외처리 - 로그인한 사용자의 학과-학번이 기준에 있는지 검사 
-        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-            return redirect('/agree/')
-    # 학과 or 전공으로 뜨는 경우
-    else:
-        # 예외처리
-        if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-            return redirect('/agree/')
+    # 검사 가능 학과 선별 로직
+    major = temp_user_info['major']
+    major_candidate = []
 
-    # 예체능대/호경특정학과 는 영어인증 면제 / (학부소속에선 면제 없음)``
+    # 세부전공
+    major_qs =  Major.objects.filter(sub_major = major)
+    if major_qs.exists():
+        major_candidate.append(major_qs[0].major)
+    else:
+        # 전공/학과
+        major_qs = Major.objects.filter(major = major)
+        if major_qs.exists():
+            major_candidate.append(major_qs[0].major)
+        else:
+            # 학부
+            major_qs = Major.objects.filter(department = major)
+            if major_qs.exists():
+                for q in major_qs:
+                    major_candidate.append(q.major)
+
+    # 예외처리
+    if not major_candidate or (not Standard.objects.filter(user_year = year, user_dep__in = major_candidate).exists()):
+        messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+        return redirect('/agree/')
+
+    # 최종 결과가 학부인 경우 전공 선택지 담아주기
+    major_select = []
+    if len(major_candidate) > 1:
+        major_select = major_candidate
+
+    # 예체능대학은 영어면제
     is_exempt_english = 0
-    if not major_select:
-        user_standard_row = Standard.objects.get(user_year = year, user_dep = temp_user_info['major'])
-        english_standard = json.loads(user_standard_row.english)
-        if not english_standard:
-            is_exempt_english = 1
+    if major_qs[0].college == "예체능대학":
+        is_exempt_english = 1
     temp_user_info['is_exempt_english'] = is_exempt_english
     
     # 나머지 데이터도 추가해주기    
