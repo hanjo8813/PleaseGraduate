@@ -392,31 +392,40 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
+    # # 세사봉
+    # ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
+    # for row in ug_qs1:
+    #     year = int(row.student_id[:2])
+    #     real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
+    #     user_classification = row.classification[:2]
+    #     if user_classification != real_classification:
+    #         row.classification = user_classification + "→" + real_classification
+    #         print(row.classification)
+    #     row.save()
 
-    # 세사봉
-    ug_qs1 = UserGrade.objects.filter(subject_num = "8364")
-    for row in ug_qs1:
-        year = int(row.student_id[:2])
-        real_classification = ChangedClassification.objects.get(subject_num = "8364", year = year).classification
-        user_classification = row.classification[:2]
-        if user_classification != real_classification:
-            row.classification = user_classification + "→" + real_classification
-            print(row.classification)
-        row.save()
-
-    # 창기
-    ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
-    for row in ug_qs2:
-        year = int(row.student_id[:2])
-        real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
-        user_classification = row.classification[:2]
-        if user_classification != real_classification:
-            row.classification = user_classification + "→" + real_classification
-            print(row.classification)
-        row.save()
+    # # 창기
+    # ug_qs2 = UserGrade.objects.filter(subject_num = "9045")
+    # for row in ug_qs2:
+    #     year = int(row.student_id[:2])
+    #     real_classification = ChangedClassification.objects.get(subject_num = "9045", year = year).classification
+    #     user_classification = row.classification[:2]
+    #     if user_classification != real_classification:
+    #         row.classification = user_classification + "→" + real_classification
+    #         print(row.classification)
+    #     row.save()
 
     # for row in TestTable.objects.all():
     #     row.text = "hi"
     #     row.save()
+
+    
+
+
+
+
+
+
+
+
 
     return HttpResponse('테스트 완료, 터미널 확인')

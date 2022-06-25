@@ -1,6 +1,7 @@
 # 파이썬 라이브러리
 import json
 import datetime
+from tkinter.tix import Tree
 import bcrypt
 # 장고 관련 참조
 from django.shortcuts import redirect
@@ -36,7 +37,7 @@ def f_certify(request):
 
 # ***********************************************************************************
 
-    temp_user_info['major'] = '바순'
+    temp_user_info['major'] = '피아노'
     year = 18
     
 # ***********************************************************************************
@@ -44,9 +45,10 @@ def f_certify(request):
     # 검사 가능 학과 선별 로직
     major = temp_user_info['major']
     major_candidate = []
+    is_department = False
 
     # 세부전공
-    major_qs =  Major.objects.filter(sub_major = major)
+    major_qs = Major.objects.filter(sub_major = major)
     if major_qs.exists():
         major_candidate.append(major_qs[0].major)
     else:
@@ -58,6 +60,7 @@ def f_certify(request):
             # 학부
             major_qs = Major.objects.filter(department = major)
             if major_qs.exists():
+                is_department = True
                 for q in major_qs:
                     major_candidate.append(q.major)
 
@@ -68,7 +71,7 @@ def f_certify(request):
 
     # 최종 결과가 학부인 경우 전공 선택지 담아주기
     major_select = []
-    if len(major_candidate) > 1:
+    if is_department:
         major_select = major_candidate
 
     # 예체능대학은 영어면제

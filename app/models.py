@@ -45,6 +45,7 @@ class NewUserInfo(models.Model):
     password = models.CharField(max_length=100)
     year = models.IntegerField()
     major = models.CharField(max_length=45)
+    sub_major = models.CharField(max_length=45, blank=True, null=True)
     major_status = models.CharField(max_length=10)
     name = models.CharField(max_length=45)
     book = models.CharField(max_length=45)
