@@ -37,56 +37,72 @@ def f_mod_info(request):
     # 기본 정보 -> 변수에 저장
     ui_row = NewUserInfo.objects.get(student_id = user_id)
     year = user_id[:2]
-    getted_major = temp_user_info['major']
+    
+    # 받아온거에서 전공제외 항목들 쿼리셋에 저장
+    ui_row.book = temp_user_info['book']
+    ui_row.name = temp_user_info['name']
 
     # ***********************************************************************************
     
-    # getted_major = 
+    # temp_user_info['major'] = ""
     # year = 
     # ui_row.year = 
     # ui_row.save()
     
     # ***********************************************************************************
 
-    # 받아온거에서 전공제외 항목들 쿼리셋에 저장
-    ui_row.book = temp_user_info['book']
-    ui_row.name = temp_user_info['name']
-    
-    # 전공이 학부로 뜨는 경우(1학년에 해당)
-    if getted_major[-2:] == '학부':
-        # 해당 학부의 학과를 모두 불러온 후 리스트에 저장
-        md = Major.objects.filter(department = getted_major)
-        major_select = [row.major for row in md]
-        # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
-        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 변경된 '+ getted_major + '-' + year + '의 검사를 지원하지 않습니다.')
-            return redirect('/mypage/')
-        # 통과하면 저장 후 세션에 전공선택지 넣고 메시지로 선택창 띄워준다
-        ui_row.save()
-        request.session['temp_major_select'] = major_select
-        messages.warning(request, '전공선택 창 띄우기')
-        return redirect('/mypage/')
-    # 학과/전공으로 뜨는 경우
+    # 검사 가능 학과 선별 로직
+    input_major = temp_user_info['major']
+    major_select = []
+
+    # 세부전공
+    major_qs = Major.objects.filter(sub_major = input_major)
+    if major_qs.exists():
+        ui_row.sub_major = input_major
+        ui_row.major = major_qs[0].major
     else:
-        # 예외처리 - 바뀐 학과/전공이 기준에 해당하는지 검사
-        if not Standard.objects.filter(user_year = year, user_dep = getted_major).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 변경된 '+ getted_major + '-' + year + '의 검사를 지원하지 않습니다.')
-            return redirect('/mypage/')
-        # 영어인증 면제학과로 변경시, user_info의 영어정보를 면제로 바꾼다
-        user_standard_row = Standard.objects.get(user_year = year, user_dep = getted_major)
-        english_standard = json.loads(user_standard_row.english)
-        if not english_standard:
-            ui_row.eng = '영어인증면제학과'
-        # 면제학과에서 이수해야하는 학과로 전과했을때
-        elif ui_row.eng  == '영어인증면제학과':
-            ui_row.eng = '해당없음'
-        # 유저정보 테이블에 저장
-        ui_row.major = getted_major
-        ui_row.save()
-        # json DB도 업데이트
-        update_json(user_id)
-        messages.success(request, '업데이트성공')
-        return redirect('/mypage/') 
+        # 전공/학과
+        major_qs = Major.objects.filter(major = input_major)
+        if major_qs.exists():
+            ui_row.sub_major = None
+            ui_row.major = major_qs[0].major
+        else:
+            # 학부
+            major_qs = Major.objects.filter(department = input_major)
+            if major_qs.exists():
+                ui_row.sub_major = None
+                for q in major_qs:
+                    major_select.append(q.major)
+            else:
+                messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+                return redirect('/mypage/') 
+
+    # 예체능대학은 영어면제
+    if major_qs[0].college == "예체능대학":
+        ui_row.eng = '영어인증면제학과'
+    else:
+        ui_row.eng = '해당없음'
+
+    # 예외처리
+    if major_select :
+        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+        else:
+            # 통과하면 저장 후 세션에 전공선택지 넣고 메시지로 선택창 띄워준다
+            ui_row.save()
+            request.session['temp_major_select'] = major_select
+            messages.warning(request, '전공선택 창 띄우기')
+    else:
+        if not Standard.objects.filter(user_year = year, user_dep = ui_row.major).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+        else:
+            # 유저정보 테이블에 저장 후 json DB도 업데이트
+            ui_row.save()
+            update_json(user_id)
+            messages.success(request, '업데이트성공')
+
+    return redirect('/mypage/') 
+
 
 # 2. 전공상태 + 영어인증 수정
 def f_mod_ms_eng(request):

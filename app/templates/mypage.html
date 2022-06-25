@@ -38,7 +38,11 @@
                 </tr>
                 <tr>
                     <td class="my_box_table_1st_td">학과</td>
-                    <td>{{ major }}</td>
+                    {% if sub_major %}
+                        <td>{{ major }} ({{ sub_major }})</td>
+                    {% else %}
+                        <td>{{ major }}</td>
+                    {% endif %}
                 </tr>
                 <tr>
                     <td class="my_box_table_1st_td">학번</td>

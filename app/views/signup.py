@@ -37,47 +37,51 @@ def f_certify(request):
 
 # ***********************************************************************************
 
-    temp_user_info['major'] = '피아노'
-    year = 18
+    # temp_user_info['major'] = ''
+    # year = 
     
 # ***********************************************************************************
 
     # 검사 가능 학과 선별 로직
+    input_major = temp_user_info['major']
     major_select = []
 
     # 세부전공
-    major_qs = Major.objects.filter(sub_major = temp_user_info['major'])
+    major_qs = Major.objects.filter(sub_major = input_major)
     if major_qs.exists():
-        temp_user_info['sub_major'] = temp_user_info['major']   # 세션에 추가해줌
+        temp_user_info['sub_major'] = input_major   # 세션에 추가해줌
         temp_user_info['major'] = major_qs[0].major
     else:
         # 전공/학과
-        major_qs = Major.objects.filter(major = temp_user_info['major'])
+        major_qs = Major.objects.filter(major = input_major)
         if major_qs.exists():
             pass
         else:
             # 학부
-            major_qs = Major.objects.filter(department = temp_user_info['major'])
+            major_qs = Major.objects.filter(department = input_major)
             if major_qs.exists():
                 for q in major_qs:
                     major_select.append(q.major)
-
-    # 예외처리
-    if major_select :
-        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-            return redirect('/agree/')
-    else:
-        if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
-            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-            return redirect('/agree/')
-
+            else:
+                messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+                return redirect('/agree/') 
+    
     # 예체능대학은 영어면제
     is_exempt_english = 0
     if major_qs[0].college == "예체능대학":
         is_exempt_english = 1
     temp_user_info['is_exempt_english'] = is_exempt_english
-    
+
+    # 예외처리
+    if major_select :
+        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
+    else:
+        if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 ' + input_major + '-' + str(year) + '학번의 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
+
     # 나머지 데이터도 추가해주기    
     temp_user_info['id'] = id
     temp_user_info['year'] = year
@@ -132,7 +136,7 @@ def f_register(request):
     new_ui.book = book
     new_ui.eng = eng
     # 세부전공이 있다면 추가
-    if temp_user_info['sub_major'] :
+    if "sub_major" in temp_user_info :
         new_ui.sub_major = temp_user_info['sub_major']
     new_ui.save()
 
