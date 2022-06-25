@@ -43,36 +43,34 @@ def f_certify(request):
 # ***********************************************************************************
 
     # 검사 가능 학과 선별 로직
-    major = temp_user_info['major']
-    major_candidate = []
-    is_department = False
+    major_select = []
 
     # 세부전공
-    major_qs = Major.objects.filter(sub_major = major)
+    major_qs = Major.objects.filter(sub_major = temp_user_info['major'])
     if major_qs.exists():
-        major_candidate.append(major_qs[0].major)
+        temp_user_info['sub_major'] = temp_user_info['major']   # 세션에 추가해줌
+        temp_user_info['major'] = major_qs[0].major
     else:
         # 전공/학과
-        major_qs = Major.objects.filter(major = major)
+        major_qs = Major.objects.filter(major = temp_user_info['major'])
         if major_qs.exists():
-            major_candidate.append(major_qs[0].major)
+            pass
         else:
             # 학부
-            major_qs = Major.objects.filter(department = major)
+            major_qs = Major.objects.filter(department = temp_user_info['major'])
             if major_qs.exists():
-                is_department = True
                 for q in major_qs:
-                    major_candidate.append(q.major)
+                    major_select.append(q.major)
 
     # 예외처리
-    if not major_candidate or (not Standard.objects.filter(user_year = year, user_dep__in = major_candidate).exists()):
-        messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
-        return redirect('/agree/')
-
-    # 최종 결과가 학부인 경우 전공 선택지 담아주기
-    major_select = []
-    if is_department:
-        major_select = major_candidate
+    if major_select :
+        if not Standard.objects.filter(user_year = year, user_dep__in = major_select).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
+    else:
+        if not Standard.objects.filter(user_year = year, user_dep = temp_user_info['major']).exists():
+            messages.error(request, '😢 아직 Please Graduate에서 해당 학과-학번 검사를 지원하지 않습니다.')
+            return redirect('/agree/')
 
     # 예체능대학은 영어면제
     is_exempt_english = 0
@@ -87,6 +85,7 @@ def f_certify(request):
     # 세션에 저장
     request.session['temp_user_info'] = temp_user_info
     return redirect('/register/')
+
 
 def f_register(request):
     # 1. 세션에 있는것부터 꺼내자
@@ -132,6 +131,9 @@ def f_register(request):
     new_ui.name = name
     new_ui.book = book
     new_ui.eng = eng
+    # 세부전공이 있다면 추가
+    if temp_user_info['sub_major'] :
+        new_ui.sub_major = temp_user_info['sub_major']
     new_ui.save()
 
     return redirect('/success/')
