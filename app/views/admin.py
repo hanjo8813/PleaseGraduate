@@ -69,10 +69,12 @@ def f_insert_user(request):
 
     # admin 페이지 입력데이터 검증
     student_id = request.POST.get('student_id')
-    major = request.POST.get('major')
     name = request.POST.get('name')
-    if '' in [student_id, major, name]:
-        return HttpResponse('❌❌❌ 세가지 데이터를 모두 입력해야 함 ❌❌❌')
+    major = request.POST.get('major')
+    sub_major = request.POST.get('sub_major')
+
+    if '' in [student_id, name, major, sub_major]:
+        return HttpResponse('❌❌❌ 4가지 데이터를 모두 입력해야 함 ❌❌❌')
 
     register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     password = bcrypt.hashpw('1234'.encode(
@@ -88,6 +90,7 @@ def f_insert_user(request):
     new_ui.password = password
     new_ui.year = year
     new_ui.major = major
+    new_ui.sub_major = sub_major
     new_ui.major_status = major_status
     new_ui.name = name
     new_ui.book = book

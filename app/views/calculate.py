@@ -326,7 +326,7 @@ def f_result(user_id):
         
         # 인문/예체능대학의 16,17 학번의 소기코 대체과목은 컴기코로 바꿔줌
         if ui_row.year in [16, 17] \
-            and Major.objects.get(major = ui_row.major).college in ["예체능대학", "인문과학대학"] \
+            and Major.objects.filter(major = ui_row.major)[0].college in ["예체능대학", "인문과학대학"] \
             and '9799' in recom_essential_cs :
             # 일단 추천리스트에서 소기코는 삭제하고
             recom_essential_cs.remove('9799')
