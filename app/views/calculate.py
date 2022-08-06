@@ -97,7 +97,7 @@ def make_recommend_list_other(other_, user_lec_list):
         # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
         if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
             # AllLecture에서 이수구분이 교선일때만 리스트에 추가함
-            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전필', '전선', '교선1']).exists():
+            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전필', '전선', '교선1', '교선']).exists():
                 rank += 1
                 row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
                 recom.append( [row_dic[0], rank] )
@@ -312,7 +312,7 @@ def f_result(user_id):
     ################################################
     if cs_exists :
         # 성적표에서 고선 추출
-        df_cs = data[data['이수구분'].isin(['교선', '교선1', '중선'])]
+        df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
         df_cs.reset_index(inplace=True,drop=True)
         # 기준학점 & 사용자학점합계 추출
         standard_num_cs = standard_row.core_selection
@@ -360,7 +360,7 @@ def f_result(user_id):
             cs_part_for_recom = standard_cs_part
         else:                   # 만족 못했으면 영역 recom 리스트 그대로
             cs_part_for_recom = recom_cs_part
-        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선', '교선1', '중선'],  selection__in=cs_part_for_recom)
+        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)

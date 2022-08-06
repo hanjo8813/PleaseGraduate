@@ -43,7 +43,7 @@
         <span id='dd' class="close" style="font-size:3rem;">&times;</span>
         <div class='popup_content'>
             <div class='popup_title'>
-                공지사항 (22.08.08)
+                공지사항 (22.08.06)
             </div>
             <div class='popup_box'>
                 <ul>
@@ -102,7 +102,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0626' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0807' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -116,7 +116,7 @@
             if (chk.checked) {
                 var date = new Date();
                 date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0626' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0807' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
