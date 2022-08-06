@@ -227,11 +227,11 @@ input[type="button"]
     font-size:0.9rem;
     font-weight: bold;
     letter-spacing:0.8px;
-    width:175px;
+    width:180px;
     clear:right;
     float:right;
     margin-top:4.2rem; 
-    margin-right:0.1rem; 
+    margin-right:0.5rem; 
 }
 
 .popup_content{
