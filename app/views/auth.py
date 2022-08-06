@@ -62,11 +62,18 @@ def f_mypage(user_id):
     # 성적표 띄울땐 커스텀과 찐 성적 구분한다
     grade = list(ug.exclude(year='커스텀').values())
     custom_grade = list(ug.filter(year='커스텀').values())
-    # 성적표 리스트에서 이수구분 변경됐을 경우 표시해줌
+    # 성적표 리스트에서 이수구분 변경여부 검사
     for i, g in enumerate(grade):
         is_changed_classification = 0
-        if "→" in g["classification"]:
-            is_changed_classification = 1
+        # 변경내역 있는 과목 조회
+        cc_qs = ChangedClassification.objects.filter(year = ui_row.year, subject_num = g["subject_num"])
+        if cc_qs.exists():
+            changed_classifiaction = cc_qs[0].classification
+            # 학번 기준과 맞지않으면 변경
+            if g["classification"] != changed_classifiaction:
+                grade[i]["classification"] += "→" + changed_classifiaction
+                is_changed_classification = 1
+        # 해당 과목에 이수구분 변경여부 추가 마킹
         grade[i]["is_changed_classification"] = is_changed_classification
     # 공학인증 없는학과 
     user_en = Standard.objects.get(user_dep=ui_row.major, user_year=ui_row.year).sum_eng

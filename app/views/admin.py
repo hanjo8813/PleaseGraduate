@@ -410,13 +410,5 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
-    ug_qs = UserGrade.objects.filter(subject_num__in = ["8364", "9045"])
-    for row in ug_qs:
-        before_classification = row.classification[:2]
-        if before_classification == "교선":
-            before_classification += "1"
-        row.classification = before_classification
-        row.save()
-
 
     return HttpResponse('테스트 완료, 터미널 확인')

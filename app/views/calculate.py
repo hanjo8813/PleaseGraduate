@@ -109,11 +109,6 @@ def convert_to_int(num):
         num = int(num)
     return num
 
-def convert_classification(classification):
-    if "→" in classification:
-        return classification.split("→")[1]
-    return classification
-
 def convert_selection(selection):
     if selection == "융합과창업":
         return "자기계발과진로"
@@ -128,8 +123,13 @@ def f_result(user_id):
     user_qs = UserGrade.objects.filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
     data.rename(columns = {'subject_num' : '학수번호', 'subject_name' : '교과목명', 'classification' : '이수구분', 'selection' : '선택영역', 'grade' : '학점'}, inplace = True)
-    # 이수구분변경 과목 변경 결과로 수정
-    data["이수구분"] = data["이수구분"].apply(convert_classification)
+    # 이수구분 변경 과목 검사
+    for i, row in data.iterrows():
+        cc_qs = ChangedClassification.objects.filter(year = ui_row.year, subject_num = row["학수번호"])
+        if cc_qs.exists():
+            changed_classifiaction = cc_qs[0].classification
+            if row["이수구분"] != changed_classifiaction:
+                data.at[i, "이수구분"] = changed_classifiaction # df의 해당 행-열 데이터 변경
     # 사용자에게 맞는 기준 row 뽑아내기
     standard_row = Standard.objects.get(user_dep = ui_row.major, user_year = ui_row.year)
 
