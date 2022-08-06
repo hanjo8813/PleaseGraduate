@@ -114,8 +114,8 @@ def make_merge_df():
     # *** 매우중요 ***
     # 업데이트 전에 반드시 확인하고 업데이트해야함
     # first와 second의 파일 경로를 우선순위에 맞게 바꿔주자
-    first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
-    second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
+    first = './dev/update_table/2nd_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    second = './dev/update_table/1st_semester/'     # 이전 학기 엑셀
 
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
     
@@ -152,6 +152,19 @@ def make_merge_df():
     df_merge.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
     # 선택영역 Nan을 바꾸기
     df_merge.fillna('', inplace=True)
+    
+    # 이수구분 변경
+    def convert_classification(classification):
+        if classification == "교양필수": return "교필"
+        elif classification == "공통교양필수": return "공필"
+        elif classification == "교양선택": return "교선"
+        elif classification == "무관후보생교육": return "ROTC"
+        elif classification == "학문기초교양필수": return "기필"
+        elif classification == "전공선택": return "전선"
+        elif classification == "전공필수": return "전필"
+        else: return classification
+    df_merge["이수구분"] = df_merge["이수구분"].apply(convert_classification)
+
     # 최신강의 학수번호 리스트
     s_num_list = df_merge['학수번호'].tolist()
     return df_merge, s_num_list
@@ -162,6 +175,7 @@ def f_test_update_lecture(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
     df_merge, s_num_list = make_merge_df()
+
     # 1. test_new_lecture 업데이트
     # 우선 text_new_lecture 테이블의 데이터를 모두 삭제해준다
     TestNewLecture.objects.all().delete()
@@ -296,6 +310,7 @@ def f_update_standard(request):
 
 #  -------------------------------------------- ( major 테이블 업데이트 ) ---------------------------------------------------------
 
+# deprecated
 def f_update_major(request):
     # 사용법
     # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
@@ -420,6 +435,7 @@ def f_test(request):
     # for row in TestTable.objects.all():
     #     row.text = "hi"
     #     row.save()
+    
 
 
 
