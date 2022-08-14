@@ -490,7 +490,7 @@ def f_result(user_id):
             'standard_essential' : standard_essential_b,
             'pass' : pass_b,
         }
-
+        
         # 화학과 기교에서는 조건이 추가된다.
         if ui_row.major == '화학과':
             pass_chemy_all = pass_b

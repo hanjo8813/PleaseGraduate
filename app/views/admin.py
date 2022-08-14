@@ -395,5 +395,4 @@ def f_test(request):
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
-
     return HttpResponse('테스트 완료, 터미널 확인')
