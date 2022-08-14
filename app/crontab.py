@@ -5,7 +5,7 @@ import requests
 from datetime import date, timedelta
 from django.db.models import Count, Sum
 
-# 매일 00:00 마다 실행됨
+# 매일 00:00, 01 마다 실행됨
 
 def insert_today():
     # 오늘날짜 row 생성
