@@ -29,7 +29,7 @@ def f_login(request):
         return redirect('/login/')
     # !! 로그인시마다 json을 최신화시킨다 !!
     update_json(user_id)
-    # 세션에 ID와 전공상태 저장
+    # 세션에 ID 저장
     request.session['id'] = user_id
     return redirect('/mypage/')
 

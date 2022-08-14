@@ -61,7 +61,6 @@ def f_user_test(request):
 
 #  -------------------------------------------- (사용자 삽입) ---------------------------------------------------------
 
-
 def f_insert_user(request):
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
@@ -107,9 +106,8 @@ def make_merge_df():
     # 1. upadate_lecture 폴더안에 1학기 폴더(1st_semester)와 2학기 폴더(2nd_semester) 구분되어 있음
     # 2. 두 학기의 최신 강의목록 엑셀 파일을 각 폴더에 넣는다.
     # 3. 각 폴더에는 엑셀파일이 하나씩만 존재해야한다.
-    # 4. 엑셀의 확장자는 .xlsx 가 아닌 .xls 이어야하므로 로컬에서 변경해준다.
-    # 5. 엑셀파일에서 칼럼명이 살짝 이상할때가 있으므로 (한칸띄우기 등등) 검토가 필요함.
-    # 6. DB 변경하는 시간이 1분정도 걸림
+    # 4. 엑셀파일에서 칼럼명이 살짝 이상할때가 있으므로 (한칸띄우기 등등) 검토가 필요함.
+    # 5. DB 변경하는 시간이 1분정도 걸림
 
     # *** 매우중요 ***
     # 업데이트 전에 반드시 확인하고 업데이트해야함
@@ -259,10 +257,6 @@ def f_update_lecture(request):
 
 
 def f_update_standard(request):
-    # 사용법
-    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
-    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경 -> 첫 행 삭제
-
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
@@ -287,6 +281,7 @@ def f_update_standard(request):
         new_st.major_selection = int(row['major_selection'])
         new_st.core_essential = int(row['core_essential'])
         new_st.core_selection = int(row['core_selection'])
+        new_st.la_balance = int(row['la_balance'])
         new_st.basic = int(row['basic'])
         new_st.ce_list = str(row['ce_list'])
         new_st.cs_list = str(row['cs_list'])
@@ -312,10 +307,6 @@ def f_update_standard(request):
 
 # deprecated
 def f_update_major(request):
-    # 사용법
-    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
-    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
-
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
@@ -342,9 +333,6 @@ def f_update_major(request):
 #  -------------------------------------------- ( subject_group 테이블 업데이트 ) ---------------------------------------------------------
 
 def f_update_subject_group(request):
-    # 사용법
-    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
-    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
@@ -372,9 +360,6 @@ def f_update_subject_group(request):
 #  -------------------------------------------- ( changed_classification 테이블 업데이트 ) ---------------------------------------------------------
 
 def f_update_changed_classification(request):
-    # 사용법
-    # 1. 해당 폴더에 들어있는 엑셀(xls) 첫 행 아래로 새로운 데이터를 추가한다.
-    # 2. 아니면 관리용 엑셀파일을 복사 -> xls로 변경
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
@@ -409,6 +394,5 @@ def f_test(request):
     if platform.system() != 'Windows':
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
-
 
     return HttpResponse('테스트 완료, 터미널 확인')

@@ -5,7 +5,7 @@ import requests
 from datetime import date, timedelta
 from django.db.models import Count, Sum
 
-# 매일 00:00 마다 실행됨
+# 매일 00:00, 01 마다 실행됨
 
 def insert_today():
     # 오늘날짜 row 생성
@@ -40,6 +40,13 @@ def daily_statistics():
     user_with_major = ''
     for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key=lambda x: x[1], reverse=True):
         user_with_major +=  str(row[0]) + " - " + str(row[1]) + " 명\n"
+
+    # 가입자/탈퇴자수 저장
+    vc_qs = VisitorCount.objects.get(visit_date = yesterday)
+    vc_qs.user_count = total_user
+    vc_qs.signup_count = daily_signup
+    vc_qs.delete_count = daily_delete
+    vc_qs.save()
 
     # Slack 알림
     url = config('SLACK_WEBHOOK_URL_ALARM')

@@ -22,15 +22,24 @@ def a_statistics(request):
     # 사용자 과목정보에서 교선 긁어옴
     cs_queryset = UserGrade.objects.exclude(year = '커스텀').filter(
         classification__in = ['교선', '교선1', '교선2'], 
-        selection__in=selection_list, grade__in= grade_list
-        )
+        selection__in=selection_list, 
+        grade__in= grade_list
+    )
     cs_count = cs_queryset.values_list('subject_num').annotate(count=Count('subject_num'))
     # 쿼리셋을 리스트로 변환 -> 등장횟수에 따라 내림차순 정렬 
     cs_count = sorted(list(cs_count), key = lambda x : x[1], reverse=True)
     zip_lecture_count = []
     for s_num, count in cs_count:
-        if AllLecture.objects.filter(subject_num = s_num).exists() and count >= 10:
-            lec_info = list(AllLecture.objects.filter(subject_num = s_num).values())[0]
+        if count < 10:
+            continue
+        al_queryset = AllLecture.objects.filter(
+            subject_num = s_num, 
+            classification__in = ['교선', '교선1', '교선2'], 
+            selection__in=selection_list,
+            # grade__in=grade_list
+        )
+        if al_queryset.exists():
+            lec_info = list(al_queryset.values())[0]
             zip_lecture_count.append([lec_info, count])
     # context 전송
     context={

@@ -1,4 +1,5 @@
 # 파이썬 라이브러리
+import platform
 import json
 import datetime
 from tkinter.tix import Tree
@@ -37,8 +38,9 @@ def f_certify(request):
 
 # ***********************************************************************************
 
-    # temp_user_info['major'] = ''
-    # year = 
+    if platform.system() == 'Windows':
+        temp_user_info['major'] = '인공지능학과'
+        year = 22
     
 # ***********************************************************************************
 

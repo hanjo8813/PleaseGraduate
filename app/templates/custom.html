@@ -28,7 +28,7 @@
                 <p>4. 추가된 과목표를 확인하고 저장 버튼을 눌러 자신의 정보를 업데이트합니다.</p>
                 <div style="margin-top: 1.2rem;">
                     <p><span class="caution_info">※ 융합/연계전공 과목의 경우 과목 검색이 되지 않습니다.</span></p>
-                    <p><span class="caution_info">※ ELP1 이수면제자는 "면제"를 검색하여 커스텀 과목을 추가해주세요!</span></p>
+                    <p><span class="caution_info">※ ELP1/대학영어 이수면제자는 "면제"를 검색하여 커스텀 과목을 추가해주세요!</span></p>
                 </div>
                 
             </div>
@@ -170,6 +170,10 @@
 
 
 <script>
+    // 학번추출
+    const user_id = '{{request.session.id }}';
+    const year = Number(user_id.substring(0, 2));
+
     // 저장하기 클릭시 로딩모달
     function pop_modal() {
         document.getElementById('load_madal').style.display = "block";
@@ -180,13 +184,22 @@
 
     function ajax_conn() {
         var input_s_num = $("#s_num").val();
-        // ELP1 이수면제 커맨드 입력시
+        // 영어과목 이수면제 커맨드 입력시
         if(input_s_num == '면제'){
-            show_table(['10352', 'English Listening Practice 1', '', '이수면제용', 0]);
-            var classification_input = document.getElementById('classification');
-            classification_input.value = '교필';
-            classification_input.disabled = true;
-            return;
+            if(year <= 21){
+                show_table(['10352', 'English Listening Practice 1', '', '이수면제용', 0]);
+                var classification_input = document.getElementById('classification');
+                classification_input.value = '교필';
+                classification_input.disabled = true;
+                return;
+            }
+            else{
+                show_table(['11304', '대학영어', '', '이수면제용', 0]);
+                var classification_input = document.getElementById('classification');
+                classification_input.value = '공필';
+                classification_input.disabled = true;
+                return;
+            }
         }
         // ajax 통신 시작
         $.ajax(
@@ -244,12 +257,15 @@
         html += "<option value='교필'>교필</option>"
         html += "<option value='교선1'>교선1</option>"
         html += "<option value='교선2'>교선2</option>"
-        html += "<option value='교선'>교선(22학번 이후)</option>"
         html += "<option value='기교'>기교</option>"
         html += "<option value='연필'>연필</option>"
         html += "<option value='연선'>연선</option>"
         html += "<option value='복필'>복필</option>"
         html += "<option value='복선'>복선</option>"
+        html += "<option value='교선'>교선(22학번 이후)</option>"
+        html += "<option value='공필'>공필</option>"
+        html += "<option value='균필'>균필</option>"
+        html += "<option value='기필'>기필</option>"
         html += "</select>";
         html += "</td>";
         html += "<td class='grade_table_td'><input class='td_input' type='text' id='selection' value='" + result[3] + "' readonly></td>";
