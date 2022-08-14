@@ -11,8 +11,8 @@
 - 22학번 서비스 지원 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/73))
 - 2022-2학기 강의시간표 및 수강편람 정보 업데이트
 - 꿀교양찾기 검색 기능 개선
-- 이수구분 변경 과목 관리 개선  ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/84))
 - admin - 일일 통계 기능 추가
+- 이수구분 변경 과목 관리 개선 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/84))
 - 예체능대학의 로그인 및 정보 업데이트 오류 수정 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/88))
 
 
