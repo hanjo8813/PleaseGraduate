@@ -455,7 +455,7 @@ def f_result(user_id):
         # context 생성
         context_la_balance = {
             'standard_num' : standard_num_la_balance,
-            'user_num' : user_num_la_balance,
+            'user_num' : convert_to_int(user_num_la_balance),
             'recom' : recom_la_balance,
             'standard_part' : standard_la_balance_part,
             'part_check' : check_la_balance_part,

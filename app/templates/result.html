@@ -256,9 +256,51 @@
                     </div>
                     <div class="gbox">
                         <span class="grade">이수 영역</span>
-                        <span class="r" id="myarea1"></span>
+                        <span class="r" id="myarea4"></span>
                     </div>
                     <button class="rbutton" id="myBtn4">Recommend</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 균필 -->
+        {% if exists.la_balance %}
+        <div class="resultbox">
+            <div class="name">
+                균형교양필수
+                <span class="tooltip">
+                    <span class='tip_div'>Tip</span>
+                </span>
+                <div class="tooltip_text">
+                    <p>&#183; 22년도부터 교선1, 교선2가 통합되었습니다.</p>
+                    <p class='tooltip_sub_p'>- 단, 통합 이전에 수강한 교선2는 교선영역 기준학점에 <span class='tooltip_span'>포함되지 않습니다.</span></p>
+                    <p class='tooltip_sub_p'>- 선택영역도 5개 영역 -> 6개 영역으로 통합되었습니다.</p>
+                    <p>&#183; 세 가지 조건을 만족했을 경우 통과합니다.</p>
+                    <p class='tooltip_sub_p'>1. 교양선택 과목으로 기준학점을 만족해야합니다.</p>
+                    <p class='tooltip_sub_p'>2. 교양선택 영역에서 정해진 필수과목을 모두 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>&nbsp;&nbsp;&nbsp;- 해당 과목이 폐강된 경우 동일과목으로 대체 이수해야합니다.</p>
+                    <p class='tooltip_sub_p'>3. 과목마다 '선택영역'이 존재하고, 6가지의 선택영역 중 3가지 이상 이수해야합니다.</p>
+                </div>
+            </div>
+            <div class="box">
+                <div id="chart9">
+                    <strong></strong>
+                </div>
+                <div class="sbox">
+                    <div class="gbox">
+                        <span class="grade">기준 학점</span>
+                        <span class="r" id="grade9"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade">이수 학점</span>
+                        <span class="r" id="mygrade9"></span>
+                    </div>
+                    <div class="gbox">
+                        <span class="grade">이수 영역</span>
+                        <span class="r" id="myarea9"></span>
+                    </div>
+                    <button class="rbutton" id="myBtn9">Recommend</button>
                 </div>
             </div>
         </div>
@@ -758,6 +800,78 @@
         </div>
     </div>
 </div>
+
+<!-- 균필 -->
+<div id="myModal9" class="modal">
+    <div class="modal-content">
+        <span class="close" id="close9">&times;</span>
+        <br>
+        <div class="modal_div">
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택영역 현황
+                </div>
+                <div class="mydiv">'선택영역'을 필수로 2개 이상 이수해야 졸업요건을 충족합니다.</div>
+                <hr>
+                <table class="mytable" style="padding-bottom:1rem; width:65%">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc;">{{la_balance.standard_part.0}}</th>
+                        <th style="border-right :1px solid #cccccc;">{{la_balance.standard_part.1}}</th>
+                        <th>{{la_balance.standard_part.2}}</th>
+                    </tr>
+                    <tr class="mytr">
+                        {% for check in la_balance.part_check %}
+                        {% if check == '이수' %}
+                        <td class="mytd" style='color:#17a55e; font-weight: bold;'>
+                        {% else %}
+                        <td class="mytd">
+                        {% endif %}
+                            {{ check }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+                <div class="partdiv">
+                    {% if la_balance.pass_part %}
+                    <span style="color:#17a55e">선택영역 조건을 만족하셨습니다</span>
+                    {% else %}
+                    <span style="color:#d32f2f">선택영역이 부족합니다</span>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- 과목 추천 -->
+            {% if not la_balance.pass %}
+            <div class="p_div">
+                <div style="font-size : 1.5rem;"><i class="my_i fas fa-check-circle"></i> 추천과목
+                </div>
+                <div class="mydiv">
+                    듣지 않은 과목 중, 부족한 선택영역의 과목을 추천합니다.
+                </div>
+                <hr>
+                <table class="mytable">
+                    <tr class="myth" style="background-color: #f8f8f8;">
+                        <th style="border-right :1px solid #cccccc; width:15%">학수번호</th>
+                        <th style="border-right :1px solid #cccccc; width:40%">과목명</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">이수구분</th>
+                        <th style="border-right :1px solid #cccccc; width:15%">선택영역</th>
+                        <th style="width:15%">학점</th>
+                    </tr>
+                    {% for q in la_balance.recom %}
+                    <tr class="mytr">
+                        <td class="mytd">{{ q.subject_num }}</td>
+                        <td class="mytd">{{ q.subject_name }}</td>
+                        <td class="mytd">{{ q.classification }}</td>
+                        <td class="mytd">{{ q.selection }}</td>
+                        <td class="mytd" style="border-right :0px">{{ q.grade|floatformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <br><br><br>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
 
 <!-- 기교 -->
 <div id="myModal5" class="modal">
@@ -1260,6 +1374,7 @@
 </script>
 {% endif %}
 
+
 {% if exists.cs %}
 <script>
     // 교선 영역 함수
@@ -1267,12 +1382,12 @@
     var Mygrade4 = '{{core_selection.user_num}}';
     var pernum4 = to_percent(Mygrade4, Grade4);
     // 선택영역 패스여부
-    var Myarea1;
+    var Myarea4;
     if ('{{core_selection.pass_part}}' == 1) {
-        Myarea1 = "Pass";
+        Myarea4 = "Pass";
     }
     else {
-        Myarea1 = "NP";
+        Myarea4 = "NP";
         if (pernum4 == 100) {
             pernum4 -= 1;
         }
@@ -1289,7 +1404,7 @@
         }
     }
     document.getElementById("grade4").innerHTML = Grade4;
-    document.getElementById("myarea1").innerHTML = Myarea1;
+    document.getElementById("myarea4").innerHTML = Myarea4;
     document.getElementById("mygrade4").innerHTML = Mygrade4;
     document.getElementById("cs_p").innerHTML = Cs_p;
     var modal4 = document.getElementById('myModal4');
@@ -1301,6 +1416,39 @@
     CircleProgress(pernum4, '#chart4', 150);
 </script>
 {% endif %}
+
+
+{% if exists.la_balance %}
+<script>
+    // 균필 영역 함수
+    var Grade9 = '{{la_balance.standard_num}}';
+    var Mygrade9 = '{{la_balance.user_num}}';
+    var pernum9 = to_percent(Mygrade9, Grade9);
+    // 선택영역 패스여부
+    var Myarea9;
+    if ('{{la_balance.pass_part}}' == 1) {
+        Myarea9 = "Pass";
+    }
+    else {
+        Myarea9 = "NP";
+        if (pernum9 == 100) {
+            pernum9 -= 1;
+        }
+    }
+    //
+    document.getElementById("grade9").innerHTML = Grade9;
+    document.getElementById("myarea9").innerHTML = Myarea9;
+    document.getElementById("mygrade9").innerHTML = Mygrade9;
+    var modal9 = document.getElementById('myModal9');
+    var btn9 = document.getElementById("myBtn9");
+    var span9 = document.getElementById("close9");
+    Btnclick(btn9, modal9);
+    Spanclick(span9, modal9);
+
+    CircleProgress(pernum9, '#chart9', 150);
+</script>
+{% endif %}
+
 
 {% if exists.b %}
 <script>
