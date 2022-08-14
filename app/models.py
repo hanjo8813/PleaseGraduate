@@ -112,6 +112,7 @@ class Standard(models.Model):
     major_selection = models.IntegerField()
     core_essential = models.IntegerField()
     core_selection = models.IntegerField()
+    la_balance = models.IntegerField()
     basic = models.IntegerField()
     ce_list = models.CharField(max_length=100)
     cs_list = models.CharField(max_length=100)

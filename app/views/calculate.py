@@ -119,6 +119,8 @@ def convert_selection(selection):
 def f_result(user_id):
     # userinfo 테이블에서 행 추출
     ui_row = NewUserInfo.objects.get(student_id = user_id)
+    # 사용자 학과정보 불러오기
+    user_major_row = Major.objects.filter(major = ui_row.major)[0]
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
     user_qs = UserGrade.objects.filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['subject_num', 'subject_name', 'classification', 'selection', 'grade'])
@@ -140,11 +142,13 @@ def f_result(user_id):
     ################### 예외처리 여부 ###################
     ####################################################
     # 교필, 교선, 기교, 복전, 영어 여부 판단
-    ce_exists, cs_exists, b_exists, multi_exists, english_exists = 0, 0, 0, 0, 0
+    ce_exists, cs_exists, la_balance_exists, b_exists, multi_exists, english_exists = 0, 0, 0, 0, 0, 0
     if standard_row.core_essential:
         ce_exists = 1
     if standard_row.core_selection:
         cs_exists = 1
+    if standard_row.la_balance:
+        la_balance_exists = 1
     if standard_row.basic:
         b_exists = 1 
     if ui_row.major_status != '해당없음':
@@ -154,6 +158,7 @@ def f_result(user_id):
     context_exists = {
         'ce' : ce_exists,
         'cs' : cs_exists,
+        'la_balance' : la_balance_exists,
         'b' : b_exists,
         'english' : english_exists,
         'multi' : multi_exists,
@@ -280,7 +285,7 @@ def f_result(user_id):
 
 
     ################################################
-    ################### 교필 영역 ###################
+    ################### 교필/공필 영역 ###################
     ################################################
     if ce_exists :
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
@@ -311,7 +316,7 @@ def f_result(user_id):
     ################### 교선 영역 ###################
     ################################################
     if cs_exists :
-        # 성적표에서 고선 추출
+        # 성적표에서 교선 추출
         df_cs = data[data['이수구분'].isin(['교선1', '중선'])]
         df_cs.reset_index(inplace=True,drop=True)
         # 기준학점 & 사용자학점합계 추출
@@ -326,7 +331,7 @@ def f_result(user_id):
         
         # 인문/예체능대학의 16,17 학번의 소기코 대체과목은 컴기코로 바꿔줌
         if ui_row.year in [16, 17] \
-            and Major.objects.filter(major = ui_row.major)[0].college in ["예체능대학", "인문과학대학"] \
+            and user_major_row.college in ["예체능대학", "인문과학대학"] \
             and '9799' in recom_essential_cs :
             # 일단 추천리스트에서 소기코는 삭제하고
             recom_essential_cs.remove('9799')
@@ -390,8 +395,60 @@ def f_result(user_id):
         result_context['core_selection'] = context_core_selection
 
 
+
+    
     ################################################
-    ################### 기교 영역 ###################
+    ################### 균필 영역 ###################
+    ################################################
+    if la_balance_exists :
+
+        # 허용영역 기준 생성 -> 대학별 영역 제외
+        standard_la_balance_part = ["역사와사상", "자연과과학", "경제와사회", "문화와예술"]
+        if user_major_row.college in ["인문과학대학"]:
+            standard_la_balance_part.remove("역사와사상")
+        elif user_major_row.college in ["자연과학대학", "생명과학대학", "전자정보공학대학", "소프트웨어융합대학", "공과대학"]:
+            standard_la_balance_part.remove("자연과과학")
+        elif user_major_row.college in ["사회과학대학", "경영경제대학", "호텔관광대학"]:
+            standard_la_balance_part.remove("경제와사회")
+        elif user_major_row.college in ["예체능대학"]:
+            standard_la_balance_part.remove("문화와예술")
+        # 디이베/만애텍은 예체능으로 침
+        if ui_row.major in ["디자인이노베이션전공", "만화애니메이션텍전공"]:
+            standard_la_balance_part = ["역사와사상", "자연과과학", "경제와사회"]
+        
+        # 성적표에서 균필 과목 추출
+        df_la_balance = data[data['이수구분'].isin(['균필'])]
+        df_la_balance.reset_index(inplace=True,drop=True)
+
+        # 선택영역 검사
+        print(df_la_balance["선택영역"])
+        
+        user_la_balance_part = list(set(df_la_balance[df_la_balance['선택영역'].isin(standard_la_balance_part)]['선택영역'].tolist()))
+
+        print(user_la_balance_part)
+
+        # # context 생성
+        # context_la_balance = {
+        #     'standard_num' : ,
+        #     'user_num' : ,
+        #     'recom_essential' : ,
+        #     'standard_essential' : ,
+        #     'recom_selection' : ,
+        #     'standard_cs_part' : ,
+        #     'part_check' : ,
+        #     'pass_part' : ,
+        #     'pass_ess' : ,
+        #     'pass' : ,
+        # }
+        # result_context['la_balance'] = context_la_balance
+
+
+
+
+
+
+    ################################################
+    ################### 기교/기필 영역 ###################
     ################################################
     if b_exists :
         # 기준필수과목 & 사용자교필과목 추출 => 동일과목 매핑 dict 생성
@@ -568,6 +625,7 @@ def f_result(user_id):
         }
         result_context['multi_major_essential'] = context_multi_major_essential
         result_context['multi_major_selection'] = context_multi_major_selection
+
 
     #############################################
     ################### Total ###################
