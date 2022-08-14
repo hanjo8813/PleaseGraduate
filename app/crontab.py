@@ -12,6 +12,8 @@ def insert_today():
     new_vc = VisitorCount()
     new_vc.visit_date = datetime.datetime.now().strftime('%Y-%m-%d')
     new_vc.visit_count = 1
+    new_vc.signup_count = 0
+    new_vc.delete_count = 0
     new_vc.save()
 
 
@@ -40,6 +42,12 @@ def daily_statistics():
     user_with_major = ''
     for row in sorted(NewUserInfo.objects.values_list('major').annotate(count=Count('major')), key=lambda x: x[1], reverse=True):
         user_with_major +=  str(row[0]) + " - " + str(row[1]) + " 명\n"
+
+    # 가입자/탈퇴자수 저장
+    vc_qs = VisitorCount.objects.get(visit_date = yesterday)
+    vc_qs.signup_count = daily_signup
+    vc_qs.delete_count = daily_delete
+    vc_qs.save()
 
     # Slack 알림
     url = config('SLACK_WEBHOOK_URL_ALARM')

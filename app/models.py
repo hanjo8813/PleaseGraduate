@@ -170,6 +170,8 @@ class DjangoSession(models.Model):
 class VisitorCount(models.Model):
     visit_date = models.CharField(primary_key=True, max_length=45)
     visit_count = models.IntegerField()
+    signup_count = models.IntegerField()
+    delete_count = models.IntegerField()
 
     class Meta:
         managed = False
