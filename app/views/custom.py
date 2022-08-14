@@ -12,9 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 def a_search(request):
     # AJAX 통신으로 넘어온 학수번호를 받아서 파싱
     s_num = request.POST['back_s_num']
-    if not s_num.isdigit():
-        return JsonResponse({'result' : '검색실패'})
-    s_num = int(s_num)
+    if s_num[0].isdigit():
+        s_num = int(s_num)
     # 학수번호를 all_lecture 테이블에서 검색
     al = AllLecture.objects.filter(subject_num=s_num)
     # 존재한다면 
