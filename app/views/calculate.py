@@ -96,10 +96,11 @@ def make_recommend_list_other(other_, user_lec_list):
             break
         # 뉴렉쳐에 있는 최신 학수번호 + 내가 안들은것만 담기 + 과목정보 - 등장횟수 순위 묶어서 저장
         if NewLecture.objects.filter(subject_num=s_num).exists() and (s_num not in user_lec_list):
-            # AllLecture에서 이수구분이 교선일때만 리스트에 추가함
-            if AllLecture.objects.filter(subject_num = s_num, classification__in = ['전필', '전선', '교선1', '교선']).exists():
+            # AllLecture에서 이수구분이 맞을때만 리스트에 추가함
+            al_qs = AllLecture.objects.filter(subject_num = s_num, classification__in = ['전필', '전선', '교선1', '교선'])
+            if al_qs.exists():
                 rank += 1
-                row_dic = list(AllLecture.objects.filter(subject_num = s_num).values())
+                row_dic = list(al_qs.values())
                 recom.append( [row_dic[0], rank] )
     # 학수번호 -> 쿼리셋 -> 모든 정보 리스트로 변환 후 리턴
     return recom
@@ -360,13 +361,13 @@ def f_result(user_id):
                 part_check[i] = '미이수'
 
         # 선택추천과목 리스트 생성
-        user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in standard_row.cs_list.split('/')]
         if not recom_cs_part :  # 만족한경우엔 5개 다 추천
             cs_part_for_recom = standard_cs_part
         else:                   # 만족 못했으면 영역 recom 리스트 그대로
             cs_part_for_recom = recom_cs_part
         other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
+        user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in standard_row.cs_list.split('/')]
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
         # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)
         pass_cs_part, pass_cs_num, pass_cs_ess, pass_cs= 0, 0, 0, 0
@@ -394,13 +395,18 @@ def f_result(user_id):
         }
         result_context['core_selection'] = context_core_selection
 
-
-
     
     ################################################
     ################### 균필 영역 ###################
     ################################################
     if la_balance_exists :
+        # 성적표에서 균필 과목 추출
+        df_la_balance = data[data['이수구분'].isin(['균필'])]
+        df_la_balance.reset_index(inplace=True,drop=True)
+
+        # 기준학점 & 사용자학점합계 추출
+        standard_num_la_balance = standard_row.la_balance
+        user_num_la_balance = df_la_balance['학점'].sum()
 
         # 허용영역 기준 생성 -> 대학별 영역 제외
         standard_la_balance_part = ["역사와사상", "자연과과학", "경제와사회", "문화와예술"]
@@ -415,36 +421,48 @@ def f_result(user_id):
         # 디이베/만애텍은 예체능으로 침
         if ui_row.major in ["디자인이노베이션전공", "만화애니메이션텍전공"]:
             standard_la_balance_part = ["역사와사상", "자연과과학", "경제와사회"]
-        
-        # 성적표에서 균필 과목 추출
-        df_la_balance = data[data['이수구분'].isin(['균필'])]
-        df_la_balance.reset_index(inplace=True,drop=True)
 
-        # 선택영역 검사
-        print(df_la_balance["선택영역"])
-        
+        # 사용자가 들은 선택영역 추출
         user_la_balance_part = list(set(df_la_balance[df_la_balance['선택영역'].isin(standard_la_balance_part)]['선택영역'].tolist()))
+        # 사용자가 안들은 영역 추출
+        lack_la_balance_part = []
+        if len(user_la_balance_part) < 2:   # 기준영역 - 사용자들은영역 = 부족영역
+            lack_la_balance_part = list(set(standard_la_balance_part) - set(user_la_balance_part))
+        # 사용자의 부족 영역 체크
+        check_la_balance_part = ['이수' for _ in range(len(standard_la_balance_part))]
+        for i, c in enumerate(standard_la_balance_part):
+            if c not in user_la_balance_part:
+                check_la_balance_part[i] = '미이수'
 
-        print(user_la_balance_part)
+        # 과목 추천리스트 생성 -> 부족영역이 있을때만 생성
+        recom_la_balance = []
+        if lack_la_balance_part:
+            al_qs = AllLecture.objects.filter(
+                classification = '균필', 
+                selection__in = lack_la_balance_part,
+            )
+            recom_la_balance = list(al_qs.values())
 
-        # # context 생성
-        # context_la_balance = {
-        #     'standard_num' : ,
-        #     'user_num' : ,
-        #     'recom_essential' : ,
-        #     'standard_essential' : ,
-        #     'recom_selection' : ,
-        #     'standard_cs_part' : ,
-        #     'part_check' : ,
-        #     'pass_part' : ,
-        #     'pass_ess' : ,
-        #     'pass' : ,
-        # }
-        # result_context['la_balance'] = context_la_balance
-
-
-
-
+        # 패스여부 검사 (선택영역, 기준학점, 전체)
+        pass_la_balance_part, pass_la_balance_num, pass_la_balance= 0, 0, 0
+        if not lack_la_balance_part:
+            pass_la_balance_part = 1
+        if standard_num_la_balance <= user_num_la_balance:
+            pass_la_balance_num = 1
+        if pass_la_balance_part and pass_la_balance_num:
+            pass_la_balance = 1
+        
+        # context 생성
+        context_la_balance = {
+            'standard_num' : standard_num_la_balance,
+            'user_num' : user_num_la_balance,
+            'recom' : recom_la_balance,
+            'standard_part' : standard_la_balance_part,
+            'part_check' : check_la_balance_part,
+            'pass_part' : pass_la_balance_part,
+            'pass' : pass_la_balance,
+        }
+        result_context['la_balance'] = context_la_balance
 
 
     ################################################
