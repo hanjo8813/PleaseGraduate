@@ -72,8 +72,8 @@ def f_insert_user(request):
     major = request.POST.get('major')
     sub_major = request.POST.get('sub_major')
 
-    if '' in [student_id, name, major, sub_major]:
-        return HttpResponse('❌❌❌ 4가지 데이터를 모두 입력해야 함 ❌❌❌')
+    if '' in [student_id, name, major]:
+        return HttpResponse('❌❌❌ 3가지 데이터를 필수 입력해야 함 ❌❌❌')
 
     register_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     password = bcrypt.hashpw('1234'.encode(

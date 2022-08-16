@@ -325,7 +325,7 @@ def f_result(user_id):
         user_num_cs = df_cs['학점'].sum()
         # 기준필수과목 & 사용자과목 추출 => 동일과목 매핑 dict 생성
         dic_cs = make_dic([s_num for s_num in standard_row.cs_list.split('/')])
-        user_dic_cs = make_dic(df_cs['학수번호'].tolist())
+        user_dic_cs = make_dic(data['학수번호'].tolist())    # * 수정 : 필수과목은 교선1만 검사하지 않고 모든 학수번호를 대상으로 검사 
         # 기준필수과목+체크 & 추천과목 리스트 생성
         recom_essential_cs, check_cs = make_recommend_list(user_dic_cs, dic_cs)
         standard_essential_cs = to_zip_list(list_to_query(dic_cs.keys()), check_cs)
