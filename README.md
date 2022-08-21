@@ -1,6 +1,6 @@
 # Please Graduate
 
- ![pg](https://img.shields.io/badge/version-2.3.0-a3374f) 
+ ![since](https://img.shields.io/badge/since-2021.01-a3374f) ![pg](https://img.shields.io/badge/version-2.3.0-a3374f)
 
 ## 관련 링크
 
@@ -22,7 +22,7 @@
 
 <div align='center'>
     <h3>세종대학교 졸업요건 검사 및 강의 추천 서비스 'Please Graduate'</h3>
-    <p>총 <b>402개</b>의 검사 기준으로, <b>62개</b>의 모든 학과/전공 및 7개 학번(15~21)의 검사를 지원합니다.</p>
+    <p>총 <b>387개</b>의 검사 기준으로, <b>62개</b>의 모든 학과/전공 및 8개 학번(15~22)의 검사를 지원합니다.</p>
     <p>재학생 인증을 통해 회원가입이 가능하고, 기이수성적 엑셀파일만 업로드하면 자동으로 검사합니다.</p>
     <p>검사 결과에선 자신이 부족한 부분을 시각화해주고, 자신과 비슷한 사용자들이 많이 들었던 과목을 추천합니다.</p>
 </div>
