@@ -50,8 +50,8 @@ jobs:
       run: |
          python manage.py collectstatic --settings=project.settings.prod
     
-    # EC2로 배포 스크립트 전송
-    - name: Send scripts to EC2
+    # OCI로 배포 스크립트 전송
+    - name: Send scripts to OCI
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.ORACLE_INSTANCE_HOST }}
@@ -61,8 +61,8 @@ jobs:
         source: "./deploy/*"
         target: "/srv"
 
-    # EC2에서 배포 스크립트 실행
-    - name: Deploy to EC2
+    # OCI에서 배포 스크립트 실행
+    - name: Deploy to OCI
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.ORACLE_INSTANCE_HOST }}
