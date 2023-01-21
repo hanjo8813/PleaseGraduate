@@ -54,10 +54,10 @@ jobs:
     - name: Send scripts to EC2
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.AWS_EC2_HOST }}
-        username: ${{ secrets.AWS_EC2_USERNAME }}
-        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
-        port: ${{ secrets.AWS_EC2_PORT }}
+        host: ${{ secrets.ORACLE_INSTANCE_HOST }}
+        username: ${{ secrets.ORACLE_INSTANCE_USERNAME }}
+        key: ${{ secrets.ORACLE_INSTANCE_PRIVATE_KEY }}
+        port: ${{ secrets.ORACLE_INSTANCE_PORT }}
         source: "./deploy/*"
         target: "/srv"
 
@@ -65,10 +65,10 @@ jobs:
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.AWS_EC2_HOST }}
-        username: ${{ secrets.AWS_EC2_USERNAME }}
-        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
-        port: ${{ secrets.AWS_EC2_PORT }}
+        host: ${{ secrets.ORACLE_INSTANCE_HOST }}
+        username: ${{ secrets.ORACLE_INSTANCE_USERNAME }}
+        key: ${{ secrets.ORACLE_INSTANCE_PRIVATE_KEY }}
+        port: ${{ secrets.ORACLE_INSTANCE_PORT }}
         script: |
           cd /srv/deploy
           bash deploy.sh \
