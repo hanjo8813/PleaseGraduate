@@ -11,6 +11,7 @@ from django_pandas.io import read_frame
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
+from django.conf import settings
 # 모델 참조
 from django.db.models import Count
 from ..models import *
@@ -20,15 +21,15 @@ from .auth import *
 
 def r_admin_home(request):
     # 로컬에서만 접근 가능하도록 하기
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
     request.session.clear()
-    return render(request, "admin/home.html")
+    return render(request, "admin_home.html")
     
 
 def r_admin_test(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
     request.session.clear()
@@ -48,7 +49,7 @@ def r_admin_test(request):
 
 
 def f_user_test(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -62,7 +63,7 @@ def f_user_test(request):
 #  -------------------------------------------- (사용자 삽입) ---------------------------------------------------------
 
 def f_insert_user(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -112,21 +113,21 @@ def make_merge_df():
     # *** 매우중요 ***
     # 업데이트 전에 반드시 확인하고 업데이트해야함
     # first와 second의 파일 경로를 우선순위에 맞게 바꿔주자
-    first = './dev/update_table/2nd_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
-    second = './dev/update_table/1st_semester/'     # 이전 학기 엑셀
+    first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
 
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
     
     file_name = os.listdir(first)[0]
     df_1 = pd.read_excel(first + file_name, index_col=None)
-    df_1.drop([d for d in list(df_1) if d not in need_col],
-                  axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_1.drop([d for d in list(df_1) if d not in need_col], axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_1['학수번호'] = pd.to_numeric(df_1['학수번호'])  # 학수번호 앞자리 0 제거
     df_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
 
     file_name = os.listdir(second)[0]
     df_2 = pd.read_excel(second + file_name, index_col=None)
-    df_2.drop([d for d in list(df_2) if d not in need_col],
-                  axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_2.drop([d for d in list(df_2) if d not in need_col], axis=1, inplace=True)     # 필요한 컬럼만 추출
+    df_2['학수번호'] = pd.to_numeric(df_2['학수번호'])  # 학수번호 앞자리 0 제거
     df_2.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
 
     # 동일과목 제거 -> 1번이 우선순위 더 높음. 2번을 삭제한다
@@ -154,12 +155,13 @@ def make_merge_df():
     # 이수구분 변경
     def convert_classification(classification):
         if classification == "교양필수": return "교필"
-        elif classification == "공통교양필수": return "공필"
         elif classification == "교양선택": return "교선"
-        elif classification == "무관후보생교육": return "ROTC"
-        elif classification == "학문기초교양필수": return "기필"
         elif classification == "전공선택": return "전선"
         elif classification == "전공필수": return "전필"
+        elif classification == "학문기초교양필수": return "기필"
+        elif classification == "공통교양필수": return "공필"
+        elif classification == "균형교양필수": return "균필"
+        elif classification == "무관후보생교육": return "ROTC"
         else: return classification
     df_merge["이수구분"] = df_merge["이수구분"].apply(convert_classification)
 
@@ -169,7 +171,7 @@ def make_merge_df():
 
 
 def f_test_update_lecture(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
     df_merge, s_num_list = make_merge_df()
@@ -218,7 +220,7 @@ def f_test_update_lecture(request):
 
 
 def f_update_lecture(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -257,7 +259,7 @@ def f_update_lecture(request):
 
 
 def f_update_standard(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -307,7 +309,7 @@ def f_update_standard(request):
 
 # deprecated
 def f_update_major(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -333,7 +335,7 @@ def f_update_major(request):
 #  -------------------------------------------- ( subject_group 테이블 업데이트 ) ---------------------------------------------------------
 
 def f_update_subject_group(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -360,7 +362,7 @@ def f_update_subject_group(request):
 #  -------------------------------------------- ( changed_classification 테이블 업데이트 ) ---------------------------------------------------------
 
 def f_update_changed_classification(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
 
@@ -391,8 +393,22 @@ def f_update_changed_classification(request):
 
 
 def f_test(request):
-    if platform.system() != 'Windows':
+    if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
+
+    # first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    # second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
+
+    # need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
+    
+    # file_name = os.listdir(first)[0]
+    # df_1 = pd.read_excel(first + file_name, index_col=None)
+    # df_1.drop([d for d in list(df_1) if d not in need_col],
+    #               axis=1, inplace=True)     # 필요한 컬럼만 추출
+    # df_1['학수번호'] = pd.to_numeric(df_1['학수번호'])
+    # df_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
+
+    # print(df_1)
 
     return HttpResponse('테스트 완료, 터미널 확인')

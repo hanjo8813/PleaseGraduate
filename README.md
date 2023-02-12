@@ -6,7 +6,7 @@
 
 <table >
     <tr>
-        <td width="600" align='center'>사이트 링크 <br> https://www.please-graduate.com/</td>
+        <td width="600" align='center'>사이트 링크 <br> https://please-graduate.com/</td>
         <td width="600" align='center'><a href="/dev_record.md">개발일지 / 업데이트 기록</a></td>
     </tr>
 </table>
