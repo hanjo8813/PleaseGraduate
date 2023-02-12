@@ -8,9 +8,10 @@
 
 ### 23.02.13
 - **v2.3.1 -> v2.3.2**
-- 서버 이전 (AWS -> OCI)
+- 서버 이전 (AWS -> OCI) ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/93))
 - 2023-1학기 강의시간표 및 수강편람 정보 업데이트
 - Q&A 링크 추가
+- ui 수정 피드백 반영 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/95))
 
 ### 22.08.21
 - **v2.3.0 -> v2.3.1**
