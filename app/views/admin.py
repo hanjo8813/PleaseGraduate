@@ -27,7 +27,7 @@ def r_admin_home(request):
     request.session.clear()
     return render(request, "admin_home.html")
     
-
+# deprecated
 def r_admin_test(request):
     if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
@@ -396,19 +396,4 @@ def f_test(request):
     if not settings.DEBUG:
         messages.error(request, '❌ 관리자 페이지엔 접근할 수 없습니다!')
         return redirect('/')
-
-    # first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
-    # second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
-
-    # need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
-    
-    # file_name = os.listdir(first)[0]
-    # df_1 = pd.read_excel(first + file_name, index_col=None)
-    # df_1.drop([d for d in list(df_1) if d not in need_col],
-    #               axis=1, inplace=True)     # 필요한 컬럼만 추출
-    # df_1['학수번호'] = pd.to_numeric(df_1['학수번호'])
-    # df_1.drop_duplicates(['학수번호'], inplace=True, ignore_index=True)
-
-    # print(df_1)
-
     return HttpResponse('테스트 완료, 터미널 확인')
