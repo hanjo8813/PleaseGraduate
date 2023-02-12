@@ -20,8 +20,6 @@ from django.conf import settings
 from app import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
     # 페이지 렌더링
     path('', views.r_head),
     path('statistics/', views.r_statistics),

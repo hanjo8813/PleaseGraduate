@@ -1,12 +1,12 @@
 # Please Graduate
 
- ![since](https://img.shields.io/badge/since-2021.01-a3374f) ![pg](https://img.shields.io/badge/version-2.3.1-a3374f)
+ ![since](https://img.shields.io/badge/since-2021.01-a3374f) ![pg](https://img.shields.io/badge/version-2.3.2-a3374f)
 
 ## 관련 링크
 
 <table >
     <tr>
-        <td width="600" align='center'>사이트 링크 <br> https://www.please-graduate.com/</td>
+        <td width="600" align='center'>사이트 링크 <br> https://please-graduate.com/</td>
         <td width="600" align='center'><a href="/dev_record.md">개발일지 / 업데이트 기록</a></td>
     </tr>
 </table>
@@ -186,18 +186,6 @@
 - Nginx를 사용하여 리다이렉트 및 HTTPS + HTTP/2.0을 지원하고, 정적 파일을 제공합니다. 
 - 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
 - 일일 방문자수 구현을 위해 django-crontab을 사용합니다.
-
-<br>
-
-## 📁 DB 구조
-
-<image width="550" src="https://user-images.githubusercontent.com/71180414/125682617-94fcf596-7722-4d75-8f6a-a4199b98a859.png">
-
-- 각 과목은 고유한 **학수번호**(PK)를 통해 구분됩니다.
-- `all_lecture` : 매학기 학교에서 제공하는 개설과목 엑셀 5개년치를 Dataframe으로 병합, 중복제거 후 저장한 모든 과목 정보 테이블
-- `new_lecture` : 최근 1년 내 개설된 학기 강의들의 학수번호 리스트 테이블
-- `subject_group` : 동일과목이 존재할 경우 그룹번호와 학수번호를 매핑해주는 테이블
-- `standard` : 학과 - 학번별 모든 경우의 졸업 기준을 저장하는 테이블
 
     
 <br>

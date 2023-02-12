@@ -47,13 +47,17 @@
             </div>
             <div class='popup_box'>
                 <ul>
-                    <li>💫 새해 복 많이 받으세요</li>
-                    <li>2023-1 관심과목 담기 기간 : 1.30(월) 10:00 ~ 2.2(목) 17:00</li>
+                    <li>수강신청 화이팅 🙌</li>
+                    <li>2023-1 수강신청 기간 : 2.13(월) ~ 2.16(목) 10:00 ~ 17:00</li>
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
                     <li>
-                        <b>version 2.3.1 업데이트 내용</b>&nbsp;&nbsp;
+                        <b>version 2.3.2 업데이트 내용</b>&nbsp;&nbsp;
                         <a class="link_site" target="_blank" href="https://github.com/hanjo8813/PleaseGraduate/blob/master/dev_record.md">업데이트 기록 보기</a>
+                    </li>
+                    <li>2023-1학기 강의시간표 및 수강편람 정보가 업데이트 되었습니다.</li>
+                    <li style="margin-left:1.2rem; font-size:1rem;">
+                        컴퓨터공학과 16학번 전공학점 기준 변경
                     </li>
                 </ul>
             </div>
@@ -102,7 +106,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0821' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0212' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -116,7 +120,7 @@
             if (chk.checked) {
                 var date = new Date();
                 date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0821' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0212' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }

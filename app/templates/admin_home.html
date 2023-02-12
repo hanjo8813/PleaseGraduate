@@ -1,0 +1,92 @@
+{% extends 'reference.html' %}
+
+{% block content %}
+
+<style>
+  .admin_container {
+    text-align: center;
+    margin: 100px 100px;
+  }
+
+  .admin_table {
+    margin: 0 auto;
+  }
+
+  .admin_table th,
+  td {
+    border: 1px solid #dadada;
+    padding: 3px 6px 3px 6px;
+  }
+</style>
+
+
+<div class="admin_container">
+
+  <table class="admin_table">
+    <tr>
+      <th>함수명</th>
+      <th>설명</th>
+      <th>실행</th>
+    </tr>
+    <tr>
+      <td>f_test</td>
+      <td>콘솔 테스트</td>
+      <td><button onclick="run('/f_test/')">실행</button></td>
+    </tr>
+    <tr>
+      <td>f_user_test</td>
+      <form action="/f_user_test/" method="post" onsubmit="return check()">
+      {% csrf_token %}
+        <td>
+          사용자 테스트
+          <br>
+          <input type="text" id="user_id" name="user_id" placeholder="user_id">
+        </td>
+        <td>
+          <input type='submit' value='실행'>
+        </td>
+      </form>
+    </tr>
+    <tr>
+      <td>f_insert_user</td>
+      <form action="/f_insert_user/" method="post" onsubmit="return check()">
+        {% csrf_token %}
+        <td>
+          사용자 추가 (3가지 모두 입력해야함)
+          <br>
+          <input type="text" id="student_id" name="student_id" placeholder="student_id">
+          <input type="text" id="name" name="name" placeholder="name">
+          <input type="text" id="major" name="major" placeholder="major">
+        </td>
+        <td>
+          <input type='submit' value='실행'>
+        </td>
+      </form>
+    </tr>
+    <tr>
+      <td>f_test_update_lecture</td>
+      <td>강의 업데이트 테스트용</td>
+      <td><button onclick="run('/f_test_update_lecture/')">실행</button></td>
+    </tr>
+    <tr>
+      <td>f_update_lecture</td>
+      <td>new_lecture / all_lecutre 테이블 업데이트</td>
+      <td><button onclick="run('/f_update_lecture/')">실행</button></td>
+    </tr>
+  </table>
+
+</div>
+
+<script>
+  function run(url) {
+    if (check()) {
+      location.href = url;
+    }
+  }
+
+  function check(){
+    return confirm("정말 실행하시겠습니까?");
+  }
+</script>
+
+{% endblock %}
