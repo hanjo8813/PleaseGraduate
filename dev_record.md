@@ -12,6 +12,7 @@
 - 2023-1학기 강의시간표 및 수강편람 정보 업데이트
 - Q&A 링크 추가
 - ui 수정 피드백 반영 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/95))
+- 수학통계학과 22학번 졸업요건 오류 수정 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/97))
 
 ### 22.08.21
 - **v2.3.0 -> v2.3.1**
