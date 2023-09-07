@@ -23,11 +23,15 @@ def r_head(request):
     # user_info 회원수 + new_user_info 회원수 합계
     user_num = NewUserInfo.objects.count()
     context = {
-        'visit_today' : visit_today,
-        'visit_total' : visit_total,
-        'user_num' : user_num
+        'visit_today' : addComma(visit_today),
+        'visit_total' : addComma(visit_total),
+        'user_num' : addComma(user_num)
     }
     return render(request, "head.html", context)
+
+def addComma(num):
+    return format(num, ',d')
+
 
 def r_statistics(request):
     user_num = NewUserInfo.objects.count()
