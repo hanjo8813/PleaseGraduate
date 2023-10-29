@@ -113,8 +113,8 @@ def make_merge_df():
     # *** 매우중요 ***
     # 업데이트 전에 반드시 확인하고 업데이트해야함
     # first와 second의 파일 경로를 우선순위에 맞게 바꿔주자
-    first = './dev/update_table/1st_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
-    second = './dev/update_table/2nd_semester/'     # 이전 학기 엑셀
+    first = './dev/update_table/2nd_semester/'      # 이번에 업데이트 해야하는 엑셀 (우선순위가 높은 학기)
+    second = './dev/update_table/1st_semester/'     # 이전 학기 엑셀
 
     need_col = ['학수번호', '교과목명', '이수구분', '선택영역', '학점']
     

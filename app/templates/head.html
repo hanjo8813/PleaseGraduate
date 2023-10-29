@@ -50,16 +50,10 @@
                     <li>모바일 환경에선 화면이 깨질 수 있으므로 웹 환경을 권장합니다.</li>
                     <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
                     <li>
-                        <b>version 2.3.2 업데이트 내용</b>&nbsp;&nbsp;
-                        <a class="link_site" target="_blank" href="https://github.com/hanjo8813/PleaseGraduate/blob/master/dev_record.md">업데이트 기록 보기</a>
+                        <b>version 2.3.3 업데이트 내용</b>&nbsp;&nbsp;
+                        <a class="link_site" target="_blank" href="https://github.com/hanjo8813/PleaseGraduate/blob/master/CHANGELOG.md">업데이트 기록 보기</a>
                     </li>
-                    <li>2023-1학기 강의시간표 및 수강편람 정보가 업데이트 되었습니다.</li>
-                    <li style="margin-left:1.2rem; font-size:1rem;">
-                        컴퓨터공학과 16학번 전공학점 기준 변경
-                    </li>
-                    <li style="margin-left:1.2rem; font-size:1rem;">
-                        수학통계학과 22학번 전필학점 오류 수정
-                    </li>
+                    <li>2023-2학기 강의시간표 및 수강편람 정보가 업데이트 되었습니다.</li>
                 </ul>
             </div>
             <div class="popup_check">
@@ -107,7 +101,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0212' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_1030' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -121,7 +115,7 @@
             if (chk.checked) {
                 var date = new Date();
                 date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_0212' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_1030' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
