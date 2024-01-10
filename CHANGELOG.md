@@ -6,6 +6,11 @@
 
 ## 개발/배포 기록
 
+### 24.01.11
+- **v2.3.3 -> v2.3.4**
+- 고전독서 인증 방식 개선 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/102))
+- 커스텀 과목 + 공학인증 버그 개선 ([자세히](https://github.com/hanjo8813/PleaseGraduate/issues/100))
+
 ### 23.10.30
 - **v2.3.2 -> v2.3.3**
 - 2023-2학기 강의시간표 및 수강편람 정보 업데이트

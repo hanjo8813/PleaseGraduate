@@ -3,31 +3,37 @@
 {% block content %}
 <div class="lcontainer">
 
+    <!-- 경고 -->
+    <div stype="display: flex; flex-wrap: wrap; justify-content: center; align-content: center;">
+        <p style="margin:1rem 0 0 0; color:#d32f2f; font-weight: bold;">※ 공학인증 검사는 Beta 버전이며 관리되고 있지 않습니다. 😱</p>
+        <p style="margin:1rem 0 0 0; color:#d32f2f; font-weight: bold;">※ 검사 결과가 정확하지 않을 수 있으므로, 참고 용도로만 사용 부탁드립니다.</p>
+        <p style="margin:1rem 0 0 0; color:#d32f2f; font-weight: bold;">※ 기능 미구현으로 커스텀 과목은 검사에서 제외됩니다.</p>
+    </div>
+
     <!-- 공학인증 총 학점 -->
     <div class="fcontainer">
         <div class="resultbox container0">
             <div class="name name0">공학 인증 Total</div>
-            <div style="margin:-1.2rem 0 1rem 0; color:#d32f2f">※ 공학인증 검사는 Beta 버전이므로 정확하지 않을 수 있습니다.</div>
             <div class="box">
-                <div id="chart0">
+                <div class="chart_box" id="chart0">
                     <strong class="total_strong"></strong>
                 </div>
                 <div class="Sbox">
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">학번</span>
                         <span class="t" id="studentnumber"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">이름</span>
                         <span class="t" id="name"></span>
                     </div>
-                    <div class="gbox">
+                    <div class="gbox total_gbox">
                         <span class="grade Grade">총 기준 학점
                         </span>
                         <span class="t" id="totalgrade"></span>
                     </div>
                     <div>
-                        <div class="gbox">
+                        <div class="gbox total_gbox">
                             <span class="grade Grade">총 이수 학점
                             </span>
 
@@ -35,7 +41,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="gbox Gbox">
+                        <div class="gbox Gbox total_gbox">
                             <span class="cap"><i class="fas fa-graduation-cap"></i></span>
 
                             <div class="T" id="cangraduate"> </div>
@@ -51,22 +57,23 @@
 
         <!-- 전공 -->
         <div class="resultbox container1">
-            <div class="name name1">전공
+            <div class="name">전공
                 <span class="tooltip">
-                    <i class="fas fa-question-circle"></i>
+                    <span class='tip_div'>Tip</span>
                 </span>
-                <div class="tooltip_text" style="width:600px; text-align: left;">
-                    1. 재학기간동안 지정된 전공 교과목 내에서 총 {{standard_num.eng_major}}학점을 채워야합니다.<br>
-                    2. {{standard_num.eng_major}}학점 중에서 과목 중 일부는 설계과목으로 채워야합니다.<br>
-                    3. 설계과목은 3가지 종류로 나누어집니다.<br>
-                    &nbsp;&nbsp;&nbsp;* 기초설계(1개 지정) -> 요소설계({{standard_num.build_sel_num}}개 선택) -> 종합설계(1개 지정)<br>
-                    4. 요소설계 과목은 지정된 과목 리스트 후보에서 {{standard_num.build_sel_num}}개를 선택하여 들어야합니다.<br>
-                    5. 반드시 기초설계를 들은 이후부터 ~ 종합설계를 듣기 전까지 요소설계 과목을 채워야합니다.<br>
-                    &nbsp;&nbsp;&nbsp;* 기초설계를 듣기 전이나, 종합설계를 들은 이후의 요소설계 과목은 인정되지 않으므로 주의!!<br><br>
-                    ※ 18학번 이전 : 기초설계, 종합설계 = 지정설계 / 요소설계 = 선택설계<br>
-                    ※ 전공영역 기준 설명이 이해가 안된다면 학교 사이트를 참고하세요. 👉
+                <div class="tooltip_text">
+                    <p></p>
+                    <p>1. 재학기간동안 지정된 전공 교과목 내에서 총 {{standard_num.eng_major}}학점을 채워야합니다.</p>
+                    <p>2. {{standard_num.eng_major}}학점 중에서 과목 중 일부는 설계과목으로 채워야합니다.</p>
+                    <p>3. 설계과목은 3가지 종류로 나누어집니다.</p>
+                    <p>&nbsp;&nbsp;&nbsp;* 기초설계(1개 지정) -> 요소설계({{standard_num.build_sel_num}}개 선택) -> 종합설계(1개 지정)</p>
+                    <p>4. 요소설계 과목은 지정된 과목 리스트 후보에서 {{standard_num.build_sel_num}}개를 선택하여 들어야합니다.</p>
+                    <p>5. 반드시 기초설계를 들은 이후부터 ~ 종합설계를 듣기 전까지 요소설계 과목을 채워야합니다.</p>
+                    <p>&nbsp;&nbsp;&nbsp;* 기초설계를 듣기 전이나, 종합설계를 들은 이후의 요소설계 과목은 인정되지 않으므로 주의!!</p>
+                    <p>※ 18학번 이전 : 기초설계, 종합설계 = 지정설계 / 요소설계 = 선택설계</p>
+                    <p>※ 전공영역 기준 설명이 이해가 안된다면 학교 사이트를 참고하세요. 👉
                     <a class="link_site" target="_blank"
-                        href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a>
+                        href="http://abeek.sejong.ac.kr/abeek/program0501.html">공학인증</a></p>
                 </div>
             </div>
             <div class="box">
@@ -93,12 +100,12 @@
 
         <!-- 전문교양 -->
         <div class="resultbox container2">
-            <div class="name name1">전문 교양
-                <span class="tooltip t2">
-                    <i class="fas fa-question-circle"></i>
+            <div class="name">전문 교양
+                <span class="tooltip">
+                    <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    - 전문 교양 필수과목을 모두 들으면 통과합니다.
+                    <p>&#183;  전문 교양 필수과목을 모두 들으면 통과합니다.</p>
                 </div>
             </div>
             <div class="box">
@@ -126,12 +133,12 @@
 
         <!-- BSM -->
         <div class="resultbox container3">
-            <div class="name name1">BSM
-                <span class="tooltip t3">
-                    <i class="fas fa-question-circle"></i>
+            <div class="name">BSM
+                <span class="tooltip">
+                    <span class='tip_div'>Tip</span>
                 </span>
                 <div class="tooltip_text">
-                    - BSM 필수과목을 모두 들으면 통과합니다.
+                    <p>&#183; BSM 필수과목을 모두 들으면 통과합니다.</p>
                 </div>
             </div>
             <div class="box">
@@ -163,9 +170,9 @@
 <!-- 추천 모달-->
 
 <!-- 전공영역 -->
-<div id="myModal1" class="modal modal1">
+<div id="myModal1" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close1">&times;</span>
         <br>
         <div class="modal_div">
             <!-- 기초설계 과목 -->
@@ -324,9 +331,9 @@
 </div>
 
 <!-- 전문 교양 -->
-<div id="myModal2" class="modal modal2">
+<div id="myModal2" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close2">&times;</span>
         <br>
         <div class="modal_div">
             <!-- 필수과목 -->
@@ -398,9 +405,9 @@
 </div>
 
 <!-- BSM-->
-<div id="myModal3" class="modal modal3">
+<div id="myModal3" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="close3">&times;</span>
         <br>
         <div class="modal_div">
 
@@ -517,6 +524,8 @@
 <!-- 원그래프 js 참조 -->
 {% load static %}
 <script src="{% static 'js/circle-progress.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+
 
 <script>
     // 퍼센트화 함수
@@ -548,9 +557,6 @@
     var pernum2 = to_percent(Mygrade2, Grade2);
     var pernum3 = to_percent(Mygrade3, Grade3);
 
-
-
-
     if (pernum0 == 100) {
         var Cangraduate = "축하합니다! 공학인증이 가능합니다!!";
         document.querySelector('.T').style.fontSize = '24px';
@@ -561,72 +567,20 @@
             Totalgrade - Mytotalgrade
         ) + "학점이 필요합니다!!";
     }
-    const toggleb = document.querySelector('.navbar_toggle');
-    const menu = document.querySelector('.navbar_menu');
-    let tooltipeb = document.querySelectorAll('.tooltip');
-    let text = document.querySelectorAll('.tooltip_text');
 
-    var modal1 = document.getElementById('myModal1');
-    var modal2 = document.getElementById('myModal2');
-    var modal3 = document.getElementById('myModal3');
+    document.getElementById("name").innerHTML = Name;
+    document.getElementById("studentnumber").innerHTML = Studentnumber;
+    document.getElementById("grade1").innerHTML = Grade1;
+    document.getElementById("grade2").innerHTML = Grade2;
+    document.getElementById("grade3").innerHTML = Grade3;
+    document.getElementById("mygrade1").innerHTML = Mygrade1;
+    document.getElementById("mygrade2").innerHTML = Mygrade2;
+    document.getElementById("mygrade3").innerHTML = Mygrade3;
+    document.getElementById("mytotalgrade").innerHTML = Mytotalgrade;
+    document.getElementById("totalgrade").innerHTML = Totalgrade;
+    document.getElementById("cangraduate").innerHTML = Cangraduate;
 
-    var btn1 = document.getElementById("myBtn1");
-    var btn2 = document.getElementById("myBtn2");
-    var btn3 = document.getElementById("myBtn3");
-
-
-    var span1 = document.getElementsByClassName("close")[0];
-    var span2 = document.getElementsByClassName("close")[1];
-    var span3 = document.getElementsByClassName("close")[2];
-
-
-    document
-        .getElementById("name")
-        .innerHTML = Name;
-    document
-        .getElementById("studentnumber")
-        .innerHTML = Studentnumber;
-
-    document
-        .getElementById("grade1")
-        .innerHTML = Grade1;
-    document
-        .getElementById("grade2")
-        .innerHTML = Grade2;
-    document
-        .getElementById("grade3")
-        .innerHTML = Grade3;
-
-    document
-        .getElementById("mygrade1")
-        .innerHTML = Mygrade1;
-    document
-        .getElementById("mygrade2")
-        .innerHTML = Mygrade2;
-    document
-        .getElementById("mygrade3")
-        .innerHTML = Mygrade3;
-
-
-    document
-        .getElementById("mytotalgrade")
-        .innerHTML = Mytotalgrade;
-    document
-        .getElementById("totalgrade")
-        .innerHTML = Totalgrade;
-
-    document
-        .getElementById("cangraduate")
-        .innerHTML = Cangraduate;
-
-
-
-    toggleb.addEventListener('click', () => {
-        menu
-            .classList
-            .toggle('active');
-    });
-
+    // 차트
     var CircleProgress = function (x, y, z) {
         if (x == 100) {
             $(y)
@@ -674,45 +628,50 @@
                 });
         }
     }
-    var Tooltipeb = function (x, y) {
-        x.addEventListener('click', () => {
-            y
-                .classList
-                .toggle('active');
-        });
-    }
-    var Btnclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "block";
-        }
-
-    }
-    var Spanclick = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-        }
-
-    }
-
-    for (i = 0; i < 3; i++) {
-        Tooltipeb(tooltipeb[i], text[i]);
-    }
-    Btnclick(btn1, modal1);
-    Btnclick(btn2, modal2);
-    Btnclick(btn3, modal3);
-
-
-    Spanclick(span1, modal1);
-    Spanclick(span2, modal2);
-    Spanclick(span3, modal3);
-
-
     CircleProgress(pernum0, '#chart0', 250);
     CircleProgress(pernum1, '#chart1', 150);
     CircleProgress(pernum2, '#chart2', 150);
     CircleProgress(pernum3, '#chart3', 150);
 
 
+    // 툴팁
+    let tooltip_btn = document.querySelectorAll('.tooltip');
+    let tooltip_box = document.querySelectorAll('.tooltip_text');
+    window.onload = function(){
+
+        for (i = 0; i < tooltip_btn.length; i++) {
+            Tooltipeb(tooltip_btn[i], tooltip_box[i]);
+        }
+
+        function Tooltipeb(btn, box) {
+            btn.addEventListener('click', () => {
+                box.classList.toggle('active');
+            });
+        }
+    }
+
+    // 모달
+    var modal1 = document.getElementById('myModal1');
+    var modal2 = document.getElementById('myModal2');
+    var modal3 = document.getElementById('myModal3');
+
+    var btn1 = document.getElementById("myBtn1");
+    var btn2 = document.getElementById("myBtn2");
+    var btn3 = document.getElementById("myBtn3");
+
+    var span1 = document.getElementById("close1");
+    var span2 = document.getElementById("close2");
+    var span3 = document.getElementById("close3");
+
+    Btnclick(btn1, modal1);
+    Btnclick(btn2, modal2);
+    Btnclick(btn3, modal3);
+
+    Spanclick(span1, modal1);
+    Spanclick(span2, modal2);
+    Spanclick(span3, modal3);
+
+    // 모달 닫기
     window.onclick = function (event) {
         if (event.target == modal1) {
             modal1.style.display = "none";
