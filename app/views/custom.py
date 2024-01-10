@@ -52,9 +52,9 @@ def f_add_custom(request):
         # 커스텀 과목을 한행씩 UserGrade 테이블에 추가
         for row in zip(year, semester, subject_num, subject_name, classification, selection, grade):
             # 중복 검사
-            if subject_num in subject_num_set:
+            if row[2] in subject_num_set:
                 continue
-            subject_num_set.add(subject_num)
+            subject_num_set.add(row[2])
             # 저장
             new_ug = UserGrade()
             new_ug.student_id = user_id

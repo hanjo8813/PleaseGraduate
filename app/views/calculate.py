@@ -183,7 +183,7 @@ def f_result(user_id):
     ################### 고전독서 영역 ###################
     ####################################################
     pass_book = 0
-    if ui_row.book == '고특통과': 
+    if ui_row.book == '고특통과' or (data['학수번호'] == '9780').sum(): 
         pass_book = 2
         context_book = {
             'pass' : pass_book
