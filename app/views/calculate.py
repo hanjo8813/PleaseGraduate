@@ -709,7 +709,7 @@ def f_en_result(user_id):
 
     # df 생성
     # user_grade 테이블에서 사용자의 성적표를 DF로 변환하기
-    user_qs = UserGrade.objects.filter(student_id = user_id)
+    user_qs = UserGrade.objects.exclude(year = '커스텀').filter(student_id = user_id)
     data = read_frame(user_qs, fieldnames=['year', 'semester', 'subject_num', 'grade'])
     data.rename(columns = {'year' : '년도', 'semester' : '학기', 'subject_num' : '학수번호', 'grade' : '학점'}, inplace = True)
 
