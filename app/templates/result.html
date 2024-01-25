@@ -255,10 +255,6 @@
                         <span class="grade">필수 과목</span>
                         <span class="r" id="cs_p"></span>
                     </div>
-                    <div class="gbox">
-                        <span class="grade">이수 영역</span>
-                        <span class="r" id="myarea4"></span>
-                    </div>
                     <button class="rbutton" id="myBtn4">Recommend</button>
                 </div>
             </div>
@@ -656,48 +652,6 @@
         <span class="close" id="close4">&times;</span>
         <br>
         <div class="modal_div">
-            <div class="p_div">
-                <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 선택영역 현황
-                </div>
-                <div class="mydiv">'선택영역'을 필수로 3개 이상 이수해야 졸업요건을 충족합니다.</div>
-                <hr>
-                <table class="mytable" style="padding-bottom:1rem">
-                    <tr class="myth" style="background-color: #f8f8f8;">
-                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.0}}
-                        </th>
-                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.1}}
-                        </th>
-                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.2}}
-                        </th>
-                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.3}}
-                        </th>
-                        <th style="border-right :1px solid #cccccc; width:16%">{{core_selection.standard_cs_part.4}}
-                        </th>
-                        <th style="width:16%">
-                            {{core_selection.standard_cs_part.5}}<br>
-                            <span style="font-size: 1rem;">(융합과창업)</span>
-                        </th>
-                    </tr>
-                    <tr class="mytr">
-                        {% for check in core_selection.part_check %}
-                        {% if check == '이수' %}
-                        <td class="mytd" style='color:#17a55e; font-weight: bold;'>
-                        {% else %}
-                        <td class="mytd">
-                        {% endif %}
-                            {{ check }}
-                        </td>
-                        {% endfor %}
-                    </tr>
-                </table>
-                <div class="partdiv">
-                    {% if core_selection.pass_part %}
-                    <span style="color:#17a55e">선택영역 조건을 만족하셨습니다</span>
-                    {% else %}
-                    <span style="color:#d32f2f">선택영역이 부족합니다</span>
-                    {% endif %}
-                </div>
-            </div>
             <!-- 필수과목 -->
             <div class="p_div">
                 <div style="font-size : 1.5rem;"><i class="fas fa-check-circle"></i> 필수과목 목록
@@ -1384,17 +1338,6 @@
     var Grade4 = '{{core_selection.standard_num}}';
     var Mygrade4 = '{{core_selection.user_num}}';
     var pernum4 = to_percent(Mygrade4, Grade4);
-    // 선택영역 패스여부
-    var Myarea4;
-    if ('{{core_selection.pass_part}}' == 1) {
-        Myarea4 = "Pass";
-    }
-    else {
-        Myarea4 = "NP";
-        if (pernum4 == 100) {
-            pernum4 -= 1;
-        }
-    }
     // 필수과목 패스여부
     var Cs_p;
     if ('{{core_selection.pass_ess}}' == 1) {
@@ -1407,7 +1350,6 @@
         }
     }
     document.getElementById("grade4").innerHTML = Grade4;
-    document.getElementById("myarea4").innerHTML = Myarea4;
     document.getElementById("mygrade4").innerHTML = Mygrade4;
     document.getElementById("cs_p").innerHTML = Cs_p;
     var modal4 = document.getElementById('myModal4');
