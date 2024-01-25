@@ -53,13 +53,11 @@
                         <b>version 2.3.4 업데이트 내용</b>&nbsp;&nbsp;
                         <a class="link_site" target="_blank" href="https://github.com/hanjo8813/PleaseGraduate/blob/master/CHANGELOG.md">업데이트 기록 보기</a>
                     </li>
+                    <li>교양선택 이수조건 변경</li>
+                        <li style="margin-left:1.2rem; font-size:1rem;">21학년도 이전 입학자를 대상으로 교양선택 3개 영역 이상 이수영역 조건이 해제되었습니다.</li>
                     <li>고전독서 인증 방식 개선</li>
                         <li style="margin-left:1.2rem; font-size:1rem;">기이수과목 중 고전특강 과목이 존재하는 경우 해당 영역이 pass되도록 수정하였습니다.</li>
                         <li style="margin-left:1.2rem; font-size:1rem;">이제 고전특강 수강 후 '내 정보 업데이트'를 하지 않고도 검사가 가능합니다.</li>
-                    <li>커스텀 과목 + 공학인증 버그 개선</li>
-                        <li style="margin-left:1.2rem; font-size:1rem;">커스텀 과목이 중복으로 삽입되는 버그를 수정하였습니다.</li>
-                        <li style="margin-left:1.2rem; font-size:1rem;">정상 동작하지 않던 공학인증(Beta) 페이지를 수정하였습니다.</li>
-                        <li style="margin-left:1.2rem; font-size:1rem;">커스텀 과목을 추가한 경우, 공학인증 검사에서 발생하는 버그를 수정하였습니다.</li>
                 </ul>
             </div>
             <div class="popup_check">
@@ -107,7 +105,7 @@
     */
 
     // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_1030' + '=([^;]*)(;|$)');
+    var unlook_cookie = document.cookie.match('(^|;) ?' + 'is_unlook_0125' + '=([^;]*)(;|$)');
     if (unlook_cookie == null) {
         document.getElementById('myModal').style.display = 'block';
     }
@@ -121,7 +119,7 @@
             if (chk.checked) {
                 var date = new Date();
                 date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
-                document.cookie = 'is_unlook_1030' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
+                document.cookie = 'is_unlook_0125' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
             }
         }
     }
