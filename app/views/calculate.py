@@ -345,39 +345,17 @@ def f_result(user_id):
             else:
                 recom_essential_cs.append('10528')
 
-        # 선택영역 검사
-        standard_cs_part =["사상과역사","사회와문화","자연과과학기술","세계와지구촌","예술과체육","자기계발과진로"]   # 기준 영역 6개
-        # 융합과창업 -> 자기계발과진로 변경
-        df_cs["선택영역"] = df_cs["선택영역"].apply(convert_selection)
-        user_cs_part = list(set(df_cs[df_cs['선택영역'].isin(standard_cs_part)]['선택영역'].tolist()))
-        # 사용자가 안들은 영역 추출
-        recom_cs_part = []
-        if len(user_cs_part) < 3:
-            recom_cs_part = list(set(standard_cs_part) - set(user_cs_part))
-        # 사용자의 부족 영역 체크
-        part_check = ['이수' for _ in range(len(standard_cs_part))]
-        for i, c in enumerate(standard_cs_part):
-            if c not in user_cs_part:
-                part_check[i] = '미이수'
-
-        # 선택추천과목 리스트 생성
-        if not recom_cs_part :  # 만족한경우엔 5개 다 추천
-            cs_part_for_recom = standard_cs_part
-        else:                   # 만족 못했으면 영역 recom 리스트 그대로
-            cs_part_for_recom = recom_cs_part
-        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'],  selection__in=cs_part_for_recom)
+        other_cs = UserGrade.objects.exclude(year = '커스텀').filter(classification__in = ['교선1', '중선'])
         other_cs = other_cs.values_list('subject_num').annotate(count=Count('subject_num'))
         user_cs_lec = df_cs['학수번호'].tolist() + [s_num for s_num in standard_row.cs_list.split('/')]
         recom_selection_cs = make_recommend_list_other(other_cs, user_cs_lec)
-        # 패스여부 검사 (선택영역, 기준학점, 필수과목, 전체)
-        pass_cs_part, pass_cs_num, pass_cs_ess, pass_cs= 0, 0, 0, 0
-        if not recom_cs_part:
-            pass_cs_part = 1
+        # 패스여부 검사 (기준학점, 필수과목, 전체)
+        pass_cs_num, pass_cs_ess, pass_cs= 0, 0, 0
         if standard_num_cs <= user_num_cs:
             pass_cs_num = 1
         if not recom_essential_cs:
             pass_cs_ess = 1
-        if pass_cs_part and pass_cs_num and pass_cs_ess:
+        if pass_cs_num and pass_cs_ess:
             pass_cs = 1
 
         # context 생성
@@ -387,9 +365,6 @@ def f_result(user_id):
             'recom_essential' : list_to_query(recom_essential_cs),
             'standard_essential' : standard_essential_cs,
             'recom_selection' : recom_selection_cs,
-            'standard_cs_part' : standard_cs_part,
-            'part_check' : part_check,
-            'pass_part' : pass_cs_part,
             'pass_ess' : pass_cs_ess,
             'pass' : pass_cs,
         }
