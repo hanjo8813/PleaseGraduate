@@ -186,6 +186,5 @@
 - Nginx를 사용하여 리다이렉트 및 HTTPS + HTTP/2.0을 지원하고, 정적 파일을 제공합니다. 
 - 프론트엔드는 Django Template Engine을 사용해 SSR 방식으로 렌더링합니다.
 - 일일 방문자수 구현을 위해 django-crontab을 사용합니다.
-
     
 <br>
