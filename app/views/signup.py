@@ -33,7 +33,7 @@ def f_certify(request):
         messages.error(request, '⚠️ 세종대학교 포털 ID/PW를 다시 확인하세요! (Caps Lock 확인) \\n\\n (재외국민전형 입학자, 계약학과, 편입생은 학생인증이 불가능합니다.😥)')
         return redirect('/agree/')
     elif temp_user_info == 'err_server':
-        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 대양휴머니티칼리지 사이트의 서버 문제일 수 있으니 잠시 후 시도해주세요.')
+        messages.error(request, '⛔ 대양휴머니티칼리지 로그인 중 예기치 못한 오류가 발생했습니다. 사이트 문제일 수 있으니 잠시 후 시도해주세요.')
         return redirect('/agree/')
 
 # ***********************************************************************************
