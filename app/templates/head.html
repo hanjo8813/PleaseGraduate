@@ -37,64 +37,69 @@
     </header>
 </div>
 
-<!-- 서비스 종료 공지 -->
-<div id='myModal' class="modal" style="display: none;">
-    <div class="modal-content">
-        <span id='dd' class="close" style="font-size:3rem;">&times;</span>
-        <div class='popup_content'>
-            <div class='popup_title'>
-                서비스 종료 안내
-            </div>
-            <div class='popup_box'>
-                <div>
-                    <b>PleaseGraduate 서비스 종료 안내</b>
-                </div>
 
-                <hr style='border: 0.001px solid rgb(230, 230, 230); margin:1rem 0 1rem 0; width:85%'>
+<div id="noticeModal" style="position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9999;">
 
-                <div style="margin-bottom: 0.6rem;">
-                    본 서비스는 <b>2026년 2월 9일(월)</b>부로 운영이 종료됩니다.
-                </div>
+    <div style="background:#ffffff; width:94%; max-width:650px;
+    border-radius:18px; padding:36px 30px;
+    box-shadow:0 14px 40px rgba(0,0,0,0.25);
+    text-align:center; position:relative;">
 
-                <div style="margin-bottom: 0.6rem;">
-                    서비스 종료 시점 이후 졸업요건 분석 기능은 '올클' 사이트에서 계속 이용하실 수 있습니다.
-                </div>
+        <!-- 닫기 버튼 -->
+        <span onclick="closeNotice()" style="position:absolute; top:18px; right:20px;
+      font-size:30px; cursor:pointer; color:#777;">×</span>
 
-                <div style="margin-left:1.2rem; font-size:1rem; margin-bottom: 0.6rem;">
-                    ▶ <a target="_blank" href="https://allcll.kr">https://allcll.kr</a>
-                </div>
-
-                <div style="margin-left:1.2rem; font-size:1rem;">
-                    그동안 PleaseGraduate를 이용해주신 모든 분들께 진심으로 감사드립니다.
-                </div>
-            </div>
-
-            <!-- <div class="popup_check">
-                <label style='cursor:pointer'>
-                    <input id='unlook' type="checkbox" style='width:1rem; height:1rem;'>
-                    <label for='unlook'></label>
-                    &nbsp;다시 보지 않기
-                </label>
-            </div> -->
+        <!-- 제목 -->
+        <div style="font-size:26px; font-weight:800; margin-bottom:22px;">
+            서비스 종료 안내
         </div>
+
+        <!-- 내용 -->
+        <div style="font-size:18px; line-height:1.75; color:#222; margin-bottom:20px;">
+            PleaseGraduate 서비스는
+            <span style="color:#d32f2f;font-weight:700;">
+                2026년 2월 11일(수)
+            </span>
+            부로 운영이 종료됩니다.
+        </div>
+
+        <div style="font-size:17px; color:#333; margin-bottom:25px;">
+            졸업요건 분석 서비스는 <b>올클(Allcll)</b>에서 더 나은 환경으로 제공될 예정입니다. (개발중)
+        </div>
+
+        <!-- 링크 -->
+        <a href="https://allcll.kr" target="_blank" style="display:inline-block; margin-bottom:22px;
+      font-size:30px; font-weight:600;
+      color:#1976d2; text-decoration:underline;">
+            https://allcll.kr
+        </a>
+
+        <!-- 감사 문구 (강조) -->
+        <div style="
+      font-size:20px;
+      font-weight:700;
+      color:#444;
+      margin-top:15px;
+      margin-bottom:35px;
+    ">
+            그동안 PleaseGraduate를 이용해주셔서 진심으로 감사드립니다.
+        </div>
+
+        <!-- 확인 버튼 -->
+        <button onclick="closeNotice()" style="width:100%; padding:16px;
+      border-radius:12px; border:none;
+      background:rgb(164, 26, 55); color:#fff;
+      font-size:20px; font-weight:700;
+      cursor:pointer;">
+            확인
+        </button>
+
     </div>
 </div>
 
-
-<!-- 웹 권장 모달 (모바일에서만 뜸) 
-<div id='myModal' class="modal" style ="display: none;">
-    <div class="modal-content">
-        <span class="close" style="font-size:5rem;">&times;</span>
-        <div class="modal_div">
-            <br><br><br><br><br>
-            <div style="font-size:3rem; font-weight:bold; padding-bottom:6rem;">
-                모바일 환경에서는 화면이 깨질 수 있으므로 PC 환경에서의 사용을 권장합니다. <br>
-                (모바일 사용시 가로모드 권장)
-            </div>
-        </div>
-    </div>
-</div>
--->
 
 {% endblock %}
 
@@ -102,46 +107,9 @@
 {% block js_section %}
 <!-- js 파트 -->
 <script>
-    /*
-    // 기기 검사
-    var filter = "win16|win32|win64|mac|macintel"; 
-    if ( navigator.platform ) { 
-        // 모바일에서만 보이게함
-        if(filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
-            document.getElementById('myModal').style.display="block";
-        } 
+    function closeNotice() {
+        document.getElementById("noticeModal").style.display = "none";
     }
-    */
-
-    // 쿠키 여부에 따라 모달창 렌더링
-    var unlook_cookie = document.cookie.match('(^|;) ?' + 'last_modal' + '=([^;]*)(;|$)');
-    if (unlook_cookie == null) {
-        document.getElementById('myModal').style.display = 'block';
-    }
-
-    // 모달 창 끄기 + 다시 보지 않음 쿠키 설정
-    var Spanclick_set_cookie = function (x, y) {
-        x.onclick = function () {
-            y.style.display = "none";
-            // var chk = document.getElementById('unlook');
-            // // 체크하고 누르면 쿠키 생성
-            // if (chk.checked) {
-            //     var date = new Date();
-            //     date.setTime(date.getTime() + 60 * 24 * 60 * 60 * 1000);
-            //     document.cookie = 'last_modal' + '=' + 'unlook' + ';expires=' + date.toUTCString() + ';path=/';
-            // }
-        }
-    }
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    var modal = document.getElementById('myModal');
-    var span = document.getElementsByClassName("close")[0];
-
-    Spanclick_set_cookie(span, modal);
 </script>
 
 {% endblock %}
