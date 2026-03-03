@@ -1,0 +1,22 @@
+name: Deploy to Oracle
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy_html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload HTML to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.OCI_INSTANCE_HOST }}
+          username: ${{ secrets.OCI_INSTANCE_USERNAME }}
+          key: ${{ secrets.OCI_INSTANCE_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_INSTANCE_PORT }}
+          source: "./deploy/notice.html"
+          target: "/srv/notice"
