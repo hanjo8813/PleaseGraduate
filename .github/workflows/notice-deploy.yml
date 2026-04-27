@@ -1,8 +1,6 @@
 name: Deploy to Oracle
 
-on:
-  push:
-    branches: [ main ]
+on: workflow_dispatch
 
 jobs:
   deploy_html:
